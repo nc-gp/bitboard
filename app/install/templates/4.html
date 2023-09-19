@@ -1,0 +1,40 @@
+<!doctype html>
+<html>
+{head}
+<body>
+	<div id="install">
+		<header>
+			<h1>Account</h1>
+			<p>Setup default administration account.</p>
+		</header>
+
+		<main>
+			<div style="text-align: justify;">
+				{error}
+				<form action="/?bb_next=true" method="post" style="display: grid; place-items: center;">
+					<input type="hidden" name="step_4" value="true">
+
+                    <div class="input-group">
+                        <input required="" type="text" name="username" autocomplete="off" class="input">
+                        <label class="user-label">Username</label>
+                    </div>
+					<div class="input-group">
+                        <input required="" type="text" name="email" autocomplete="off" class="input">
+                        <label class="user-label">Email</label>
+                    </div>
+                    <div class="input-group">
+                        <input required="" type="password" name="password" autocomplete="off" class="input">
+                        <label class="user-label">Password</label>
+                    </div>
+
+					<div class="center">
+                        <input type="submit" value="Next">
+                    </div>
+                </form>
+			</div>
+		</main>
+
+		{footer}
+	</div>
+</body>
+</html>

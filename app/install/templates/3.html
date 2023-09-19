@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+{head}
+<body>
+	<div id="install">
+		<header>
+			<h1>Database</h1>
+			<p>Setup database information.</p>
+		</header>
+
+		<main>
+			<div style="text-align: justify;">
+				<form action="/?bb_next=true" method="post" style="display: grid; place-items: center;">
+                    <input type="hidden" name="step_3" value="true">
+
+                    <div class="input-group">
+                        <input required="" type="text" name="host" autocomplete="off" class="input">
+                        <label class="user-label">Host</label>
+                    </div>
+                    <div class="input-group">
+                        <input required="" type="text" name="user" autocomplete="off" class="input">
+                        <label class="user-label">User</label>
+                    </div>
+                    <div class="input-group">
+                        <input type="password" name="pass" autocomplete="off" class="input">
+                        <label class="user-label">Password</label>
+                    </div>
+                    <div class="input-group">
+                        <input required="" type="text" name="name" autocomplete="off" class="input" value="bitboard">
+                        <label class="user-label">Database name</label>
+                    </div>
+
+                    <div class="center">
+                        <input type="submit" value="Next">
+                    </div>
+                </form>
+			</div>
+		</main>
+
+		{footer}
+	</div>
+</body>
+</html>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html>
+{head}
+<body>
+	<div id="install">
+		<header>
+			<h1>Forum</h1>
+			<p>Basic information about your forum</p>
+		</header>
+
+		<main>
+            <div style="text-align: justify;">{error}</div>
+			<form action="/?bb_next=true" method="post" style="display: grid; place-items: center;">
+				<input type="hidden" name="step_5" value="true">
+
+                <div class="input-group">
+                    <input required="" type="text" name="forum_name" autocomplete="off" class="input">
+                    <label class="user-label">Forum name</label>
+                </div>
+
+				<div class="input-group">
+                    <input required="" type="text" name="forum_description" autocomplete="off" class="input">
+                    <label class="user-label">Forum description</label>
+                </div>
+
+				<div class="center">
+					<input class="button" type="submit" value="Next">
+				</div>
+			</form>
+		</main>
+
+		{footer}
+	</div>
+</body>
+</html>
