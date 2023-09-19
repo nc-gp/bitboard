@@ -1,5 +1,8 @@
 <?php
 
+/**
+ * The Database class provides methods for interacting with a MySQL database using MySQLi.
+ */
 class Database
 {
     private $connection;
@@ -8,6 +11,15 @@ class Database
     private bool $query_closed = true;
     public int $query_count = 0;
 
+    /**
+     * Constructor to initialize the Database connection.
+     *
+     * @param string $dbhost   The database host.
+     * @param string $dbuser   The database user.
+     * @param string $dbpass   The database password.
+     * @param string $dbname   The database name.
+     * @param string $charset  The character set for the database connection.
+     */
     public function __construct(string $dbhost = 'localhost', string $dbuser = 'root', string $dbpass = '', string $dbname = 'bitboard', string $charset = 'utf8')
     {
         $this->connection = new mysqli($dbhost, $dbuser, $dbpass);
@@ -19,6 +31,11 @@ class Database
         $this->SelectDatabase($dbname);
     }
 
+    /**
+     * Select the database to use.
+     *
+     * @param string $dbname The name of the database to select.
+     */
     public function SelectDatabase(string $dbname)
     {
         $this->Query('CREATE DATABASE IF NOT EXISTS ' . $dbname);
@@ -26,6 +43,12 @@ class Database
         $this->connection->select_db($dbname);
     }
 
+    /**
+     * Execute a MySQL query.
+     *
+     * @param string $query The SQL query to execute.
+     * @return Database The Database object.
+     */
     public function Query($query) 
     {
         if (!$this->query_closed)
@@ -74,6 +97,12 @@ class Database
         return $this;
     }
 
+    /**
+     * Fetch all rows from a result set.
+     *
+     * @param callable $callback A callback function to process each row.
+     * @return array The array of fetched rows.
+     */
     public function FetchAll($callback = null) 
     {
         $params = array();
@@ -110,6 +139,11 @@ class Database
         return $result;
     }
 
+    /**
+     * Fetch a single row as an associative array from a result set.
+     *
+     * @return array The associative array representing the fetched row.
+     */
     public function FetchArray() 
     {
         $params = array();
@@ -132,33 +166,64 @@ class Database
         return $result;
     }
 
+    /**
+     * Close the database connection.
+     *
+     * @return bool True if the connection was successfully closed; false otherwise.
+     */
     public function Close()
     {
         return $this->connection->close();
     }
 
+    /**
+     * Get the number of rows in the result set.
+     *
+     * @return int The number of rows in the result set.
+     */
     public function NumRows()
     {
         $this->query->store_result();
         return $this->query->num_rows;
     }
 
+    /**
+     * Get the number of affected rows by the last query.
+     *
+     * @return int The number of affected rows.
+     */
     public function AffectedRows()
     {
         return $this->query->affected_rows;
     }
 
+    /**
+     * Get the last inserted ID from the last query.
+     *
+     * @return int The last inserted ID.
+     */
     public function LastInsertID()
     {
         return $this->connection->insert_id;
     }
 
+    /**
+     * Display an error message and exit if show_errors is enabled.
+     *
+     * @param string $error The error message to display.
+     */
     public function Error($error)
     {
         if ($this->show_errors)
             exit($error);
     }
 
+    /**
+     * Get the MySQL data type for a variable.
+     *
+     * @param mixed $var The variable to determine the type for.
+     * @return string The MySQL data type.
+     */
     private function _gettype($var)
     {
         if (is_string($var)) 
