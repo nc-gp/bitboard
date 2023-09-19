@@ -1,0 +1,32 @@
+html,body {
+    font-family: -apple-system, BlinkMacSystemFont, "Avenir Next", Avenir,
+    "Nimbus Sans L", Roboto, "Noto Sans", "Segoe UI", Arial, Helvetica,
+    "Helvetica Neue", sans-serif;
+    scroll-behavior: smooth;
+    color: #dcdcdc;
+    background-color: #212121;
+}
+
+a.button {
+    cursor: pointer;
+    border: 1px solid #7127c3;
+    padding: 8px 38px;
+    border-radius: 50px;
+    font-size: 1rem;
+    color: #FFFFFF;
+    text-decoration: none;
+    transition: background-color .2s ease-in-out;
+}
+
+a.button.fill {
+    background-color: #7127c3;
+    border: none;
+}
+
+a.button:hover {
+  background-color: #9331ff;
+}
+
+.uppercase {
+    text-transform: uppercase;
+}

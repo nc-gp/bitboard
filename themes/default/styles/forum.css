@@ -1,0 +1,135 @@
+#content {
+    display: block;
+    margin: 30px 35px;
+}
+
+#threads {
+    display: block;
+    margin-top: 10px;
+}
+
+.prethread {
+    background: #111;
+    border-radius: 15px;
+    margin-top: 10px;
+    transition: background .2s ease-out;
+    position: relative;
+    padding: 15px;
+}
+
+.prethread:first-of-type {
+    margin-top: 0;
+}
+
+.prethread:hover {
+    background: #0d0d0d;
+}
+
+.prethread .thread {
+    display: grid; 
+    grid-template-columns: 2fr 0.5fr 0.5fr; 
+    grid-template-rows: 1fr; 
+    gap: 0 10px; 
+    grid-template-areas: 
+      ". . .";
+    align-items: center;
+}
+
+.thread_info a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.stats {
+    text-align: start;
+}
+
+.lastpost {
+  display: flex;
+  align-items: center;
+}
+
+.lastpost_by {
+  color: inherit;
+  text-decoration: none;
+}
+
+.lastpost_info {
+  margin-left: 10px;
+}
+
+.lastpost_avatar img {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  border: 2px dashed #7127c3;
+}
+
+.pclosed {
+    padding: 1px 5px;
+    border-radius: 10px;
+    background: rgba(255, 53, 53, 0.65);
+}
+
+.ppinned {
+    padding: 1px 5px;
+    border-radius: 10px;
+    background: rgba(60, 255, 53, 0.65);
+}
+
+.info {
+  display: flex;
+}
+
+.info i {
+    font-size: 2rem;
+    margin-right: 10px;
+    line-height: 1.25;
+    color: #7127c3;
+    text-shadow: 0 0 10px black;
+}
+
+.info h1 {
+    margin: 0;
+    color: white;
+}
+
+.presubforum {
+  background: #111;
+  border-radius: 15px;
+  margin-top: 10px;
+  transition: background .2s ease-out;
+  position: relative;
+  padding: 15px;
+}
+
+.presubforum:last-child {
+  margin-bottom: 15px;
+}
+
+.subforum {
+  display: grid;
+  grid-template-columns: 2fr 0.5fr 0.5fr;
+  grid-template-rows: 1fr;
+  gap: 0 10px;
+  grid-template-areas: ". . .";
+  align-items: center;
+}
+
+.subforum_title {
+  font-size: 2rem;
+  font-weight: bold;
+}
+
+.subforum_title a {
+  text-decoration: none;
+  color: inherit;
+}
+
+.subforum_desc {
+  color: #a2a2a2;
+}
+
+.thread_subinfo {
+  color: #a2a2a2;
+}

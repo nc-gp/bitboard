@@ -1,0 +1,211 @@
+#content {
+    margin: 30px 35px;
+    display: flex;
+    gap: 30px;
+}
+
+#content #categories {
+    width: 75%;
+  }
+  
+#content #topstats {
+    width: 25%;
+}
+
+.category {
+    display: block;
+    width: 100%;
+    position: relative;
+}
+
+.category:not(:first-of-type) {
+    margin-top: 20px;
+}
+
+.category .category_info {
+    display: flex;
+}
+
+.category .category_info i {
+    font-size: 2rem;
+    margin-right: 10px;
+    line-height: 1.25;
+    color: #7127c3;
+    text-shadow: 0 0 10px black;
+}
+
+.category .category_info h1 {
+    margin: 0;
+    color: white;
+}
+
+.category .category_info h2 {
+    margin: 0;
+    font-size: 1rem;
+    font-weight: normal;
+    color: #a2a2a2;
+}
+
+.category .category_container {
+    display: block;
+}
+
+.category .category_container {
+    margin-top: 10px;
+}
+
+.category .category_container .preforum {
+    background: #111;
+    border-radius: 15px;
+    margin-top: 20px;
+    transition: background .2s ease-out;
+    position: relative;
+}
+
+.category .category_container .preforum:first-of-type {
+    margin-top: 0;
+}
+
+.category .category_container .preforum:hover {
+    background: #0d0d0d;
+}
+
+.category .category_container .preforum .forum {
+    align-items: center;
+    padding: 15px;
+    display: grid;
+    grid-template-columns: 5% 75% 20%;
+    grid-template-rows: 1fr;
+    gap: 0 10px;
+    grid-template-areas: ". .";
+}
+
+.category .category_container .preforum .forum .forum_icon {
+
+}
+
+.category .category_container .preforum .forum .forum_icon i {
+    text-shadow: 0 0 10px black;
+    font-size: 2rem;
+}
+
+.category .category_container .preforum .forum .forum_info {
+
+}
+
+.category .category_container .preforum .forum .forum_info .forum_title {
+
+    font-size: 1.5rem;
+}
+
+.category .category_container .preforum .forum .forum_info .forum_title a {
+    color: #dcdcdc;
+    text-decoration: none;
+}
+
+.category .category_container .preforum .forum .forum_info .forum_desc {
+
+    font-size: 0.8rem;
+    color: #a2a2a2;
+}
+
+.category .category_container .preforum .forum .forum_stats {
+    position: absolute;
+    top: -15px;
+    right: 20px;
+    text-align: right;
+    font-size: 0.7rem;
+}
+
+.category .category_container .preforum .forum .forum_lastpost {
+    display: flex;
+    align-items: center;
+}
+
+.category .category_container .preforum .forum .subforum_l {
+    font-size: 0.8rem;
+    display: block;
+    color: gray;
+    text-decoration: none;
+    transition: color .1s;
+    margin-left: 10px;
+}
+
+.category .category_container .preforum .forum .subforum_l:hover {
+    color: #7127c3;
+}
+
+.category .category_container .preforum .forum .subforum_l:first-of-type {
+    margin-top: 10px;
+}
+
+.category .category_container .preforum .forum .forum_lastpost .lastpost_avatar {
+    margin-right: 10px;
+}
+
+.category .category_container .preforum .forum .forum_lastpost .lastpost_avatar img {
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    border: 2px dashed #7127c3;
+}
+
+.category .category_container .preforum .forum .forum_lastpost .lastpost_postdate,
+.category .category_container .preforum .forum .forum_lastpost .lastpost_by {
+    font-size: 0.8rem;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+.category .category_container .preforum .forum .forum_lastpost .lastpost_threadtitle {
+    width: 100px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+}
+
+#topstats {
+    
+}
+
+#stats {
+    display: flex;
+    padding: 60px 35px;
+    justify-content: space-around;
+    align-content: center;
+    background: #111;
+    box-shadow: 0px 5px 20px -1px black;
+}
+
+.stat .iconstat {
+    font-size: 2.5rem;
+}
+
+.stat .txt {
+    color: #a2a2a2;
+    text-align: center;
+}
+
+.stat .userstat {
+    display: flex;
+    align-items: center;
+}
+
+.stat .userstat img {
+    border-radius: 50%;
+    width: 64px;
+    height: 64px;
+    border: 2px dashed #7127c3;
+}
+.stat .userstat .userstatblock {
+    margin-left: 10px;
+}
+
+.stat .userstat .usb-username {
+    display: block;
+    text-decoration: none;
+}

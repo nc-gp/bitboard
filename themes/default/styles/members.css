@@ -1,0 +1,91 @@
+#content {
+    display: block;
+}
+
+#mem-container {
+    display: flex;
+    flex-wrap: wrap;
+    padding: 0 20px;
+    margin: auto;
+    max-width: 1200px;
+}
+
+.member {
+    margin: 20px;
+    border-radius: 6px;
+    width: calc(33.3% - 40px);
+    overflow: hidden;
+    position: relative;
+    background: #111;
+    box-shadow: 1px 1px 1px 1px black;
+    transition: box-shadow .3s;
+}
+
+.member:hover {
+    box-shadow: 0 5px 10px rgba(0, 0, 0, 0.05), 0 0 0 1px #7127c3;
+ }
+
+.member-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    padding: 20px;
+    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.05) 1%, rgba(0, 0, 0, 0) 100%);
+}
+
+.member-info {
+    padding: 16px 20px;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+}
+
+.member-info-title {
+    font-size: 11px;
+    font-weight: bold;
+    color: white;
+    /*! letter-spacing: 1px; */
+}
+
+.member-info-data {
+    flex: 1;
+    white-space: nowrap;
+    text-align: right;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    padding-left: 20px;
+    color: #6c6c6c;
+}
+
+.member-avatar img {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+}
+
+.member-basic-info {
+    flex: 1;
+    overflow: hidden;
+    white-space: nowrap;
+    /*! color: #cacaca; */
+    margin-left: 10px;
+}
+
+.mebmer-username {
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 15px;
+    margin-bottom: 2px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    text-decoration: none;
+    display: block;
+}
+
+.member-rank {
+    color: rgba(176, 176, 176, 0.6);
+    font-size: 14px;
+}

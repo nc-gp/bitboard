@@ -1,0 +1,28 @@
+.pagination {
+    margin: 35px 35px 10px 35px;
+    display: flex;
+    justify-content: center;
+  }
+  
+.pagination-btn {
+    padding: 2px 4px !important;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-left: 3px;
+}
+
+.pagination-btn:first-of-type {
+    margin-left: 0;
+}
+
+.no-hover {
+    transition: none !important;
+    cursor: default !important;
+}
+
+.no-hover:hover {
+    background-color: rgba(0,0,0,0) !important;
+}
