@@ -40,6 +40,15 @@ class Instalation
 					'name' => $_POST['name']
 				);
 
+				try {
+					$mysqli = mysqli_connect($config['host'], $config['user'], $config['pass'], $config['name']);
+					if(mysqli_connect_error() && UrlManager::Redirect('./', array('error' => 1, 'msg' => mysqli_connect_error())))
+						return;
+				} catch (Exception $e) {
+					if(UrlManager::Redirect('./', array('error' => 1, 'msg' => $e->getMessage())))
+						return;
+				}
+
 				$configFile = new File('./app/database/config.php');
 				$data = '<?php' . "\n\n";
 				$data .= '$config["host"] = \'' . $config['host'] . '\';' . "\n";
@@ -62,9 +71,9 @@ class Instalation
 				)');
 
 				$InstallDatabase->Query('INSERT INTO bit_settings 
-					(id,forum_name,forum_online,forum_online_msg,forum_theme,reputation_negative) 
-					VALUES (?,?,?,?,?,?)', 
-					array(0, 'Forum', 1, 'Back soon.', 'default', 1)
+					(id,forum_name,forum_description,forum_online,forum_online_msg,forum_theme,reputation_negative) 
+					VALUES (?,?,?,?,?,?,?)', 
+					array(0, 'Forum', 'Your awesome forum', 1, 'Back soon.', 'default', 1)
 				);
 
 				$bit_categories = $InstallDatabase->Query('CREATE TABLE IF NOT EXISTS bit_categories (
