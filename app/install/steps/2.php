@@ -12,10 +12,15 @@ class Step
 
 	protected function Do()
 	{
+		$extensions = get_loaded_extensions();
 		$phpTemplate = new Template("./app/install/templates/other/2_php_ok.html");
+		$mysqlTemplate = new Template("./app/install/templates/other/2_mysql_ok.html");
 
 		if(!version_compare(phpversion(), "8.0.0", ">="))
 			$phpTemplate = new Template("./app/install/templates/other/2_php_bad.html");
+
+		if(!in_array("pdo_mysql", $extensions))
+			$mysqlTemplate = new Template("./app/install/templates/other/2_mysql_bad.html");
 
 		$phpTemplate->AddEntry("{phpversion}", phpversion());
 		$phpTemplate->Replace();
@@ -32,6 +37,7 @@ class Step
 		$this->template->AddEntry("{head}", $headTemplate->templ);
 		$this->template->AddEntry("{footer}", $footerTemplate->templ);
 		$this->template->AddEntry("{php}", $phpTemplate->templ);
+		$this->template->AddEntry("{mysql}", $mysqlTemplate->templ);
 		$this->template->Render(true);
 	}
 }
