@@ -1,0 +1,13 @@
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # Block direct access to the /app folder
+  RewriteRule ^app/.*$ - [F,L]
+
+  # Rewrite all other URLs to index.php
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.*)$ index.php?action=$1 [QSA,L]
+</IfModule>
