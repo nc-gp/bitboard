@@ -12,7 +12,12 @@ class Log
      */
     static public function Log($message)
     {
-        echo '<script>console.log("' . $message . '")</script>';
+        if (is_array($message))
+            $message = json_encode($message);
+        else
+            $message = "'$message'";
+
+        echo '<script>console.log(' . $message . ')</script>';
     }
 
     /**
