@@ -42,6 +42,22 @@ class RelativeTime
         if (!$full) $string = array_slice($string, 0, 1);
         return $string ? implode(', ', $string) . ' ago' : 'just now';
     }
+
+    /**
+     * Format a timestamp into a human-readable string.
+     *
+     * @param string $timestamp The timestamp in the format 'YYYY-MM-DD HH:MM:SS'.
+     * @return string The formatted timestamp in the format 'Published Month day, year, at time'.
+     */
+    public static function Format($timestamp): string
+    {
+        $datetime = new DateTime($timestamp);
+        
+        $formattedDate = $datetime->format('F d, Y');
+        $formattedTime = $datetime->format('g:i A');
+        
+        return 'Published ' . $formattedDate . ', at ' . $formattedTime;
+    }
 }
 
 ?>
