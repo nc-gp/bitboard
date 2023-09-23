@@ -46,10 +46,17 @@ class Setup
 
 				try 
 				{
-					$mysqli = mysqli_connect($config['host'], $config['user'], $config['pass'], $config['name']);
-					if(mysqli_connect_error())
+					$mysqli = mysqli_connect($config['host'], $config['user'], $config['pass']);
+					if(mysqli_connect_errno())
 					{
 						SessionManager::AddInformation('mysql', mysqli_connect_error(), true);
+						UrlManager::Redirect('./');
+						return;
+					}
+
+					if(!mysqli_query($mysqli, 'CREATE DATABASE IF NOT EXISTS ' . $config['name']))
+					{
+						SessionManager::AddInformation('mysql', mysqli_error($mysqli), true);
 						UrlManager::Redirect('./');
 						return;
 					}
@@ -61,7 +68,7 @@ class Setup
 					return;
 				}
 
-				$configFile = new File('./app/database/config.php');
+				$configFile = new File('./app/config.php');
 				$data = '<?php' . "\n\n";
 				$data .= '$config["host"] = \'' . $config['host'] . '\';' . "\n";
 				$data .= '$config["user"] = \'' . $config['user'] . '\';' . "\n";
