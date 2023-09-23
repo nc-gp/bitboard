@@ -18,7 +18,7 @@ class File
     public function __construct(string $path)
     {
         $this->path = $path;
-        $this->data = $this->_load();
+        $this->data = $this->Load();
     }
 
     /**
@@ -32,20 +32,15 @@ class File
     }
 
     /**
-     * Save the data to the file.
+     * Save the data to the file using fopen.
      */
     public function Save(): void
     {
-        file_put_contents($this->path, $this->data);
-    }
-
-    /**
-     * Load data from the file into the File object.
-     */
-    public function Load(): void
-    {
-        if ($this->Exists())
-            $data = file_get_contents($this->path);
+        $fileHandle = fopen($this->path, 'w');
+        if ($fileHandle) {
+            fwrite($fileHandle, $this->data);
+            fclose($fileHandle);
+        }
     }
 
     /**
@@ -74,10 +69,16 @@ class File
      *
      * @return mixed The loaded data or -1 if the file does not exist.
      */
-    private function _load(): mixed
+    private function Load(): mixed
     {
-        if ($this->Exists())
-            return file_get_contents($this->path);
+        if ($this->Exists()) {
+            $fileHandle = fopen($this->path, 'r');
+            if ($fileHandle) {
+                $data = fread($fileHandle, filesize($this->path));
+                fclose($fileHandle);
+                return $data;
+            }
+        }
 
         return -1;
     }
