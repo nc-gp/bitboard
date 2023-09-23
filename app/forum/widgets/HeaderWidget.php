@@ -5,7 +5,7 @@ namespace App\Forum\Widgets;
 use App\Classes\Template;
 use App\Classes\UrlManager;
 use App\Classes\SessionManager;
-use App\Classes\Avatar;
+use App\Classes\AvatarUtils;
 
 class HeaderWidget
 {
@@ -30,7 +30,7 @@ class HeaderWidget
         if (SessionManager::IsLogged())
         {
             $userTemplate = new Template('./themes/' . $this->theme . '/templates/header/nav/user.html');
-            $userTemplate->AddEntry('{avatar}', Avatar::GetPath($this->theme, $_SESSION['bitboard_user']['avatar']));
+            $userTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($this->theme, $_SESSION['bitboard_user']['avatar']));
             $userTemplate->AddEntry('{username}', $_SESSION['bitboard_user']['username']);
             $userTemplate->Replace();
 
