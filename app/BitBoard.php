@@ -41,7 +41,7 @@ class BitBoard
 			return;
 		}
 
-		require_once './app/database/config.php';
+		require_once './app/config.php';
 
 		$this->database = new Database($config['host'], $config['user'], $config['pass'], $config['name']);
 
