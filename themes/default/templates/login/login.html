@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+{head}
+<body>
+	<div class="bit-container">
+		<header>
+            <h1>Login to {forum_name}</h1>
+            <p><a href="{register_url}">Not a member? Register now!</a></p>
+        </header>
+
+        <main>
+            <div style="text-align: justify;">
+				{error}
+				<form action="./login/process" method="post" style="display: grid; place-items: center;">
+					<input type="hidden" name="step_4" value="true">
+
+                    <div class="input-group">
+                        <input required="" type="text" name="username" autocomplete="off" class="input">
+                        <label class="user-label">Username / Email</label>
+                    </div>
+
+                    <div class="input-group">
+                        <input required="" type="password" name="password" autocomplete="off" class="input">
+                        <label class="user-label">Password</label>
+                    </div>
+
+					<div class="center">
+                        <input type="submit" value="Login">
+                    </div>
+                </form>
+			</div>
+        </main>
+
+	</div>
+</body>
+</html>

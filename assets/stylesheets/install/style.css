@@ -29,9 +29,10 @@ p {
   padding: 15px;
   background: #181818;
   min-width: 500px;
-  min-height: 350px;
+  min-height: 500px;
   max-width: 500px;
   box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0px;
+  position: relative;
 }
 
 header {
@@ -40,8 +41,11 @@ header {
   padding-bottom: 18px;
 }
 
-.center {
-	text-align: center;
+.down {
+  position: absolute;
+  bottom: 30px;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
 a.button,

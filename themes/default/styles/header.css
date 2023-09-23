@@ -41,3 +41,64 @@ header nav {
 #menu > a:not(:first-child) {
     margin-left: 15px;
 }
+
+.dropbtn {
+    background-color: #7127C3;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+    border-radius: 10px;
+    transition: background-color .1s, border-radius .1s;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #111;
+    min-width: 160px;
+    box-shadow: 0px 10px 20px -1px #f9f9f9;
+    z-index: 1;
+    right: 0;
+    border-radius: 18px 0 18px 18px;
+    overflow: hidden;
+    text-align: right;
+}
+
+.dropdown-content a {
+    color: white;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+}
+
+.dropdown-content a:hover {
+   background-color: #1a1a1a;
+}
+
+.dropdown:hover .dropdown-content {
+   display: block;
+}
+
+.dropdown:hover .dropbtn {
+   background-color: #842DE3;
+   border-radius: 10px 10px 0 0;
+}
+
+
+#user-managment img {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+}
+#user-managment {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    gap: 5px;
+}
