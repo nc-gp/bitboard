@@ -42,8 +42,6 @@ class Database
      */
     public function SelectDatabase(string $dbname)
     {
-        $this->Query('CREATE DATABASE IF NOT EXISTS ' . $dbname);
-
         $this->connection->select_db($dbname);
     }
 
