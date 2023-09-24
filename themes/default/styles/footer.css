@@ -10,7 +10,7 @@ footer {
 }
 
 footer .footer-box img {
-    width: 260px;
+    width: 200px;
 }
 
 footer .footer-box h1 {
@@ -19,7 +19,6 @@ footer .footer-box h1 {
     letter-spacing: 1px;
     padding: 0;
     margin: 0;
-    font-size: 2rem;
 }
 
 footer .footer-box ul {
@@ -31,15 +30,7 @@ footer .footer-box ul {
 }
 
 footer .footer-box ul li a {
-    padding: 7px 0px;
-    display: inline-block;
-    font-size: 1rem;
-    letter-spacing: 0.3px;
     text-decoration: none;
-    color: white;
-    transition: color .1s;
 }
 
-footer .footer-box ul li a:hover {
-    color: #7127c3;
-}
+footer .footer-box ul li a:hover {}

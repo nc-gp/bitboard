@@ -1,38 +1,39 @@
 #content {
-    display: block;
-    margin: 30px 35px;
+  display: block;
+  margin: 30px 35px;
 }
 
 #threads {
-    display: block;
-    margin-top: 10px;
+  display: block;
+  margin-top: 10px;
 }
 
 .prethread {
-    background: #111;
-    border-radius: 15px;
-    margin-top: 10px;
-    transition: background .2s ease-out;
-    position: relative;
-    padding: 15px;
+  border-radius: 15px;
+  margin-top: 20px;
+  transition: background .2s ease-out;
+  position: relative;
+  box-shadow: 0 0 6px var(--primary-focus);
+  background-color: var(--opposite);
 }
 
 .prethread:first-of-type {
-    margin-top: 0;
+  margin-top: 0;
 }
 
 .prethread:hover {
-    background: #0d0d0d;
+  background-color: var(--opposite-x2);
 }
 
 .prethread .thread {
-    display: grid; 
-    grid-template-columns: 2fr 0.5fr 0.5fr; 
-    grid-template-rows: 1fr; 
-    gap: 0 10px; 
-    grid-template-areas: 
-      ". . .";
-    align-items: center;
+  display: grid;
+  grid-template-columns: 2fr 0.5fr 0.5fr;
+  grid-template-rows: 1fr;
+  gap: 0 10px;
+  grid-template-areas:
+    ". . .";
+  align-items: center;
+  padding: 15px;
 }
 
 .thread_info a {
@@ -41,7 +42,7 @@
 }
 
 .stats {
-    text-align: start;
+  text-align: start;
 }
 
 .lastpost {
@@ -66,15 +67,15 @@
 }
 
 .pclosed {
-    padding: 1px 5px;
-    border-radius: 10px;
-    background: rgba(255, 53, 53, 0.65);
+  padding: 1px 5px;
+  border-radius: 10px;
+  background: rgba(255, 53, 53, 0.65);
 }
 
 .ppinned {
-    padding: 1px 5px;
-    border-radius: 10px;
-    background: rgba(60, 255, 53, 0.65);
+  padding: 1px 5px;
+  border-radius: 10px;
+  background: rgba(60, 255, 53, 0.65);
 }
 
 .info {
@@ -82,16 +83,14 @@
 }
 
 .info i {
-    font-size: 2rem;
-    margin-right: 10px;
-    line-height: 1.25;
-    color: #7127c3;
-    text-shadow: 0 0 10px black;
+  font-size: 2rem;
+  margin-right: 10px;
+  line-height: 1.25;
+  color: var(--primary);
 }
 
 .info h1 {
-    margin: 0;
-    color: white;
+  margin: 0;
 }
 
 .presubforum {
@@ -117,7 +116,6 @@
 }
 
 .subforum_title {
-  font-size: 2rem;
   font-weight: bold;
 }
 

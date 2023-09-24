@@ -6,7 +6,7 @@ html {
 }
 
 body {
-	color: #dcdcdc;
+  color: #dcdcdc;
   background-color: #212121;
   font-size: 1.15rem;
   line-height: 1.5;
@@ -24,7 +24,7 @@ p {
 }
 
 #install {
-	border: 1px solid white;
+  border: 1px solid white;
   border-radius: 8px;
   padding: 15px;
   background: #181818;
@@ -36,8 +36,8 @@ p {
 }
 
 header {
-	text-align: center;
-	margin-bottom: 15px;
+  text-align: center;
+  margin-bottom: 15px;
   padding-bottom: 18px;
 }
 
@@ -50,7 +50,7 @@ header {
 
 a.button,
 input[type="submit"] {
-	cursor: pointer;
+  cursor: pointer;
   background-color: #7127c3;
   padding: 8px 38px;
   border-radius: 50px;
@@ -81,7 +81,7 @@ input[type="submit"]:hover {
   padding: 1rem;
   font-size: 1rem;
   color: #f5f5f5;
-  transition: border 150ms cubic-bezier(0.4,0,0.2,1);
+  transition: border 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .user-label {
@@ -90,15 +90,17 @@ input[type="submit"]:hover {
   color: #e8e8e8;
   pointer-events: none;
   transform: translateY(1rem);
-  transition: 150ms cubic-bezier(0.4,0,0.2,1);
+  transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.input:focus, input:valid {
+.input:focus,
+input:valid {
   outline: none;
   border: 1.5px solid #9331ff;
 }
 
-.input:focus ~ label, input:valid ~ label {
+.input:focus~label,
+input:valid~label {
   transform: translateY(-50%) scale(0.8);
   background-color: #181818;
   padding: 0 .2em;
@@ -118,9 +120,9 @@ input[type="submit"]:hover {
 }
 
 footer {
-	text-align: center;
-	width: 100%;
-	position: absolute;
-	bottom: 5px;
-	left: 0;
+  text-align: center;
+  width: 100%;
+  position: absolute;
+  bottom: 5px;
+  left: 0;
 }
