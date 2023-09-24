@@ -1,7 +1,8 @@
-html,body {
+html,
+body {
     font-family: -apple-system, BlinkMacSystemFont, "Avenir Next", Avenir,
-    "Nimbus Sans L", Roboto, "Noto Sans", "Segoe UI", Arial, Helvetica,
-    "Helvetica Neue", sans-serif;
+        "Nimbus Sans L", Roboto, "Noto Sans", "Segoe UI", Arial, Helvetica,
+        "Helvetica Neue", sans-serif;
     scroll-behavior: smooth;
     color: #dcdcdc;
     background-color: #212121;
@@ -24,9 +25,33 @@ a.button.fill {
 }
 
 a.button:hover {
-  background-color: #9331ff;
+    background-color: #9331ff;
 }
 
 .uppercase {
     text-transform: uppercase;
+}
+
+/*Scrollbar Chromium*/
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: #7127C3;
+    -moz-box-shadow: inset 0 0 0 3px #2f333d;
+    -webkit-box-shadow: inset 0 0 0 3px #2f333d;
+    box-shadow: inset 0 0 0 2px #111111;
+}
+
+::-webkit-scrollbar-track {
+    background: #111111;
+    border-radius: 0px;
+}
+
+/*Scrollbar Gecko*/
+* {
+    scrollbar-color: rgba(255, 255, 255, 0.1) rgba(255, 255, 255, 0.1);
+    scrollbar-width: thin;
 }
