@@ -12,20 +12,34 @@
 
 .member {
     margin: 20px;
-    border-radius: 6px;
-    width: calc(33.3% - 40px);
+    border-radius: var(--border-radius);
+    width: 350px;
     overflow: hidden;
     position: relative;
     background: var(--opposite);
     box-shadow: 0 0 6px var(--primary);
 }
 
-.member-header {
-    display: flex;
-    flex-wrap: wrap;
-    align-items: center;
-    padding: 20px;
+.member-container {
     background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.05) 1%, rgba(0, 0, 0, 0) 100%);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: flex-start;
+    align-content: stretch;
+    width: 100%;
+}
+
+.member-header {
+    padding: 20px 5px 20px 20px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: center;
+    width: 60%;
 }
 
 .member-info {
@@ -38,29 +52,44 @@
 }
 
 .member-info-title {
-    font-size: 12px;
     font-weight: bold;
-    /*! letter-spacing: 1px; */
 }
+
 .member-info_top {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: flex-end;
+    justify-content: center;
     align-items: flex-start;
-    align-content: flex-start;
-    position: absolute;
-    top: 0;
+    align-content: center;
+    width: 40%;
+}
+
+.member-info_top button {
+    width: 34px;
 }
 
 .member-info_side {
-    background: #1a1a1a;
-    border: 1px solid black;
-    border-radius: 20px;
-    text-align: center;
-    display: inline-flex;
-    padding: 5px 5px;
-    margin-left: 5px;
+    border-radius: 0px 0px var(--border-radius) var(--border-radius);
+    margin: 0 3px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    padding: 5px;
+    transition: padding 0.2s;
+}
+
+.member-info_side:hover {
+    padding-top: 15px;
+    padding-bottom: 15px;
+}
+
+.member-info_side:focus {
+    padding-top: 15px;
+    padding-bottom: 15px;
 }
 
 .member-info_icon {
@@ -68,13 +97,20 @@
     margin-left: 2px;
 }
 
-.member-info-data {
-    flex: 1;
-    white-space: nowrap;
-    text-align: right;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    padding-left: 20px;
+.member-info-data {}
+
+.member-f_contact {
+    border: ;
+}
+
+.member-f_contact button {
+    /*+border-radius: 0px;*/
+    -moz-border-radius: 0px;
+    -webkit-border-radius: 0px;
+    -khtml-border-radius: 0px;
+    border-radius: 0px;
+    margin-bottom: -15px;
+    padding: 5px;
 }
 
 .member-avatar img {

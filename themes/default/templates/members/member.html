@@ -1,35 +1,45 @@
 <div class="member">
-    <div class="member-header">
-        <div class="member-avatar"><img src="{avatar}"></div>
-        <div class="member-basic-info">
-            <a href="{server_url}profile/{id}" class="mebmer-username">{username}</a>
-            <div class="member-rank">{rank}</div>
+    <div class="member-container">
+        <div class="member-header">
+            <div class="member-avatar"><img src="{avatar}"></div>
+            <div class="member-basic-info">
+                <a href="{server_url}profile/{id}" class="mebmer-username">{username}</a>
+                <div class="member-rank">{rank}</div>
+            </div>
+        </div>
+        <div class="member-info_top">
+            <button class="member-info_side">
+                <div class="member-info_icon"><i class="ti ti-thumb-up-filled"></i></div>
+            </button>
+            <button class="member-info_side">
+                <div class="member-info_icon"><i class="ti ti-message-2"></i></div>
+            </button>
+            <button class="member-info_side">
+                <div class="member-info_icon"><i class="ti ti-edit"></i></div>
+            </button>
         </div>
     </div>
-    <div class="member-info_top">
-     <div class="member-info_side">
-      <div class="member-info_icon"><i class="ti ti-thumb-up-filled"></i></div>
-     </div>
-     <div class="member-info_side">
-      <div class="member-info_icon"><i class="ti ti-message-2"></i></div>
-     </div>
-     <div class="member-info_side">
-      <div class="member-info_icon"><i class="ti ti-edit"></i></div>
-     </div>
+    <div class="member-info">
+        <div class="member-info-title">Register date</div>
+        <div class="member-info-data">{regdate}</div>
     </div>
-      <div class="member-info">
-          <div class="member-info-title">Register date</div>
-          <div class="member-info-data">{regdate}</div>
-      </div>
-      <div class="member-info">
-          <div class="member-info-title">Last seen</div>
-          <div class="member-info-data">{lastseen}</div>
-      </div>
-      <div class="member-f_contact">    
-          <a href="#" class="f_contact__btn"><i class="ti ti-message-circle-2"></i>&nbsp;Message</a>
-          <a href="#" class="f_contact__btn"><i class="ti ti-activity"></i>&nbsp;Search content</a>
-          <a href="#" class="f_contact__btn"><i class="ti ti-at-off"></i>&nbsp;Ignore</a> 
-          <a href="#" class="f_contact__btn"><i class="ti ti-flag-3-filled"></i>&nbsp;Report</a>
-       </div>
-      </div>
-  </div>
+    <div class="member-info">
+        <div class="member-info-title">Last seen</div>
+        <div class="member-info-data">{lastseen}</div>
+    </div>
+    <div class="member-f_contact">
+        <form action="#">
+            <button type="submit">Message <i class="ti ti-message-circle-2"></i></button>
+        </form>
+        <form action="#">
+            <button type="submit">Search content <i class="ti ti-activity"></i></button>
+        </form>
+        <form action="#">
+            <button type="submit">Ignore <i class="ti ti-at-off"></i></button>
+        </form>
+        <form action="#">
+            <button type="submit">Report <i class="ti ti-flag-3-filled"></i></button>
+        </form>
+    </div>
+</div>
+</div>
