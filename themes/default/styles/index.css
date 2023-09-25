@@ -6,8 +6,8 @@
 
 #content #categories {
     width: 75%;
-  }
-  
+}
+
 #content #topstats {
     width: 25%;
 }
@@ -30,21 +30,12 @@
     font-size: 2rem;
     margin-right: 10px;
     line-height: 1.25;
-    color: #7127c3;
-    text-shadow: 0 0 10px black;
+    color: var(--primary);
 }
 
-.category .category_info h1 {
-    margin: 0;
-    color: white;
-}
+.category .category_info h1 {}
 
-.category .category_info h2 {
-    margin: 0;
-    font-size: 1rem;
-    font-weight: normal;
-    color: #a2a2a2;
-}
+.category .category_info h2 {}
 
 .category .category_container {
     display: block;
@@ -55,11 +46,16 @@
 }
 
 .category .category_container .preforum {
-    background: #111;
     border-radius: 15px;
     margin-top: 20px;
     transition: background .2s ease-out;
     position: relative;
+    box-shadow: 0 0 6px var(--primary-focus);
+    background-color: var(--opposite);
+}
+
+.category .category_container .preforum h2 {
+    cursor: pointer;
 }
 
 .category .category_container .preforum:first-of-type {
@@ -67,7 +63,7 @@
 }
 
 .category .category_container .preforum:hover {
-    background: #0d0d0d;
+    background: var(--opposite-x2);
 }
 
 .category .category_container .preforum .forum {
@@ -80,38 +76,21 @@
     grid-template-areas: ". .";
 }
 
-.category .category_container .preforum .forum .forum_icon {
-
+.category .category_container .preforum .forum hgroup {
+    margin: 0;
 }
 
+.category .category_container .preforum .forum .forum_icon {}
+
 .category .category_container .preforum .forum .forum_icon i {
-    text-shadow: 0 0 10px black;
     font-size: 2rem;
 }
 
-.category .category_container .preforum .forum .forum_info {
-
-}
-
-.category .category_container .preforum .forum .forum_info .forum_title {
-
-    font-size: 1.5rem;
-}
-
-.category .category_container .preforum .forum .forum_info .forum_title a {
-    color: #dcdcdc;
-    text-decoration: none;
-}
-
-.category .category_container .preforum .forum .forum_info .forum_desc {
-
-    font-size: 0.8rem;
-    color: #a2a2a2;
-}
+.category .category_container .preforum .forum .forum_info {}
 
 .category .category_container .preforum .forum .forum_stats {
     position: absolute;
-    top: -15px;
+    top: -20px;
     right: 20px;
     text-align: right;
     font-size: 0.7rem;
@@ -168,17 +147,15 @@
     display: block;
 }
 
-#topstats {
-    
-}
+#topstats {}
 
 #stats {
     display: flex;
     padding: 60px 35px;
     justify-content: space-around;
     align-content: center;
-    background: #111;
-    box-shadow: 0px 5px 20px -1px black;
+    background: var(--opposite);
+    box-shadow: 0 0 6px var(--primary);
 }
 
 .stat .iconstat {
@@ -186,7 +163,6 @@
 }
 
 .stat .txt {
-    color: #a2a2a2;
     text-align: center;
 }
 
@@ -199,8 +175,9 @@
     border-radius: 50%;
     width: 64px;
     height: 64px;
-    border: 2px dashed #7127c3;
+    box-shadow: 0 0 6px var(--primary);
 }
+
 .stat .userstat .userstatblock {
     margin-left: 10px;
 }

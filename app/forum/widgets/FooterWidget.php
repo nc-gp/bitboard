@@ -34,7 +34,7 @@ class FooterWidget
         $this->Template->Replace();
         
         // TODO: Add this to forum settings if someone wants to keep the credits to BitBoard, but they don't need to.
-        $this->Template->templ .= '<div id="bb-foot" style="text-align: center; margin: 10px 0;">Powered by BitBoard</div>';
+        $this->Template->templ .= '<div id="bb-foot">Powered by BitBoard</div>';
     }
 }
 
