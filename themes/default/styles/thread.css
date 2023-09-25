@@ -1,11 +1,13 @@
 #thread {
-    min-width: 100%; /* ? */
+    min-width: 100%;
+    /* ? */
 }
 
 .bg {
-    background: #111;
+    background: var(--opposite);
     border-radius: 15px;
     padding: 15px;
+    box-shadow: 0 0 6px var(--primary);
 }
 
 #thread-title {
@@ -19,7 +21,7 @@
     grid-template-rows: 1fr;
     gap: 0 10px;
     grid-template-areas:
-    ". .inherit";
+        ". .inherit";
     display: grid;
 }
 
@@ -30,7 +32,7 @@
     position: relative;
 }
 
-#thread-author > div {
+#thread-author>div {
     min-width: 100%;
     display: flex;
     justify-content: center;
@@ -43,7 +45,7 @@
 }
 
 #thread-username,
-#thread-userrank{
+#thread-userrank {
     margin-bottom: 10px;
 }
 
@@ -57,10 +59,9 @@
     height: 80px;
     position: relative;
     border-radius: 50%;
-    border: 3px solid #ac59ff;
-    background: #6412b7;
     padding: 5px;
     min-width: unset !important;
+    box-shadow: 0 0 6px var(--primary);
 }
 
 #thread-useravatar img {

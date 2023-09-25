@@ -4,28 +4,6 @@ body {
         "Nimbus Sans L", Roboto, "Noto Sans", "Segoe UI", Arial, Helvetica,
         "Helvetica Neue", sans-serif;
     scroll-behavior: smooth;
-    color: #dcdcdc;
-    background-color: #212121;
-}
-
-a.button {
-    cursor: pointer;
-    border: 1px solid #7127c3;
-    padding: 8px 38px;
-    border-radius: 50px;
-    font-size: 1rem;
-    color: #FFFFFF;
-    text-decoration: none;
-    transition: background-color .2s ease-in-out;
-}
-
-a.button.fill {
-    background-color: #7127c3;
-    border: none;
-}
-
-a.button:hover {
-    background-color: #9331ff;
 }
 
 .uppercase {
@@ -39,14 +17,11 @@ a.button:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-    background-color: #7127C3;
-    -moz-box-shadow: inset 0 0 0 3px #2f333d;
-    -webkit-box-shadow: inset 0 0 0 3px #2f333d;
-    box-shadow: inset 0 0 0 2px #111111;
+    background-color: var(--primary);
 }
 
 ::-webkit-scrollbar-track {
-    background: #111111;
+    background: var(--opposite-x2);
     border-radius: 0px;
 }
 
@@ -54,4 +29,84 @@ a.button:hover {
 * {
     scrollbar-color: rgba(255, 255, 255, 0.1) rgba(255, 255, 255, 0.1);
     scrollbar-width: thin;
+}
+
+/* Purple Light scheme (Default) */
+/* Can be forced with data-theme="light" */
+[data-theme="light"],
+:root:not([data-theme="dark"]) {
+    --primary: #7127C3;
+    --primary-hover: #9331ff;
+    --primary-focus: rgba(112, 39, 195, 0.4);
+    --primary-inverse: #FFF;
+    --opposite: rgba(0, 0, 0, 0.05);
+    --opposite-x2: rgba(0, 0, 0, 0.1);
+}
+
+/* Purple Dark scheme (Auto) */
+/* Automatically enabled if user has Dark mode enabled */
+@media only screen and (prefers-color-scheme: dark) {
+    :root:not([data-theme]) {
+        --primary: #7127C3;
+        --primary-hover: #9331ff;
+        --primary-focus: rgba(112, 39, 195, 0.4);
+        --primary-inverse: #FFF;
+        --opposite: rgba(255, 255, 255, 0.05);
+        --opposite-x2: rgba(255, 255, 255, 0.1);
+    }
+}
+
+/* Purple Dark scheme (Forced) */
+/* Enabled if forced with data-theme="dark" */
+[data-theme="dark"] {
+    --primary: #7127C3;
+    --primary-hover: #9331ff;
+    --primary-focus: rgba(112, 39, 195, 0.4);
+    --primary-inverse: #FFF;
+    --background-color: #000;
+    --opposite: rgba(255, 255, 255, 0.05);
+    --opposite-x2: rgba(255, 255, 255, 0.1);
+}
+
+/* Purple (Common styles) */
+:root {
+    --form-element-active-border-color: var(--primary);
+    --form-element-focus-color: var(--primary-focus);
+    --switch-color: var(--primary-inverse);
+    --switch-checked-background-color: var(--primary);
+    --mark-background-color: var(--primary) !important;
+    --mark-color: #FFF !important;
+}
+
+.login_register form {
+    margin: 0;
+    display: inline-flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+}
+
+.login_register button {
+    margin: 0;
+}
+
+.theme-switcher {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    padding: 8px;
+}
+
+#bb-foot {
+    text-align: center;
+}
+
+a.button {
+    cursor: pointer;
+    border: 2px solid var(--primary);
+    border-radius: 50px;
+    text-decoration: none;
 }

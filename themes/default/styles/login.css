@@ -1,15 +1,4 @@
-html {
-    font-family: -apple-system, BlinkMacSystemFont, "Avenir Next", Avenir,
-        "Nimbus Sans L", Roboto, "Noto Sans", "Segoe UI", Arial, Helvetica,
-        "Helvetica Neue", sans-serif;
-    scroll-behavior: smooth;
-}
-  
 body {
-    color: #dcdcdc;
-    background-color: #212121;
-    font-size: 1.15rem;
-    line-height: 1.5;
     display: grid;
     place-items: center;
     min-height: 100vh;
@@ -32,13 +21,13 @@ main {
 }
 
 header {
-	text-align: center;
-	margin-bottom: 15px;
+    text-align: center;
+    margin-bottom: 15px;
     padding-bottom: 18px;
 }
 
 .center {
-	text-align: center;
+    text-align: center;
 }
 
 a.button,
@@ -47,7 +36,6 @@ input[type="submit"] {
     background-color: #7127c3;
     padding: 8px 38px;
     border-radius: 50px;
-    font-size: 1rem;
     color: #FFFFFF;
     border: none;
     text-decoration: none;
@@ -72,9 +60,8 @@ input[type="submit"]:hover {
     border-radius: 1rem;
     background: none;
     padding: 1rem;
-    font-size: 1rem;
     color: #f5f5f5;
-    transition: border 150ms cubic-bezier(0.4,0,0.2,1);
+    transition: border 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 .user-label {
@@ -83,15 +70,17 @@ input[type="submit"]:hover {
     color: #e8e8e8;
     pointer-events: none;
     transform: translateY(1rem);
-    transition: 150ms cubic-bezier(0.4,0,0.2,1);
+    transition: 150ms cubic-bezier(0.4, 0, 0.2, 1);
 }
 
-.input:focus, input:valid {
+.input:focus,
+input:valid {
     outline: none;
     border: 1.5px solid #9331ff;
 }
 
-.input:focus ~ label, input:valid ~ label {
+.input:focus~label,
+input:valid~label {
     transform: translateY(-50%) scale(0.8);
     background-color: #181818;
     padding: 0 .2em;
