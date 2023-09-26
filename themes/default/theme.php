@@ -6,8 +6,8 @@ class Theme
         'name' => 'Default',
         'desc' => 'Classic BitBoard Theme',
         'version' => '1.0',
-        'author' => 'bitpaper',
-        'contact' => 'https://github.com/bit-paper'
+        'author' => 'bitpaper, Sherfy, tragedy',
+        'contact' => 'https://github.com/bit-paper/bitboard'
     );
 }
 
