@@ -9,7 +9,8 @@ use App\Classes\PageFactory;
 use App\Classes\File;
 Use App\Classes\UrlManager;
 use App\Classes\Console;
-
+use App\Classes\SessionManager;
+use App\Forum\Controllers\AccountController;
 use App\Forum\Pages\IndexPage;
 
 use App\Install\Setup;
@@ -54,6 +55,9 @@ class BitBoard
 
 	private function Do()
 	{
+		if(SessionManager::IsLogged())
+			AccountController::UpdateLastActive($this->database, $_SESSION['bitboard_user']['id']);
+
 		$actionParameters = isset($_GET['action']) ? $_GET['action'] : '';
 
 		if(!$this->IsOnline())
