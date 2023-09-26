@@ -1,6 +1,14 @@
-<div class="dropdown">
-    <button class="dropbtn">Opcje</button>
-    <div class="dropdown-content">
-      <a href="{server_url}logout">Wyloguj</a>
-    </div>
-</div> 
+<li role="list" dir="rtl">
+  <button aria-haspopup="listbox"><i class="ti ti-menu-2"></i></button>
+  <ul role="listbox">
+    <li><a href="{server_url}logout">Logout</a></li>
+  </ul>
+</li>
+<details role="list">
+  <summary aria-haspopup="listbox" role="button"><i class="ti ti-brightness"></i></summary>
+  <ul role="listbox">
+    <li><a href="#" data-theme-switcher="auto">Auto</a></li>
+    <li><a href="#" data-theme-switcher="light">Light</a></li>
+    <li><a href="#" data-theme-switcher="dark">Dark</a></li>
+  </ul>
+</details>
