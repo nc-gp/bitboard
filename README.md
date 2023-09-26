@@ -1,22 +1,43 @@
 <h1 align="center">
+  <img src="https://i.imgur.com/COz9BVy.png" alt="Bitboard logo">
   <br>
   BitBoard
-  <br>
 </h1>
 
 <div align="center">
-  <img src="https://img.shields.io/badge/License-GPL_3.0-green">
-  <img src="https://img.shields.io/badge/Language-PHP-blue">
+  <img src="https://img.shields.io/badge/License-GPL_3.0-green" />
+  <img src="https://img.shields.io/badge/Language-PHP-blue" />
 </div>
 
-<h4 align="center">Easy, fun, fast forum system written in PHP.</h4>
+<h4 align="center">Effortless, enjoyable, and efficient PHP-based forum system.</h4>
 
 <p align="center">
   <a href="#key-features">Key Features</a> •
-  <a href="#how-to-install">How To Install</a>
+  <a href="#how-to-install">How To Install</a> •
+  <a href="#involve">Involve</a> •
+  <a href="#license">License</a> •
+  <a href="#note">Note</a>
 </p>
 
 ## Key Features
-
+Currently there are a few features:
+- Fully working installation process.
+- Auto class loader.
+- Viewing forum.
+- Login system.
 
 ## How to Install
+- Download the source code.
+- Run, go to webpage and install.
+- Enjoy.
+
+## Involve
+To suggest a new feature, report a confirmed bug or problem, please create an issue on our GitHub project. You can also share details on how it impacts BitBoard to help us diagnose the problem.
+
+We also accepting pull requests, feel free to.
+
+## License
+GPL 3.0
+
+## Note
+Please take note that bitboard is currently in early stages of development.
