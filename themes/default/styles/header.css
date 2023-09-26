@@ -67,10 +67,7 @@ header nav a {
     border-radius: var(--border-radius);
     font-weight: bold;
     font-size: larger;
-    padding: 3px;
     margin: 10px;
-    background-color: var(--opposite-x2);
-    box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
 }
 
 #user-managment {
