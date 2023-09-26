@@ -83,7 +83,7 @@ class ThreadPage extends PageBase implements PageInterface
 
         $threadContentTemplate = new Template('./themes/' . $this->theme . '/templates/thread/thread_content.html');
         $threadContentTemplate->AddEntry('{thread_title}', $thread['thread_title']);
-        $threadContentTemplate->AddEntry('{thread_timestamp}', RelativeTime::Format($thread['thread_timestamp']));
+        $threadContentTemplate->AddEntry('{thread_timestamp}', 'Published ' . RelativeTime::Format($thread['thread_timestamp']));
         $threadContentTemplate->AddEntry('{thread_content}', $thread['thread_content']);
         $threadContentTemplate->AddEntry('{thread_likes}', $thread['thread_likes'] > 0 ? $thread['thread_likes'] : '');
         // TODO: Add like button or new like widgets for posts if user is logged!
