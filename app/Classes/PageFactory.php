@@ -2,8 +2,6 @@
 
 namespace App\Classes;
 
-use Exception;
-
 class PageFactory 
 {
     /**
@@ -22,10 +20,11 @@ class PageFactory
         if (class_exists($className)) {
             $page = new $className($database, $data);
             $page->Do();
-            echo 1;
             return $page;
         } else {
-            throw new Exception("Page '$pageName' not found.");
+            $page = new \App\Forum\Pages\_404Page($database, $data);
+            $page->Do();
+            return $page;
         }
     }
 }
