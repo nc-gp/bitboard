@@ -8,6 +8,7 @@ use App\Classes\Template;
 use App\Classes\Avatar;
 use App\Classes\AvatarUtils;
 use App\Classes\RelativeTime;
+use App\Classes\SessionManager;
 use App\Classes\UrlManager;
 use App\Classes\UsernameUtils;
 use App\Interfaces\PageInterface;
@@ -71,6 +72,13 @@ class MembersPage extends PageBase implements PageInterface
             [(($this->page - 1) * $this->maximumResults), $this->maximumResults]
         )->FetchAll();
 
+        $memberContact = '';
+        if(SessionManager::IsLogged())
+        {
+            $memberContact = new Template('./themes/' . $this->theme . '/templates/members/member_contact.html');
+            $memberContact = $memberContact->templ;
+        }
+
         $onlineTemplate = '';
         foreach ($members as $member) 
         {
@@ -91,6 +99,7 @@ class MembersPage extends PageBase implements PageInterface
             $memberTemplate->AddEntry('{posts}', $member['post_count']);
             $memberTemplate->AddEntry('{threads}', $member['thread_count']);
             $memberTemplate->AddEntry('{online}', $onlineTemplate->templ);
+            $memberTemplate->AddEntry('{contact}', $memberContact);
             $memberTemplate->Replace();
 
             $this->members .= $memberTemplate->templ;
