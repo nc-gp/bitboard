@@ -33,7 +33,6 @@ class ForumPage extends PageBase implements PageInterface
     {
         parent::__construct($db, $forumData);
         $this->UrlHandler();
-        $this->Do();
     }
 
     private function UrlHandler()
