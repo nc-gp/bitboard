@@ -1,13 +1,14 @@
 <div class="login_register">
     <form action="{server_url}login">
-        <button type="submit">LOGIN</button>
+        <button type="submit" aria-label="Login" data-microtip-position="bottom" role="tooltip"><i
+                class="ti ti-login-2"></i></button>
     </form>
     <form action="{server_url}register">
-        <button type="submit">REGISTER</button>
+        <button type="submit" aria-label="Register" data-microtip-position="bottom" role="tooltip"><i
+                class="ti ti-user-plus"></i></button>
     </form>
-    <br>
     <details role="list">
-        <summary aria-haspopup="listbox" role="button">Theme</summary>
+        <summary aria-haspopup="listbox" role="button"><i class="ti ti-brightness"></i></summary>
         <ul role="listbox">
             <li><a href="#" data-theme-switcher="auto">Auto</a></li>
             <li><a href="#" data-theme-switcher="light">Light</a></li>
