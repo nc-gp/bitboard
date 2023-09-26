@@ -4,8 +4,26 @@ body {
     scroll-behavior: smooth;
 }
 
-button:hover {
+[role=button]:hover,
+button:hover,
+input[type=button]:hover,
+input[type=reset]:hover,
+input[type=submit]:hover {
     --box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
+}
+
+li[role=list]>a::after {
+    display: none;
+}
+
+[role~="tooltip"]::before {
+    display: none;
+}
+
+[role~="tooltip"]::after {
+    font-size: medium !important;
+    background-color: var(--primary) !important;
+    box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
 }
 
 .uppercase {
@@ -80,26 +98,14 @@ button:hover {
     --mark-color: #FFF !important;
 }
 
-.login_register form {
-    margin: 0;
-    display: inline-flex;
+.login_register {
+    display: flex;
     flex-direction: row;
     flex-wrap: nowrap;
     justify-content: center;
     align-items: center;
+    height: 100%;
     align-content: center;
-}
-
-.login_register button {
-    margin: 0;
-}
-
-.theme-switcher {
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 2;
-    padding: 8px;
 }
 
 #bb-foot {

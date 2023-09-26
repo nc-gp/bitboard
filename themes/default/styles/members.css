@@ -17,11 +17,10 @@
     overflow: hidden;
     position: relative;
     background: var(--opposite);
-    box-shadow: 0 0 6px var(--primary);
+    box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
 }
 
 .member-container {
-    background: linear-gradient(to bottom, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0.05) 1%, rgba(0, 0, 0, 0) 100%);
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -29,6 +28,7 @@
     align-items: flex-start;
     align-content: stretch;
     width: 100%;
+    background-color: var(--opposite);
 }
 
 .member-header {
@@ -59,19 +59,19 @@
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: flex-start;
     align-content: center;
     width: 40%;
 }
 
 .member-info_top button {
-    width: 34px;
+    width: 32px;
 }
 
 .member-info_side {
     border-radius: 0px 0px var(--border-radius) var(--border-radius);
-    margin: 0 3px;
+    margin: 0 5px 0 0;
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -100,24 +100,36 @@
 .member-info-data {}
 
 .member-f_contact {
-    border: ;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
+    height: 70px;
+    background-color: var(--opposite);
 }
 
 .member-f_contact button {
-    /*+border-radius: 0px;*/
-    -moz-border-radius: 0px;
-    -webkit-border-radius: 0px;
-    -khtml-border-radius: 0px;
-    border-radius: 0px;
-    margin-bottom: -15px;
-    padding: 5px;
+    /*+border-radius: 50%;*/
+    -moz-border-radius: 50%;
+    -webkit-border-radius: 50%;
+    -khtml-border-radius: 50%;
+    border-radius: 50%;
+    padding: 10px;
+    font-size: larger;
+    margin: 0;
+}
+
+.member-f_contact form {
+    margin: auto;
 }
 
 .member-avatar img {
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    box-shadow: 0 0 6px var(--primary);
+    box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
 }
 
 .member-basic-info {

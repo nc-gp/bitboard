@@ -1,21 +1,14 @@
 header #bg {
-    background: url("/themes/default/images/bg.webp") no-repeat center center;
-    background-size: cover;
-    min-height: 500px;
-    filter: blur(4px);
+    background: url("/themes/default/images/bg.webp") center center / cover no-repeat;
+    min-height: 300px;
+    opacity: 0.7;
 }
 
 header nav {
-    box-shadow: 0 0 6px var(--primary);
-    min-height: 80px;
+    box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
+    height: 80px;
     padding: 0 15px;
     width: 100%;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    justify-content: space-between;
-    align-items: center;
-    align-content: center;
     background-color: var(--opposite);
 }
 
@@ -23,9 +16,36 @@ header nav button {
     max-width: 200px;
 }
 
+nav button,
+form,
+details,
+summary {
+    margin: 0;
+    padding: 12px !important;
+}
+
+nav summary::after {
+    display: none !important;
+}
+
+nav i {
+    font-size: x-large;
+}
+
+header nav a {
+    margin-right: 0;
+}
+
+.nav-links {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: flex-start;
+    align-items: center;
+    align-content: center;
+}
+
 #i {
-    min-height: 500px;
-    max-height: 500px;
     position: relative;
 }
 
@@ -39,13 +59,22 @@ header nav button {
 #user-managment img {
     width: 48px;
     height: 48px;
-    border-radius: 50%;
-    box-shadow: 0 0 6px var(--primary);
+    box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
+    border-radius: var(--border-radius);
+}
+
+#user-managment .username {
+    border-radius: var(--border-radius);
+    font-weight: bold;
+    font-size: larger;
+    padding: 3px;
+    margin: 10px;
+    background-color: var(--opposite-x2);
+    box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
 }
 
 #user-managment {
     display: flex;
     justify-content: end;
     align-items: center;
-    gap: 5px;
 }

@@ -1,6 +1,14 @@
 <li role="list" dir="rtl">
-  <a href="#" aria-haspopup="listbox">OPCJE</a>
+  <button aria-haspopup="listbox"><i class="ti ti-menu-2"></i></button>
   <ul role="listbox">
     <li><a href="{server_url}logout">Wyloguj</a></li>
   </ul>
 </li>
+<details role="list">
+  <summary aria-haspopup="listbox" role="button"><i class="ti ti-brightness"></i></summary>
+  <ul role="listbox">
+    <li><a href="#" data-theme-switcher="auto">Auto</a></li>
+    <li><a href="#" data-theme-switcher="light">Light</a></li>
+    <li><a href="#" data-theme-switcher="dark">Dark</a></li>
+  </ul>
+</details>
