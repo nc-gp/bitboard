@@ -15,6 +15,7 @@
   <a href="#key-features">Key Features</a> •
   <a href="#how-to-install">How To Install</a> •
   <a href="#involve">Involve</a> •
+  <a href="#credits">Credits</a> •
   <a href="#license">License</a> •
   <a href="#note">Note</a>
 </p>
@@ -35,6 +36,11 @@ Currently there are a few features:
 To suggest a new feature, report a confirmed bug or problem, please create an issue on our GitHub project. You can also share details on how it impacts BitBoard to help us diagnose the problem.
 
 We also accepting pull requests, feel free to.
+
+## Credits
+<a href="https://github.com/bit-paper/bitboard/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=bit-paper/bitboard" />
+</a>
 
 ## License
 GPL 3.0
