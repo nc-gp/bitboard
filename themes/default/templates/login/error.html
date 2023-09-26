@@ -1,1 +1,14 @@
-<div style="margin-bottom: 10px;" class="center red">{error}</div>
+<script>
+    Toastify({
+        text: "{error}",
+        duration: 5000,
+        close: true,
+        gravity: "bottom",
+        position: "right",
+        stopOnFocus: true,
+        style: {
+            background: "rgb(255, 53, 53)",
+            boxShadow: "0 3px 6px -1px rgba(255, 53, 53,.12),0 10px 36px -4px rgba(255, 53, 53,.3)"
+        }
+    }).showToast();
+</script>

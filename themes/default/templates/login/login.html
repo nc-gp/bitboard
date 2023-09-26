@@ -11,7 +11,6 @@
                     <a href="{register_url}">Not a member? Register now!</a>
                 </p>
             </header>
-            {error}
             <form action="./login/process" method="post">
                 <input type="text" name="username" placeholder="Username / Email" aria-label="Username / Email"
                     required="">
@@ -19,13 +18,16 @@
                 <fieldset>
                     <label for="terms">
                         <input type="checkbox" role="switch" id="terms" name="terms">
-                        I agree to the <a href="#" onclick="event.preventDefault()">Rules</a>
+                        Remember me
                     </label>
                 </fieldset>
                 <button type="submit">Login</button>
             </form>
         </section>
     </div>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    {error}
 </body>
 
 </html>
