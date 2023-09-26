@@ -2,23 +2,23 @@
 <html>
 {head}
 <body>
-	<div id="install">
-		<header>
-			<h1>Welcome to BitBoard!</h1>
-			<p>Easy, fun, fast forum system written in PHP.</p>
-		</header>
+	<div id="bb-container">
+		<div id="bb-box">
+			<form id="bb-form" action="" method="post">
+				<input type="hidden" name="step" value="1">
 
-		<main>
-			<div style="margin-bottom: 13px; text-align: justify;">
-				To proceed with installation of BitBoard, press the button below.
-			</div>
+                <h1 class="bb-lines">BitBoard</h1>
+                <h2 class="bb-lines">Easy, fun, fast forum system written in PHP.</h2>
 
-			<div class="down">
-				<a class="button" href="?bb_next=true">Begin Installation</a>
-			</div>
-		</main>
+                <button class="button">
+                    <input class="button-content" type="submit" value="Begin Installation">
+                </button>
+            </form>
+		</div>
+
+		{footer}
 	</div>
 
-	{footer}
+	<script src="./assets/javascripts/install/form.js"></script>
 </body>
 </html>

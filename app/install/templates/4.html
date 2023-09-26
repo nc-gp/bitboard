@@ -2,39 +2,67 @@
 <html>
 {head}
 <body>
-	<div id="install">
-		<header>
-			<h1>Account</h1>
-			<p>Setup default administration account.</p>
-		</header>
+    <div id="bb-container">
+        <div id="bb-box">
+            <form id="bb-form" action="" method="POST" novalidate autocomplete="off">
+                <input type="hidden" name="step" value="4">
 
-		<main>
-			<div style="text-align: justify;">
-				{error}
-				<form action="/?bb_next=true" method="post" style="display: grid; place-items: center;">
-					<input type="hidden" name="step_4" value="true">
+                <h1 class="bb-lines">BitBoard</h1>
+                <h2 class="bb-lines">Administration account.</h2>
 
-                    <div class="input-group">
-                        <input required="" type="text" name="username" autocomplete="off" class="input">
-                        <label class="user-label">Username</label>
-                    </div>
-					<div class="input-group">
-                        <input required="" type="text" name="email" autocomplete="off" class="input">
-                        <label class="user-label">Email</label>
-                    </div>
-                    <div class="input-group">
-                        <input required="" type="password" name="password" autocomplete="off" class="input">
-                        <label class="user-label">Password</label>
+                <div id="bb-input-area">
+
+                    <div class="form-control">
+                        <input cmin="4" special name="username" type="text" required="">
+                        <label>
+                            <span style="transition-delay:0ms">U</span>
+							<span style="transition-delay:50ms">s</span>
+							<span style="transition-delay:100ms">e</span>
+							<span style="transition-delay:150ms">r</span>
+							<span style="transition-delay:200ms">n</span>
+							<span style="transition-delay:250ms">a</span>
+							<span style="transition-delay:300ms">m</span>
+							<span style="transition-delay:350ms">e</span>
+                        </label>
                     </div>
 
-					<div class="down">
-                        <input type="submit" value="Next">
+					<div class="form-control">
+                        <input special name="email" type="text" required="" reg="[^@]+@[^@]+\.[a-zA-Z]{2,}">
+                        <label>
+                            <span style="transition-delay:0ms">E</span>
+							<span style="transition-delay:50ms">m</span>
+							<span style="transition-delay:100ms">a</span>
+							<span style="transition-delay:150ms">i</span>
+							<span style="transition-delay:200ms">l</span>
+                        </label>
                     </div>
-                </form>
-			</div>
-		</main>
-	</div>
 
-	{footer}
+                    <div class="form-control">
+                        <input cmin="8" special name="password" type="password" required="" reg="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$">
+                        <label>
+                            <span style="transition-delay:0ms">P</span>
+							<span style="transition-delay:50ms">a</span>
+							<span style="transition-delay:100ms">s</span>
+							<span style="transition-delay:150ms">s</span>
+							<span style="transition-delay:200ms">w</span>
+							<span style="transition-delay:250ms">o</span>
+							<span style="transition-delay:300ms">r</span>
+							<span style="transition-delay:350ms">d</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button class="button">
+                    <input class="button-content" type="submit" value="Next">
+                </button>
+            </form>
+        </div>
+
+        <footer>{footer}</footer>
+    </div>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    {error}
+    <script src="./assets/javascripts/install/form.js"></script>
 </body>
 </html>

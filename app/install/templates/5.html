@@ -2,34 +2,54 @@
 <html>
 {head}
 <body>
-	<div id="install">
-		<header>
-			<h1>Forum</h1>
-			<p>Basic information about your forum</p>
-		</header>
+    <div id="bb-container">
+        <div id="bb-box">
+            <form id="bb-form" action="" method="POST" novalidate autocomplete="off">
+                <input type="hidden" name="step" value="5">
 
-		<main>
-            <div style="text-align: justify;">{error}</div>
-			<form action="/?bb_next=true" method="post" style="display: grid; place-items: center;">
-				<input type="hidden" name="step_5" value="true">
+                <h1 class="bb-lines">BitBoard</h1>
+                <h2 class="bb-lines">Forum information.</h2>
 
-                <div class="input-group">
-                    <input required="" type="text" name="forum_name" autocomplete="off" class="input">
-                    <label class="user-label">Forum name</label>
+                <div id="bb-input-area">
+                    <div class="form-control">
+                        <input cmin="2" special name="name" type="text" required="">
+                        <label>
+                            <span style="transition-delay:0ms">N</span>
+							<span style="transition-delay:50ms">a</span>
+							<span style="transition-delay:100ms">m</span>
+							<span style="transition-delay:150ms">e</span>
+                        </label>
+                    </div>
+
+                    <div class="form-control">
+                        <input cmin="2" special name="description" type="text" required="">
+                        <label>
+                            <span style="transition-delay:0ms">D</span>
+							<span style="transition-delay:50ms">e</span>
+							<span style="transition-delay:100ms">s</span>
+							<span style="transition-delay:150ms">c</span>
+							<span style="transition-delay:200ms">r</span>
+							<span style="transition-delay:250ms">i</span>
+							<span style="transition-delay:300ms">p</span>
+							<span style="transition-delay:350ms">t</span>
+							<span style="transition-delay:400ms">i</span>
+							<span style="transition-delay:450ms">o</span>
+							<span style="transition-delay:500ms">n</span>
+                        </label>
+                    </div>
                 </div>
 
-				<div class="input-group">
-                    <input required="" type="text" name="forum_description" autocomplete="off" class="input">
-                    <label class="user-label">Forum description</label>
-                </div>
+                <button class="button">
+                    <input class="button-content" type="submit" value="Next">
+                </button>
+            </form>
+        </div>
 
-				<div class="down">
-					<input class="button" type="submit" value="Next">
-				</div>
-			</form>
-		</main>
-	</div>
+        <footer>{footer}</footer>
+    </div>
 
-	{footer}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    {error}
+    <script src="./assets/javascripts/install/form.js"></script>
 </body>
 </html>

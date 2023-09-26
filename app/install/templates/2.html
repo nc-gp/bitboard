@@ -2,27 +2,33 @@
 <html>
 {head}
 <body>
-	<div id="install">
-		<header>
-			<h1>Requirements</h1>
-			<p>The BitBoard will automatically detect requirements.</p>
-		</header>
+	<div id="bb-container">
+		<div id="bb-box">
+			<form id="bb-form" action="" method="post">
+				<input type="hidden" name="step" value="2">
 
-		<main>
-			<div style="text-align: justify;">
-				{php}
-			</div>
+                <h1 class="bb-lines">BitBoard</h1>
+                <h2 class="bb-lines">Installation requirements.</h2>
+				
+				<p class="bb-lines">
+					{php}
+				</p>
 
-			<div style="margin-bottom: 13px; text-align: justify;">
-				{mysql}
-			</div>
+				<p class="bb-lines">
+					{mysql}
+				</p>
 
-			<div class="down">
-				<a class="button" href="?bb_next=true">Next</a>
-			</div>
-		</main>
+                <button class="button">
+                    <input class="button-content" type="submit" value="Next">
+                </button>
+            </form>
+		</div>
+
+		{footer}
 	</div>
 
-	{footer}
+	<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    {error}
+    <script src="./assets/javascripts/install/form.js"></script>
 </body>
 </html>

@@ -4,50 +4,93 @@ namespace App\Install\Steps;
 
 use App\Classes\SessionManager;
 use App\Classes\Template;
+use App\Classes\Install\StepBase;
+use App\Interfaces\Install\StepInterface;
 
-class Step_4
+use App\Classes\UsernameUtils;
+use App\Classes\EmailUtils;
+use App\Classes\PasswordUtils;
+
+use App\Forum\Controllers\AccountController;
+use App\Classes\Database;
+
+class Step_4 extends StepBase implements StepInterface
 {
-	protected int $ActualStep = 4;
-	protected $template;
-	
-	protected string $error = '';
+	private static string $error = '';
 
-	public function __construct()
+	public static function Execute()
 	{
-		$this->Do();
+		self::$step = 4;
+		self::$template = new Template("./app/install/templates/4.html");
+
+		if(isset($_SESSION['bb-info-account']))
+		{
+			$err = new Template('./app/install/templates/other/error.html');
+			$err->AddEntry('{error}', $_SESSION['bb-info-account']['msg']);
+			$err->Replace();
+
+			self::$error = $err->templ;
+
+			SessionManager::RemoveInformation('account');
+		}
+
+		self::$template->AddEntry("{error}", self::$error);
+
+		parent::RenderPage();
 	}
 
-	protected function CheckError()
+    public static function Handler()
 	{
-		if(!isset($_SESSION['bb-info-account']))
+		$username = isset($_POST['username']) ? $_POST['username'] : '';
+
+		if(!UsernameUtils::Validate($username))
+		{
+			SessionManager::AddInformation('account', 'Username is too short! ( 4 >= )', true);
 			return;
+		}
 
-		$this->error = $_SESSION['bb-info-account']['msg'];
+		$email = isset($_POST['email']) ? $_POST['email'] : '';
 
-		SessionManager::RemoveInformation('account');
-	}
+		if(!EmailUtils::Validate($email))
+		{
+			SessionManager::AddInformation('account', 'Email is not valid. Try another one.', true);
+			return;
+		}
 
-	protected function Do()
-	{
-		$this->CheckError();
+		$password = isset($_POST['password']) ? $_POST['password'] : '';
 
-		$headTemplate = new Template("./app/install/templates/head.html");
-		$headTemplate->AddEntry("{step}", $this->ActualStep);
-		$headTemplate->Replace();
+		if (!PasswordUtils::CheckLength($password))
+		{
+			SessionManager::AddInformation('account', 'Password is too short! ( 8 >= )', true);
+			return;
+		}
 
-		$footerTemplate = new Template("./app/install/templates/footer.html");
-		$footerTemplate->AddEntry("{year}", date("Y"));
-		$footerTemplate->Replace();
+		if (!PasswordUtils::CheckNumber($password))
+		{
+			SessionManager::AddInformation('account', 'Password needs to have atleast one number!', true);
+			return;
+		}
 
-		$errorTemplate = new Template("./app/install/templates/other/error.html");
-		$errorTemplate->AddEntry("{error}", $this->error);
-		$errorTemplate->Replace();
+		if (!PasswordUtils::CheckLetter($password))
+		{
+			SessionManager::AddInformation('account', 'Password needs to have atleast one character!', true);
+			return;
+		}
 
-		$this->template = new Template("./app/install/templates/4.html");
-		$this->template->AddEntry("{head}", $headTemplate->templ);
-		$this->template->AddEntry("{error}", $errorTemplate->templ);
-		$this->template->AddEntry("{footer}", $footerTemplate->templ);
-		$this->template->Render(true);
+		require_once './app/config.php';
+		$NewUserDatabase = new Database($config['host'], $config['user'], $config['pass'], $config['name']);
+
+		AccountController::Create(
+			$NewUserDatabase,
+			$_POST['username'],
+			PasswordUtils::GetHash($_POST['password']),
+			$_POST['email'],
+			1
+		);
+
+		$NewUserDatabase->Close();
+
+		parent::Handler();
 	}
 }
 

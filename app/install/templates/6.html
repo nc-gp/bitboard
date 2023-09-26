@@ -2,27 +2,24 @@
 <html>
 {head}
 <body>
-	<div id="install">
-		<header>
-			<h1>Final</h1>
-			<p>Finishing installation of BitBoard</p>
-		</header>
+	<div id="bb-container">
+        <div id="bb-box">
+            <form id="bb-form" action="" method="POST" novalidate autocomplete="off">
+                <input type="hidden" name="step" value="6">
 
-		<main>
-			<div style="text-align: justify;">
-				That's all! Just press Finish below!
-			</div>
+                <h1 class="bb-lines">BitBoard</h1>
+                <h2 class="bb-lines">Installation finished.</h2>
 
-			<form action="/?bb_next=true" method="post" style="display: grid; place-items: center;">
-				<input type="hidden" name="step_6" value="true">
+                <button class="button">
+                    <input class="button-content" type="submit" value="Finish">
+                </button>
+            </form>
+        </div>
 
-				<div class="down">
-					<input class="button" type="submit" value="Finish">
-				</div>
-			</form>
-		</main>
-	</div>
+        <footer>{footer}</footer>
+    </div>
 
-	{footer}
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    <script src="./assets/javascripts/install/form.js"></script>
 </body>
 </html>

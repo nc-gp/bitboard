@@ -3,46 +3,59 @@
 namespace App\Install\Steps;
 
 use App\Classes\Template;
+use App\Classes\Install\StepBase;
+use App\Interfaces\Install\StepInterface;
+use App\Classes\SessionManager;
 
-class Step_2
+class Step_2 extends StepBase implements StepInterface
 {
-	protected int $ActualStep = 2;
-	protected $template;
+	static string $error = '';
 
-	public function __construct()
+	public static function Execute()
 	{
-		$this->Do();
-	}
+		self::$step = 2;
+		self::$template = new Template("./app/install/templates/2.html");
 
-	protected function Do()
-	{
-		$extensions = get_loaded_extensions();
 		$phpTemplate = new Template("./app/install/templates/other/2_php_ok.html");
 		$mysqlTemplate = new Template("./app/install/templates/other/2_mysql_ok.html");
 
 		if(!version_compare(phpversion(), "8.0.0", ">="))
 			$phpTemplate = new Template("./app/install/templates/other/2_php_bad.html");
 
-		if(!in_array("pdo_mysql", $extensions))
+		if(!extension_loaded("mysqli"))
 			$mysqlTemplate = new Template("./app/install/templates/other/2_mysql_bad.html");
 
 		$phpTemplate->AddEntry("{phpversion}", phpversion());
 		$phpTemplate->Replace();
 
-		$headTemplate = new Template("./app/install/templates/head.html");
-		$headTemplate->AddEntry("{step}", $this->ActualStep);
-		$headTemplate->Replace();
+		self::$template->AddEntry("{php}", $phpTemplate->templ);
+		self::$template->AddEntry("{mysql}", $mysqlTemplate->templ);
 
-		$footerTemplate = new Template("./app/install/templates/footer.html");
-		$footerTemplate->AddEntry("{year}", date("Y"));
-		$footerTemplate->Replace();
+		if(isset($_SESSION['bb-info-mysql']))
+		{
+			$err = new Template('./app/install/templates/other/error.html');
+			$err->AddEntry('{error}', $_SESSION['bb-info-mysql']['msg']);
+			$err->Replace();
 
-		$this->template = new Template("./app/install/templates/2.html");
-		$this->template->AddEntry("{head}", $headTemplate->templ);
-		$this->template->AddEntry("{footer}", $footerTemplate->templ);
-		$this->template->AddEntry("{php}", $phpTemplate->templ);
-		$this->template->AddEntry("{mysql}", $mysqlTemplate->templ);
-		$this->template->Render(true);
+			self::$error = $err->templ;
+
+			SessionManager::RemoveInformation('mysql');
+		}
+
+		self::$template->AddEntry("{error}", self::$error);
+
+		parent::RenderPage();
+	}
+
+	public static function Handler()
+	{
+		if(!extension_loaded("mysqli"))
+		{
+			SessionManager::AddInformation('mysql', 'Mysql is not installed on the server!', true);
+			return;
+		}
+
+		parent::Handler();
 	}
 }
 

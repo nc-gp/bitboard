@@ -2,43 +2,79 @@
 <html>
 {head}
 <body>
-	<div id="install">
-		<header>
-			<h1>Database</h1>
-			<p>Setup database information.</p>
-		</header>
+    <div id="bb-container">
+        <div id="bb-box">
+            <form id="bb-form" action="" method="POST" novalidate autocomplete="off">
+                <input type="hidden" name="step" value="3">
 
-		<main>
-			<div style="text-align: justify;">
-                {error}
-				<form action="/?bb_next=true" method="post" style="display: grid; place-items: center;">
-                    <input type="hidden" name="step_3" value="true">
+                <h1 class="bb-lines">BitBoard</h1>
+                <h2 class="bb-lines">Database connection data.</h2>
 
-                    <div class="input-group">
-                        <input required="" type="text" name="host" autocomplete="off" class="input">
-                        <label class="user-label">Host</label>
-                    </div>
-                    <div class="input-group">
-                        <input required="" type="text" name="user" autocomplete="off" class="input">
-                        <label class="user-label">User</label>
-                    </div>
-                    <div class="input-group">
-                        <input type="password" name="pass" autocomplete="off" class="input">
-                        <label class="user-label">Password</label>
-                    </div>
-                    <div class="input-group">
-                        <input required="" type="text" name="name" autocomplete="off" class="input" value="bitboard">
-                        <label class="user-label">Database name</label>
+                <div id="bb-input-area">
+                    <div class="form-control">
+                        <input special name="host" type="text" required="">
+                        <label>
+                            <span style="transition-delay:0ms">H</span>
+                            <span style="transition-delay:50ms">o</span>
+                            <span style="transition-delay:100ms">s</span>
+                            <span style="transition-delay:150ms">t</span>
+                        </label>
                     </div>
 
-                    <div class="down">
-                        <input type="submit" value="Next">
+                    <div class="form-control">
+                        <input special name="username" type="text" required="">
+                        <label>
+                            <span style="transition-delay:0ms">U</span>
+                            <span style="transition-delay:50ms">s</span>
+                            <span style="transition-delay:100ms">e</span>
+                            <span style="transition-delay:150ms">r</span>
+                            <span style="transition-delay:200ms">n</span>
+                            <span style="transition-delay:250ms">a</span>
+                            <span style="transition-delay:300ms">m</span>
+                            <span style="transition-delay:350ms">e</span>
+                        </label>
                     </div>
-                </form>
-			</div>
-		</main>
-	</div>
 
-    {footer}
+                    <div class="form-control">
+                        <input name="password" type="password" required="">
+                        <label>
+                            <span style="transition-delay:0ms">P</span>
+                            <span style="transition-delay:50ms">a</span>
+                            <span style="transition-delay:100ms">s</span>
+                            <span style="transition-delay:150ms">s</span>
+                            <span style="transition-delay:200ms">w</span>
+                            <span style="transition-delay:250ms">o</span>
+                            <span style="transition-delay:300ms">r</span>
+                            <span style="transition-delay:350ms">d</span>
+                        </label>
+                    </div>
+
+                    <div class="form-control">
+                        <input special name="name" type="text" value="bitboard" required="">
+                        <label>
+                            <span style="transition-delay:0ms">D</span>
+                            <span style="transition-delay:50ms">a</span>
+                            <span style="transition-delay:100ms">t</span>
+                            <span style="transition-delay:150ms">a</span>
+                            <span style="transition-delay:200ms">b</span>
+                            <span style="transition-delay:250ms">a</span>
+                            <span style="transition-delay:300ms">s</span>
+                            <span style="transition-delay:350ms">e</span>
+                        </label>
+                    </div>
+                </div>
+
+                <button class="button">
+                    <input class="button-content" type="submit" value="Next">
+                </button>
+            </form>
+        </div>
+
+        <footer>{footer}</footer>
+    </div>
+
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+    {error}
+    <script src="./assets/javascripts/install/form.js"></script>
 </body>
 </html>

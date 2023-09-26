@@ -2,32 +2,31 @@
 
 namespace App\Install\Steps;
 
+use App\Classes\Install\StepBase;
 use App\Classes\Template;
+use App\Interfaces\Install\StepInterface;
+use App\Classes\File;
 
-class Step_6
+class Step_6 extends StepBase implements StepInterface
 {
-	protected int $ActualStep = 5;
-	protected $template;
-
-	public function __construct()
+	public static function Execute()
 	{
-		$this->Do();
+		self::$step = 6;
+		self::$template = new Template("./app/install/templates/6.html");
+
+		parent::RenderPage();
 	}
 
-	protected function Do()
+	public static function Handler()
 	{
-		$headTemplate = new Template("./app/install/templates/head.html");
-		$headTemplate->AddEntry("{step}", $this->ActualStep);
-		$headTemplate->Replace();
+		$lock = new File('./app/install/lock');
+		$lock->UpdateData('delete this file if you want to restart the installation');
+		$lock->Save();
 
-		$footerTemplate = new Template("./app/install/templates/footer.html");
-		$footerTemplate->AddEntry("{year}", date("Y"));
-		$footerTemplate->Replace();
+		$step = new File('./app/install/step');
+		$step->Remove();
 
-		$this->template = new Template("./app/install/templates/6.html");
-		$this->template->AddEntry("{head}", $headTemplate->templ);
-		$this->template->AddEntry("{footer}", $footerTemplate->templ);
-		$this->template->Render(true);
+		parent::Handler();
 	}
 }
 
