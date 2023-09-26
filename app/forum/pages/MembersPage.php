@@ -71,8 +71,14 @@ class MembersPage extends PageBase implements PageInterface
             [(($this->page - 1) * $this->maximumResults), $this->maximumResults]
         )->FetchAll();
 
+        $onlineTemplate = '';
         foreach ($members as $member) 
         {
+            if(RelativeTime::IsUserActive($member['last_active']))
+                $onlineTemplate = new Template('./themes/' . $this->theme . '/templates/members/member_online.html');
+            else
+                $onlineTemplate = new Template('./themes/' . $this->theme . '/templates/members/member_offline.html');
+
             $memberTemplate = new Template('./themes/' . $this->theme . '/templates/members/member.html');
             $memberTemplate->AddEntry('{id}', $member['id']);
             $memberTemplate->AddEntry('{server_url}', $this->serverPath);
@@ -80,10 +86,11 @@ class MembersPage extends PageBase implements PageInterface
             $memberTemplate->AddEntry('{username}', UsernameUtils::Format($member['rank_format'], $member['username']));
             $memberTemplate->AddEntry('{rank}', $member['rank_name']);
             $memberTemplate->AddEntry('{reputation}', $member['reputation']);
-            $memberTemplate->AddEntry('{regdate}', $member['reg_date']);
+            $memberTemplate->AddEntry('{regdate}', RelativeTime::Format($member['reg_date'], false));
             $memberTemplate->AddEntry('{lastseen}', RelativeTime::Convert($member['last_active']));
             $memberTemplate->AddEntry('{posts}', $member['post_count']);
             $memberTemplate->AddEntry('{threads}', $member['thread_count']);
+            $memberTemplate->AddEntry('{online}', $onlineTemplate->templ);
             $memberTemplate->Replace();
 
             $this->members .= $memberTemplate->templ;

@@ -51,16 +51,35 @@ class RelativeTime
      * Format a timestamp into a human-readable string.
      *
      * @param string $timestamp The timestamp in the format 'YYYY-MM-DD HH:MM:SS'.
+     * @param bool $full Whether to use full month and day names (default is true).
      * @return string The formatted timestamp in the format 'Published Month day, year, at time'.
      */
-    public static function Format($timestamp): string
+    public static function Format($timestamp, $full = true): string
     {
         $datetime = new DateTime($timestamp);
+
+        $dateFormat = $full ? 'F d, Y' : 'M d, Y';
         
-        $formattedDate = $datetime->format('F d, Y');
+        $formattedDate = $datetime->format($dateFormat);
         $formattedTime = $datetime->format('g:i A');
         
-        return 'Published ' . $formattedDate . ', at ' . $formattedTime;
+        return $formattedDate . ', at ' . $formattedTime;
+    }
+
+    /**
+     * Check if a user is considered active based on a timestamp.
+     *
+     * @param string $timestamp The timestamp to compare with the current time.
+     *
+     * @return bool Returns true if the user is considered active (less than 15 minutes have passed since their last activity), otherwise false.
+     */
+    public static function IsUserActive(string $timestamp): bool
+    {
+        $userTime = new DateTime($timestamp);
+        $currentTime = new DateTime();
+        $timeDifference = $currentTime->getTimestamp() - $userTime->getTimestamp();
+
+        return $timeDifference < 900;
     }
 }
 

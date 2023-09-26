@@ -39,7 +39,7 @@
     justify-content: flex-start;
     align-items: center;
     align-content: center;
-    width: 60%;
+    width: 56%;
 }
 
 .member-info {
@@ -62,7 +62,7 @@
     justify-content: flex-end;
     align-items: flex-start;
     align-content: center;
-    width: 40%;
+    width: 44%;
 }
 
 .member-info_top button {
