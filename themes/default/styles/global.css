@@ -119,6 +119,12 @@ a.button {
     text-decoration: none;
 }
 
-.ti {
+i {
     pointer-events: none;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
 }
