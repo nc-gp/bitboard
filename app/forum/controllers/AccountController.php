@@ -2,63 +2,16 @@
 
 namespace App\Forum\Controllers;
 
-use App\Classes\Console;
-use App\Forum\Controllers\RankController;
-use App\Classes\UsernameUtils;
+use App\Classes\Database;
 
 class AccountController
 {
-    public array $Data;
-    public bool $IsGood = true;
-    private int $ID;
-
-    public function __construct($db, int $accountId)
+    static public function UpdateLastActive(Database $db, int $userId): void
     {
-        $this->ID = $accountId;
-
-        $this->Data = $db->Query('SELECT * FROM bit_accounts WHERE id = ? LIMIT 1', $this->ID)->FetchArray();
-
-        if(sizeof($this->Data) <= 0)
-        {
-            $this->IsGood = false;
-            Console::Error('Couldn\'t fetch account with ID ' . $this->ID);
-        }
-        else
-        {
-            $this->Data['rank'] = new RankController($db, $this->Data['rank_id']);
-            $this->Data['formatted_username'] = UsernameUtils::Format($this->Data['rank']->Data['rank_format'], $this->Data['username']);
-        }
+        $db->Query('UPDATE bit_accounts SET last_active = ? WHERE id = ?', date("Y-m-d H:i:s"), $userId);
     }
 
-    public function Delete($db)
-    {
-        $db->Query('DELETE FROM bit_accounts WHERE id = ?', $this->ID);
-    }
-
-    public function UpdateUsername($db, string $newUsername)
-    {
-        $db->Query('UPDATE bit_accounts SET username = ? WHERE id = ?', [$newUsername, $this->ID]);
-    }
-
-    public function UpdatePassword($db, $newPassword) // give hashed one!
-    {
-        $db->Query('UPDATE bit_accounts SET pass = ? WHERE id = ?', [$newPassword, $this->ID]);
-    }
-
-    public function UpdateAvatar($db, string $avatarName)
-    {
-        $db->Query('UPDATE bit_accounts SET avatar = ? WHERE id = ?', [$avatarName, $this->ID]);
-    }
-
-    public function HasPermission(int $permissionToCheck): bool
-    {
-        if ($this->Data['rank']['rank_flags'] & $permissionToCheck)
-            return true;
-
-        return false;
-    }
-    
-    static public function Create($db, string $username, string $hashedPassword, string $email, int $rankId)
+    static public function Create(Database $db, string $username, string $hashedPassword, string $email, int $rankId)
     {
         $registerDate = date("Y-m-d H:i:s");
 
