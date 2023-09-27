@@ -4,35 +4,6 @@ namespace App\Forum\Controllers;
 
 class ForumController
 {
-    public array $Data;
-    private int $ID;
-
-    public function __construct($db, int $id)
-    {
-        $this->ID = $id;
-        $this->Data = $db->Query('SELECT * FROM bit_forums WHERE id = ?', $this->ID)->FetchArray();
-    }
-
-    public function UpdateCategoryID($db, int $newCategoryID)
-    {
-        $db->Query('UPDATE bit_forums SET category_id = ? WHERE id = ?', [$newCategoryID, $this->ID]);
-    }
-
-    public function UpdateName($db, string $newForumName)
-    {
-        $db->Query('UPDATE bit_forums SET forum_name = ? WHERE id = ?', [$newForumName, $this->ID]);
-    }
-
-    public function UpdateDescription($db, string $newForumDescription)
-    {
-        $db->Query('UPDATE bit_forums SET forum_desc = ? WHERE id = ?', [$newForumDescription, $this->ID]);
-    }
-
-    public function UpdateLock($db, bool $newForumLock)
-    {
-        $db->Query('UPDATE bit_forums SET is_locked = ? WHERE id = ?', [$newForumLock ? 1 : 0, $this->ID]);
-    }
-
     static public function GetLastPost($db, int $forumID)
     {
         return $db->Query('SELECT p.post_timestamp, a.id, a.username, a.avatar, t.id AS thread_id, t.thread_title, r.rank_format 
