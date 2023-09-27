@@ -13,7 +13,7 @@
 </div>
 
 <h4 align="center">Effortless, enjoyable, and efficient PHP-based forum system.</h4>
-<h4 align="center">Written in 8,783 lines of code in 130 files.</h4>
+<h4 align="center">Written in 8,751 lines of code in 135 files.</h4>
 
 <p align="center">
   <a href="#key-features">Key Features</a> •
