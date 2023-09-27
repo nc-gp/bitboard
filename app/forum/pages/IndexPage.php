@@ -226,7 +226,6 @@ class IndexPage extends PageBase implements PageInterface
         $this->template->AddEntry('{stats}', $statsTemplate->templ);
         
         parent::RenderPage('./templates/index/styles.html');
-        echo '?';
     }
 }
 
