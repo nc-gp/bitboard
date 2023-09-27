@@ -73,7 +73,8 @@ class BitBoard
 		if(SessionManager::IsLogged())
 		{
 			AccountController::UpdateLastActive($this->database, $_SESSION['bitboard_user']['id']);
-
+			SessionManager::UpdateData($this->database);
+			
 			// Checking is user banned. (Reality this is checking if user has permission to view the forum)
 			if(!Permissions::hasPermission($_SESSION['bitboard_user']['permissions'], Permissions::VIEWING_FORUM))
 			{

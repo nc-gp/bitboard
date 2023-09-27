@@ -2,6 +2,8 @@
 
 namespace App\Classes;
 
+use App\Forum\Controllers\RankController;
+
 /**
  * The Session class provides methods for working with user sessions.
  */
@@ -15,6 +17,18 @@ class SessionManager
     static public function IsLogged(): bool
     {
         return isset($_SESSION['bitboard_logged']);
+    }
+
+    /**
+     * Updates user permissions.
+     */
+    static public function UpdateData(Database $db): void
+    {
+        $account = $db->Query('SELECT * FROM bit_accounts WHERE id = ? LIMIT 1', $_SESSION['bitboard_user']['id'])->FetchArray();
+        $permissions = $db->Query('SELECT rank_flags FROM bit_ranks WHERE id = ?', $account['rank_id'])->FetchArray();
+        $account['permissions'] = $permissions['rank_flags'];
+        
+        self::Set($account);
     }
 
     /**
