@@ -7,12 +7,15 @@ use App\Classes\Template;
 use App\Classes\UrlManager;
 use App\Classes\RelativeTime;
 use App\Classes\AvatarUtils;
+use App\Classes\Console;
 use App\Classes\UsernameUtils;
 
 use App\Interfaces\PageInterface;
 
-use App\Forum\Controllers\AccountController;
-use App\Forum\Controllers\CategoryController;
+use App\Forum\Structs\CategoryStruct;
+use App\Forum\Structs\ForumStruct;
+use App\Forum\Structs\SubForumStruct;
+
 use App\Forum\Controllers\ForumController;
 
 class IndexPage extends PageBase implements PageInterface
@@ -50,118 +53,68 @@ class IndexPage extends PageBase implements PageInterface
         $this->totalUsers = $this->database->Query('SELECT * FROM bit_accounts')->NumRows();
     }
 
-    // Todo probably to make it faster or optimize it idk about anything when optimizing in php but yeah. that works tho.
     private function FetchCategories()
     {
-        $ServerPath = UrlManager::GetPath();
+        $data = $this->database->Query('SELECT c.id AS category_id, c.category_name, c.category_icon, c.category_desc, c.category_position, f.id AS forum_id, f.forum_name, f.forum_icon, f.forum_desc, f.forum_position, f.is_locked AS forum_locked, f.category_id AS forum_catid, COUNT(DISTINCT t.id) AS thread_count, COUNT(p.id) AS post_count, s.id AS subforum_id, s.subforum_name, s.subforum_desc, s.is_locked AS subforum_locked, s.forum_id AS subforum_forumid FROM bit_categories AS c LEFT JOIN bit_forums AS f ON f.category_id = c.id LEFT JOIN bit_threads AS t ON t.forum_id = f.id LEFT JOIN bit_posts AS p ON p.thread_id = t.id LEFT JOIN bit_subforums AS s ON s.forum_id = f.id GROUP BY c.id, f.id, s.id ORDER BY c.category_position ASC, f.forum_position ASC')->FetchAll();
 
-        // Query to select categories
-        $categoriesData = $this->database->Query('SELECT id AS category_id, category_name, category_icon, category_desc, category_position
-            FROM bit_categories'
-        )->FetchAll();
+        $builded_data = array();
+        $dCount = count($data);
 
-        // Array to hold the final result
-        $result = array();
-        $categoriesCount = count($categoriesData);
-
-        if ($categoriesCount <= 0)
+        for ($i = 0; $i < $dCount; $i++) 
         {
-            $nocategoriesTemplate = new Template('./themes/' . $this->theme . '/templates/index/forum/category_nocategories.html');
-            $this->cats = $nocategoriesTemplate->templ;
-            return;
-        }
+            $d = $data[$i];
 
-        // Loop through categories data
-        foreach ($categoriesData as $category) {
-            $categoryId = $category['category_id'];
-        
-            // Query to select forums for the current category
-            $forumsData = $this->database->Query('SELECT f.id AS forum_id, f.forum_name, f.forum_icon, f.forum_desc, f.forum_position,
-                                                    COUNT(DISTINCT t.id) AS thread_count,
-                                                    COUNT(p.id) AS post_count
-                                                    FROM bit_forums AS f
-                                                    LEFT JOIN bit_threads AS t ON t.forum_id = f.id
-                                                    LEFT JOIN bit_posts AS p ON p.thread_id = t.id
-                                                    WHERE f.category_id = ?
-                                                    GROUP BY f.id
-                                                    ORDER BY f.forum_position ASC', $categoryId)->FetchAll();
-        
-            // Create an array to hold the forums for the current category
-            $forums = array();
-        
-            // Loop through forums data
-            foreach ($forumsData as $forum) {
-                $forumId = $forum['forum_id'];
-        
-                // Query to select subforums for the current forum
-                $subforumsData = $this->database->Query('SELECT id AS subforum_id, subforum_name, subforum_desc
-                                                          FROM bit_subforums
-                                                          WHERE forum_id = ?', $forumId)->FetchAll();
-        
-                // Create an array to hold the subforums for the current forum
-                $subforums = array();
-        
-                // Loop through subforums data
-                foreach ($subforumsData as $subforum) {
-                    $subforums[] = array(
-                        'id' => $subforum['subforum_id'],
-                        'name' => $subforum['subforum_name'],
-                        'description' => $subforum['subforum_desc'],
-                    );
-                }
-        
-                // Add the forum and its associated subforums to the forums array
-                $forums[] = array(
-                    'id' => $forum['forum_id'],
-                    'name' => $forum['forum_name'],
-                    'icon' => $forum['forum_icon'],
-                    'description' => $forum['forum_desc'],
-                    'pos' => $forum['forum_position'],
-                    'subforums_count' => count($subforums),
-                    'subforums' => $subforums,
-                    'thread_count' => $forum['thread_count'],
-                    'post_count' => $forum['post_count'],
-                );
+            if(!isset($builded_data[$d['category_id']]))
+            {
+                $category = new CategoryStruct($d['category_id'], $d['category_name'], $d['category_icon'], $d['category_desc'], $d['category_position']);
+                $builded_data[$d['category_id']] = $category;
             }
-        
-            // Add the category and its associated forums to the result array
-            $result[] = array(
-                'category_id' => $category['category_id'],
-                'category_name' => $category['category_name'],
-                'category_icon' => $category['category_icon'],
-                'category_desc' => $category['category_desc'],
-                'category_pos' => $category['category_position'],
-                'forums_count' => count($forums),
-                'forums' => $forums,
-            );
+
+            if($d['forum_id'] > 0 && $d['category_id'] == $d['forum_catid'])
+            {
+                $forum = new ForumStruct($d['forum_id'], $d['forum_name'], $d['forum_icon'], $d['forum_desc'], $d['forum_position'], $d['forum_locked'], $d['thread_count'], $d['post_count']);
+                $builded_data[$d['category_id']]->forums[$forum->id] = $forum;
+            }
+
+            if($d['subforum_id'] > 0 && $d['forum_id'] == $d['subforum_forumid'])
+            {
+                $subforum = new SubForumStruct($d['subforum_id'], $d['subforum_name'], $d['subforum_desc'], $d['subforum_locked']);
+                $builded_data[$d['category_id']]->forums[$d['forum_id']]->subforums[$subforum->id] = $subforum;
+            }
         }
 
-        foreach($result as $r)
+        Console::Log($builded_data);
+
+        $lastPostTemplate = '';
+        $categoryTemplate = '';
+        $forumTemplate = '';
+        $subforumTemplate = '';
+        foreach ($builded_data as $category)
         {
-            if($r['forums_count'] <= 0)
-                continue;
+            $categoryTemplate = new Template('./themes/' . $this->theme . '/templates/index/forum/category.html');
 
             $forums = '';
+            $subforums = '';
 
-            foreach($r['forums'] as $forum)
+            foreach($category->forums as $forum)
             {
-                $subforums = '';
+                $forumTemplate = new Template('./themes/' . $this->theme . '/templates/index/forum/forum.html');
 
-                foreach($forum['subforums'] as $subforum)
+                foreach($forum->subforums as $subforum)
                 {
                     $subforumTemplate = new Template('./themes/' . $this->theme . '/templates/index/forum/subforum.html');
-                    $subforumTemplate->AddEntry('{subforum_title}', $subforum['name']);
-                    $subforumTemplate->AddEntry('{subforum_id}', $subforum['id']);
-                    $subforumTemplate->AddEntry('{server_url}', $ServerPath);
+                    $subforumTemplate->AddEntry('{subforum_title}', $subforum->name);
+                    $subforumTemplate->AddEntry('{subforum_id}', $subforum->id);
+                    $subforumTemplate->AddEntry('{server_url}', $this->serverPath);
                     $subforumTemplate->Replace();
 
                     $subforums .= $subforumTemplate->templ;
                 }
 
                 $lastPostTemplate = new Template('./themes/' . $this->theme . '/templates/index/forum/forum_nolastpost.html');
-                if ($forum['post_count'] > 0)
+                if ($forum->postCount > 0)
                 {
-                    $lastPost = ForumController::GetLastPost($this->database, $forum['id']);
+                    $lastPost = ForumController::GetLastPost($this->database, $forum->id);
 
                     $lastPostTemplate = new Template('./themes/' . $this->theme . '/templates/index/forum/forum_lastpost.html');
                     $lastPostTemplate->AddEntry('{user_id}', $lastPost['id']);
@@ -170,29 +123,27 @@ class IndexPage extends PageBase implements PageInterface
                     $lastPostTemplate->AddEntry('{thread_title}', $lastPost['thread_title']);
                     $lastPostTemplate->AddEntry('{post_date}', RelativeTime::Convert($lastPost['post_timestamp']));
                     $lastPostTemplate->AddEntry('{username}', UsernameUtils::Format($lastPost['rank_format'], $lastPost['username']));
-                    $lastPostTemplate->AddEntry('{server_url}', $ServerPath);
+                    $lastPostTemplate->AddEntry('{server_url}', $this->serverPath);
                     $lastPostTemplate->Replace();
                 }
 
-                $forumTemplate = new Template('./themes/' . $this->theme . '/templates/index/forum/forum.html');
-                $forumTemplate->AddEntry('{forum_id}', $forum['id']);
-                $forumTemplate->AddEntry('{forum_icon}', $forum['icon']);
-                $forumTemplate->AddEntry('{forum_title}', $forum['name']);
-                $forumTemplate->AddEntry('{forum_description}', $forum['description']);
-                $forumTemplate->AddEntry('{forum_posts}', $forum['post_count']);
-                $forumTemplate->AddEntry('{forum_threads}', $forum['thread_count']);
+                $forumTemplate->AddEntry('{forum_id}', $forum->id);
+                $forumTemplate->AddEntry('{forum_icon}', $forum->icon);
+                $forumTemplate->AddEntry('{forum_title}', $forum->name);
+                $forumTemplate->AddEntry('{forum_description}', $forum->description);
+                $forumTemplate->AddEntry('{forum_posts}', $forum->postCount);
+                $forumTemplate->AddEntry('{forum_threads}', $forum->threadCount);
                 $forumTemplate->AddEntry('{subforums}', $subforums);
                 $forumTemplate->AddEntry('{forum_lastpost}', $lastPostTemplate->templ);
-                $forumTemplate->AddEntry('{server_url}', $ServerPath);
+                $forumTemplate->AddEntry('{server_url}', $this->serverPath);
                 $forumTemplate->Replace();
 
                 $forums .= $forumTemplate->templ;
             }
 
-            $categoryTemplate = new Template('./themes/' . $this->theme . '/templates/index/forum/category.html');
-            $categoryTemplate->AddEntry('{category_icon}', $r['category_icon']);
-            $categoryTemplate->AddEntry('{category_title}', $r['category_name']);
-            $categoryTemplate->AddEntry('{category_description}', $r['category_desc']);
+            $categoryTemplate->AddEntry('{category_icon}', $category->icon);
+            $categoryTemplate->AddEntry('{category_title}', $category->name);
+            $categoryTemplate->AddEntry('{category_description}', $category->description);
             $categoryTemplate->AddEntry('{forums}', $forums);
             $categoryTemplate->Replace();
 
