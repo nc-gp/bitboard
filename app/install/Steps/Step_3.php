@@ -227,7 +227,7 @@ class Step_3 extends StepBase implements StepInterface
 			$InstallDatabase,
 			'Admin',
 			'<span style="color: #B22222">{username}</span>',
-			Permissions::ALL_PERMISSIONS);
+			Permissions::$All);
 
 		RankController::Create(
 			$InstallDatabase, 
