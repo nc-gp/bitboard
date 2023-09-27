@@ -163,7 +163,7 @@ class Step_3 extends StepBase implements StepInterface
 			rank_id INT(6) NOT NULL
 		)');
 
-		AccountController::Create($InstallDatabase, 'Guest', '-', '-', 1);
+		AccountController::Create($InstallDatabase, 'BitBot', '-', '-', 1);
 
 		$bit_threads = $InstallDatabase->Query('CREATE TABLE IF NOT EXISTS bit_threads (
 			id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
