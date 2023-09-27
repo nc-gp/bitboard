@@ -6,6 +6,7 @@ use App\Classes\Template;
 use App\Classes\UrlManager;
 use App\Classes\SessionManager;
 use App\Classes\AvatarUtils;
+use App\Classes\Permissions;
 
 class HeaderWidget
 {
@@ -29,6 +30,8 @@ class HeaderWidget
 
         if (SessionManager::IsLogged())
         {
+            $userOptions = '';
+
             $userTemplate = new Template('./themes/' . $this->theme . '/templates/header/nav/user.html');
             $userTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($this->theme, $_SESSION['bitboard_user']['avatar']));
             $userTemplate->AddEntry('{username}', $_SESSION['bitboard_user']['username']);
@@ -38,9 +41,18 @@ class HeaderWidget
             $userMenuTemplate->AddEntry('{server_url}', $ServerPath);
             $userMenuTemplate->Replace();
 
+            if(Permissions::hasPermission($_SESSION['bitboard_user']['permissions'], Permissions::ADMIN_PANEL_ACCESS))
+            {
+                $userOptions = new Template('./themes/' . $this->theme . '/templates/header/nav/user_menu_admin_panel.html');
+                $userOptions->AddEntry('{server_url}', $ServerPath);
+                $userOptions->Replace();
+                $userOptions = $userOptions->templ;
+            }
+
             $this->Template->AddEntry('{user}', $userTemplate->templ);
             $this->Template->AddEntry('{login_register}', '');
             $this->Template->AddEntry('{user_menu}', $userMenuTemplate->templ);
+            $this->Template->AddEntry('{user_options}', $userOptions);
         }
         else
         {
