@@ -12,37 +12,24 @@
     width: 25%;
 }
 
-.category {
-    display: block;
-    width: 100%;
-    position: relative;
-}
-
-.category:not(:first-of-type) {
-    margin-top: 20px;
-}
-
 .category .category_info {
     display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-items: flex-start;
+    align-content: flex-start;
 }
 
 .category .category_info i {
     font-size: 2rem;
     margin-right: 10px;
-    line-height: 1.25;
+    line-height: 1.5;
     color: var(--primary);
 }
 
-.category .category_info h1 {}
-
-.category .category_info h2 {}
-
-.category .category_container {
-    display: block;
-}
-
-.category .category_container {
-    margin-top: 10px;
+.category .category_info h1 {
+    margin: 0;
 }
 
 .category .category_container .preforum {
@@ -87,14 +74,6 @@
 }
 
 .category .category_container .preforum .forum .forum_info {}
-
-.category .category_container .preforum .forum .forum_stats {
-    position: absolute;
-    top: -20px;
-    right: 20px;
-    text-align: right;
-    font-size: 0.7rem;
-}
 
 .category .category_container .preforum .forum .forum_lastpost {
     display: flex;
@@ -156,10 +135,27 @@
     align-content: center;
     background: var(--opposite);
     box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    align-items: center;
+    align-content: center;
+}
+
+.forum_stats {
+    text-align: right;
+    font-size: 0.7rem;
 }
 
 .stat .iconstat {
     font-size: 2.5rem;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    align-content: center;
 }
 
 .stat .txt {
@@ -176,6 +172,7 @@
     width: 64px;
     height: 64px;
     box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
+    background-color: var(--opposite);
 }
 
 .stat .userstat .userstatblock {

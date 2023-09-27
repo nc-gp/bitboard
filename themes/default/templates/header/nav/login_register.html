@@ -7,12 +7,16 @@
         <button type="submit" aria-label="Register" data-microtip-position="bottom" role="tooltip"><i
                 class="ti ti-user-plus"></i></button>
     </form>
-    <details role="list">
-        <summary aria-haspopup="listbox" role="button"><i class="ti ti-brightness"></i></summary>
+    <li role="list">
+        <button aria-haspopup="listbox" aria-label="Theme switcher" data-microtip-position="top-left" role="tooltip"><i
+                class="ti ti-sun-moon"></i></button>
         <ul role="listbox">
-            <li><a href="#" data-theme-switcher="auto">Auto</a></li>
-            <li><a href="#" data-theme-switcher="light">Light</a></li>
-            <li><a href="#" data-theme-switcher="dark">Dark</a></li>
+            <li aria-label="Auto" data-microtip-position="left" role="tooltip"><a href="#" data-theme-switcher="auto"><i
+                        class="ti ti-circle-letter-a"></i></a></li>
+            <li aria-label="Light" data-microtip-position="left" role="tooltip"><a href="#"
+                    data-theme-switcher="light"><i class="ti ti-sun"></i></a></li>
+            <li aria-label="Dark" data-microtip-position="left" role="tooltip"><a href="#" data-theme-switcher="dark"><i
+                        class="ti ti-moon-stars"></i></a></li>
         </ul>
-    </details>
+    </li>
 </div>

@@ -69,6 +69,12 @@
   padding: 1px 5px;
   border-radius: var(--border-radius);
   background: rgba(255, 53, 53, 0.65);
+  display: inline-flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
 }
 
 .ppinned {

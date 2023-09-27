@@ -130,6 +130,7 @@
     height: 50px;
     border-radius: 50%;
     box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
+    background-color: var(--opposite);
 }
 
 .member-basic-info {
