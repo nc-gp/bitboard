@@ -24,6 +24,12 @@ class LoginPage extends PageBase implements PageInterface
 
     private function UrlHandler()
     {
+        if(SessionManager::IsLogged())
+        {
+            UrlManager::Redirect($this->serverPath);
+            return;
+        }
+
         if(count($this->forumData['actionParameters']) > 1 && $this->forumData['actionParameters'][1] != 'process')
         {
             UrlManager::Redirect($this->serverPath . 'login');
@@ -34,6 +40,8 @@ class LoginPage extends PageBase implements PageInterface
             return;
 
         $account = $this->database->Query('SELECT * FROM bit_accounts WHERE username = ? LIMIT 1', $_POST['username'])->FetchArray();
+        $permissions = $this->database->Query('SELECT rank_flags FROM bit_ranks WHERE id = ?', $account['rank_id'])->FetchArray();
+        $account['permissions'] = $permissions['rank_flags'];
 
         if(count($account) <= 0)
         {
