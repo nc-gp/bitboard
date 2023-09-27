@@ -9,6 +9,7 @@ use App\Classes\PageFactory;
 use App\Classes\File;
 Use App\Classes\UrlManager;
 use App\Classes\Console;
+use App\Classes\Permissions;
 use App\Classes\SessionManager;
 use App\Forum\Controllers\AccountController;
 use App\Forum\Pages\IndexPage;
@@ -55,23 +56,38 @@ class BitBoard
 
 	private function Do()
 	{
-		if(SessionManager::IsLogged())
-			AccountController::UpdateLastActive($this->database, $_SESSION['bitboard_user']['id']);
+		Console::Log($_SESSION);
 
 		$actionParameters = isset($_GET['action']) ? $_GET['action'] : '';
+		$SplitedURL = !empty($actionParameters) ? explode('/', $_GET['action']) : array();
 
 		if(!$this->IsOnline())
 		{
-			if(empty($actionParameters))
+			if(count($SplitedURL) > 1 || count($SplitedURL) <= 0)
 			{
-				UrlManager::Redirect('./offline');
+				UrlManager::Redirect(UrlManager::GetPath() . 'offline');
 				return;
+			}
+		}
+
+		if(SessionManager::IsLogged())
+		{
+			AccountController::UpdateLastActive($this->database, $_SESSION['bitboard_user']['id']);
+
+			// Checking is user banned. (Reality this is checking if user has permission to view the forum)
+			if(!Permissions::hasPermission($_SESSION['bitboard_user']['permissions'], Permissions::VIEWING_FORUM))
+			{
+				if(count($SplitedURL) > 1 || count($SplitedURL) <= 0)
+				{
+					UrlManager::Redirect(UrlManager::GetPath() . 'banned');
+					return;
+				}
 			}
 		}
 
 		// todo: option force to login/register
 
-		if (!empty($actionParameters))
+		if (count($SplitedURL) > 0)
 		{
 			$SplitedURL = explode('/', $_GET['action']);
 
