@@ -63,6 +63,9 @@ class ThreadPage extends PageBase implements PageInterface
 
     private function fetchThread()
     {
+        if($this->threadPage > 1)
+            return;
+
         $thread = $this->database->Query('SELECT t.*, u.username AS user_name, u.avatar AS user_avatar, u.reputation AS user_reputation, u.last_active AS user_lastactive, r.id AS rank_id, r.rank_name, r.rank_format
                                     FROM bit_threads t
                                     JOIN bit_accounts u ON t.user_id = u.id
@@ -103,7 +106,36 @@ class ThreadPage extends PageBase implements PageInterface
 
     private function fetchPosts()
     {
+        $posts = $this->database->Query('SELECT * FROM bit_posts WHERE thread_id = ? LIMIT ?, ?', $this->threadID, (($this->threadPage - 1) * $this->maximumResults), $this->maximumResults)->FetchAll();
 
+        $postTemplate = '';
+        foreach ($posts as $post) 
+        {
+            $author = $this->database->Query('SELECT b.*, r.* FROM bit_accounts AS b JOIN bit_ranks AS r ON b.rank_id = r.id WHERE b.id = ?', $post['user_id'])->FetchArray();
+
+            $threadCount = $this->database->Query('SELECT COUNT(*) AS thread_count FROM bit_threads WHERE user_id = ?', $post['user_id'])->FetchArray();
+            $postCount = $this->database->Query('SELECT COUNT(*) AS post_count FROM bit_posts WHERE user_id = ?', $post['user_id'])->FetchArray();
+            $userPostCount = $threadCount['thread_count'] + $postCount['post_count'];
+
+            $userStatsTemplate = new Template('thread', 'thread_user_stats');
+            $userStatsTemplate->AddEntry('{user_reputation}', $author['reputation']);
+            $userStatsTemplate->AddEntry('{user_postcount}', $userPostCount);
+            $userStatsTemplate->Replace();
+
+            $postTemplate = new Template('thread', 'post');
+            $postTemplate->AddEntry('{user_id}', $author['id']);
+            $postTemplate->AddEntry('{user_name}', UsernameUtils::Format($author['rank_format'], $author['username']));
+            $postTemplate->AddEntry('{user_avatar}', AvatarUtils::GetPath($this->forumData['forum_theme'], $author['avatar']));
+            $postTemplate->AddEntry('{user_avatar_alt}', $author['username']);
+            $postTemplate->AddEntry('{user_rank}', $author['rank_name']);
+            $postTemplate->AddEntry('{user_stats}', $userStatsTemplate->template);
+            $postTemplate->AddEntry('{post_timestamp}', 'Published ' . RelativeTime::Format($post['post_timestamp']));
+            $postTemplate->AddEntry('{post_content}', $post['post_content']);
+            $postTemplate->AddEntry('{post_likes}', $post['post_likes'] > 0 ? $post['post_likes'] : '');
+            $postTemplate->Replace();
+
+            $this->posts .= $postTemplate->template;
+        }
     }
 
     public function Do()
