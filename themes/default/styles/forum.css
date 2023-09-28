@@ -65,10 +65,9 @@
   border: 2px dashed #7127C3;
 }
 
-.pclosed {
+.prf {
   padding: 1px 5px;
   border-radius: var(--border-radius);
-  background: rgba(255, 53, 53, 0.65);
   display: inline-flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -77,9 +76,11 @@
   align-content: center;
 }
 
+.pclosed {
+  background: rgba(255, 53, 53, 0.65);
+}
+
 .ppinned {
-  padding: 1px 5px;
-  border-radius: 10px;
   background: rgba(60, 255, 53, 0.65);
 }
 
