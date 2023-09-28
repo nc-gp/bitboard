@@ -2,7 +2,7 @@
 
 namespace App\Classes;
 
-use App\Forum\Controllers\RankController;
+use App\Forum\Structs\AccountStruct;
 
 /**
  * The Session class provides methods for working with user sessions.
@@ -20,18 +20,6 @@ class SessionManager
     }
 
     /**
-     * Updates user permissions.
-     */
-    static public function UpdateData(Database $db): void
-    {
-        $account = $db->Query('SELECT * FROM bit_accounts WHERE id = ? LIMIT 1', $_SESSION['bitboard_user']['id'])->FetchArray();
-        $permissions = $db->Query('SELECT rank_flags FROM bit_ranks WHERE id = ?', $account['rank_id'])->FetchArray();
-        $account['permissions'] = $permissions['rank_flags'];
-        
-        self::Set($account);
-    }
-
-    /**
      * Check if a user is currently logged in.
      *
      * @param array $userData Account data.
@@ -39,7 +27,7 @@ class SessionManager
     static public function Set(array $userData): void
     {
         $_SESSION['bitboard_logged'] = true;
-        $_SESSION['bitboard_user'] = $userData;
+        $_SESSION['bitboard_user'] = new AccountStruct($userData['id'], $userData['username'], $userData['pass'], $userData['avatar'], $userData['reg_date'], $userData['reputation'], $userData['last_ip'], $userData['last_active'], $userData['last_login'], $userData['rank_id'], $userData['permissions']);
     }
 
     /**

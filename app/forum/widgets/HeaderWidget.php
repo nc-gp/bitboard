@@ -34,15 +34,15 @@ class HeaderWidget
             $userOptions = '';
 
             $userTemplate = new Template('header/nav', 'user');
-            $userTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($this->theme, $_SESSION['bitboard_user']['avatar']));
-            $userTemplate->AddEntry('{username}', $_SESSION['bitboard_user']['username']);
+            $userTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($this->theme, $_SESSION['bitboard_user']->avatar));
+            $userTemplate->AddEntry('{username}', $_SESSION['bitboard_user']->name);
             $userTemplate->Replace();
 
             $userMenuTemplate = new Template('header/nav', 'user_menu');
             $userMenuTemplate->AddEntry('{server_url}', $ServerPath);
             $userMenuTemplate->Replace();
 
-            if(Permissions::hasPermission($_SESSION['bitboard_user']['permissions'], Permissions::ADMIN_PANEL_ACCESS))
+            if($_SESSION['bitboard_user']->HasPermission(Permissions::ADMIN_PANEL_ACCESS))
             {
                 $userOptions = new Template('header/nav', 'user_menu_admin_panel');
                 $userOptions->AddEntry('{server_url}', $ServerPath);

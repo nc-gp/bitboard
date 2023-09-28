@@ -28,7 +28,6 @@ class BitBoard
 	private $file;
 	private $Install;
 	private $database;
-	private $account;
 
 	public function __construct()
 	{
@@ -72,11 +71,11 @@ class BitBoard
 
 		if(SessionManager::IsLogged())
 		{
-			AccountController::UpdateLastActive($this->database, $_SESSION['bitboard_user']['id']);
-			SessionManager::UpdateData($this->database);
+			AccountController::UpdateLastActive($this->database, $_SESSION['bitboard_user']->id);
+			$_SESSION['bitboard_user']->Update($this->database);
 			
 			// Checking is user banned. (Reality this is checking if user has permission to view the forum)
-			if(!Permissions::hasPermission($_SESSION['bitboard_user']['permissions'], Permissions::VIEWING_FORUM))
+			if(!$_SESSION['bitboard_user']->HasPermission(Permissions::VIEWING_FORUM))
 			{
 				if(count($SplitedURL) > 1 || count($SplitedURL) <= 0)
 				{

@@ -20,7 +20,7 @@ class BannedPage extends PageBase implements PageInterface
 
     private function UrlHandler()
     {
-        if(Permissions::hasPermission($_SESSION['bitboard_user']['permissions'], Permissions::VIEWING_FORUM))
+        if($_SESSION['bitboard_user']->HasPermission(Permissions::VIEWING_FORUM))
             UrlManager::Redirect(UrlManager::GetPath());
     }
 
