@@ -32,22 +32,22 @@ class PageBase
         $this->forumData = $forumData;
     }
 
-    protected function RenderPage(string $stylesTemplatePath): void
+    protected function RenderPage(string $templateCategory): void
     {
-        $this->CommonSetup($stylesTemplatePath);
+        $this->CommonSetup($templateCategory);
         $this->template->Render(true);
     }
 
-    private function CommonSetup(string $stylesTemplatePath): void
+    private function CommonSetup(string $templateCategory): void
     {
-        $stylesTemplate = new StylesWidget($this->theme, $stylesTemplatePath);
-        $headTemplate = new HeadWidget($this->theme, $this->forumName, $this->forumDesc, $stylesTemplate->Template->templ);
-        $headerTemplate = new HeaderWidget($this->theme);
+        $stylesTemplate = new StylesWidget($templateCategory);
+        $headTemplate = new HeadWidget($this->forumName, $this->forumDesc, $stylesTemplate->Template->template);
+        $headerTemplate = new HeaderWidget();
         $footerTemplate = new FooterWidget($this->theme);
 
-        $this->template->AddEntry('{head}', $headTemplate->Template->templ);
-        $this->template->AddEntry('{header}', $headerTemplate->Template->templ);
-        $this->template->AddEntry('{footer}', $footerTemplate->Template->templ);
+        $this->template->AddEntry('{head}', $headTemplate->Template->template);
+        $this->template->AddEntry('{header}', $headerTemplate->Template->template);
+        $this->template->AddEntry('{footer}', $footerTemplate->Template->template);
     }
 }
 

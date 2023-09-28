@@ -76,12 +76,12 @@ class ThreadPage extends PageBase implements PageInterface
 
         Console::Log($thread);
 
-        $userStatsTemplate = new Template('./themes/' . $this->theme . '/templates/thread/thread_user_stats.html');
+        $userStatsTemplate = new Template('thread', 'thread_user_stats');
         $userStatsTemplate->AddEntry('{user_reputation}', $thread['user_reputation']);
         $userStatsTemplate->AddEntry('{user_postcount}', $userPostCount);
         $userStatsTemplate->Replace();
 
-        $threadContentTemplate = new Template('./themes/' . $this->theme . '/templates/thread/thread_content.html');
+        $threadContentTemplate = new Template('thread', 'thread_content');
         $threadContentTemplate->AddEntry('{thread_title}', $thread['thread_title']);
         $threadContentTemplate->AddEntry('{thread_timestamp}', 'Published ' . RelativeTime::Format($thread['thread_timestamp']));
         $threadContentTemplate->AddEntry('{thread_content}', $thread['thread_content']);
@@ -93,10 +93,10 @@ class ThreadPage extends PageBase implements PageInterface
         $threadContentTemplate->AddEntry('{user_avatar}', AvatarUtils::GetPath($this->theme, $thread['user_avatar']));
         $threadContentTemplate->AddEntry('{user_avatar_alt}', $thread['user_name']);
         $threadContentTemplate->AddEntry('{user_rank}', $thread['rank_name']);
-        $threadContentTemplate->AddEntry('{user_stats}', $userStatsTemplate->templ);
+        $threadContentTemplate->AddEntry('{user_stats}', $userStatsTemplate->template);
         $threadContentTemplate->Replace();
 
-        $this->thread = $threadContentTemplate->templ;
+        $this->thread = $threadContentTemplate->template;
 
         $this->forumDesc .= $thread['thread_title'];
     }
@@ -111,14 +111,14 @@ class ThreadPage extends PageBase implements PageInterface
         $this->fetchThread();
         $this->fetchPosts();
 
-        $paginationTemplate = new PaginationWidget($this->theme, $this->threadPage, $this->postsCount, $this->maximumResults, 'thread/' . $this->threadID . '/page/');
+        $paginationTemplate = new PaginationWidget($this->threadPage, $this->postsCount, $this->maximumResults, 'thread/' . $this->threadID . '/page/');
     
-        $this->template = new Template('./themes/' . $this->theme . '/templates/thread/thread.html');
+        $this->template = new Template('thread', 'thread');
         $this->template->AddEntry('{thread}', $this->thread);
         $this->template->AddEntry('{posts}', $this->posts);
-        $this->template->AddEntry('{pagination}', $this->postsCount > 0 ? $paginationTemplate->Template->templ : '');
+        $this->template->AddEntry('{pagination}', $this->postsCount > $this->maximumResults ? $paginationTemplate->Template->template : '');
         
-        parent::RenderPage('/templates/thread/styles.html');
+        parent::RenderPage('thread');
     }
 }
 

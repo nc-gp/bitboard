@@ -26,9 +26,9 @@ class BannedPage extends PageBase implements PageInterface
 
     public function Do()
     {
-        $this->template = new Template('./themes/' . $this->theme . '/templates/banned/banned.html');
+        $this->template = new Template('banned', 'banned');
         $this->template->AddEntry('{server_url}', $this->serverPath);
-        parent::RenderPage('/templates/banned/styles.html');
+        parent::RenderPage('banned');
     }
 }
 

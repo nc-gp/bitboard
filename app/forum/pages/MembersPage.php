@@ -75,19 +75,19 @@ class MembersPage extends PageBase implements PageInterface
         $memberContact = '';
         if(SessionManager::IsLogged())
         {
-            $memberContact = new Template('./themes/' . $this->theme . '/templates/members/member_contact.html');
-            $memberContact = $memberContact->templ;
+            $memberContact = new Template('members', 'member_contact');
+            $memberContact = $memberContact->template;
         }
 
         $onlineTemplate = '';
         foreach ($members as $member) 
         {
             if(RelativeTime::IsUserActive($member['last_active']))
-                $onlineTemplate = new Template('./themes/' . $this->theme . '/templates/members/member_online.html');
+                $onlineTemplate = new Template('members', 'member_online');
             else
-                $onlineTemplate = new Template('./themes/' . $this->theme . '/templates/members/member_offline.html');
+                $onlineTemplate = new Template('members', 'member_offline');
 
-            $memberTemplate = new Template('./themes/' . $this->theme . '/templates/members/member.html');
+            $memberTemplate = new Template('members', 'member');
             $memberTemplate->AddEntry('{id}', $member['id']);
             $memberTemplate->AddEntry('{server_url}', $this->serverPath);
             $memberTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($this->theme, $member['avatar']));
@@ -98,11 +98,11 @@ class MembersPage extends PageBase implements PageInterface
             $memberTemplate->AddEntry('{lastseen}', RelativeTime::Convert($member['last_active']));
             $memberTemplate->AddEntry('{posts}', $member['post_count']);
             $memberTemplate->AddEntry('{threads}', $member['thread_count']);
-            $memberTemplate->AddEntry('{online}', $onlineTemplate->templ);
+            $memberTemplate->AddEntry('{online}', $onlineTemplate->template);
             $memberTemplate->AddEntry('{contact}', $memberContact);
             $memberTemplate->Replace();
 
-            $this->members .= $memberTemplate->templ;
+            $this->members .= $memberTemplate->template;
         }
     }
 
@@ -110,13 +110,13 @@ class MembersPage extends PageBase implements PageInterface
     {
         $this->FetchMembers();
 
-        $paginationTemplate = new PaginationWidget($this->theme, $this->page, $this->totalMembers, $this->maximumResults, 'members/page/');
+        $paginationTemplate = new PaginationWidget($this->page, $this->totalMembers, $this->maximumResults, 'members/page/');
 
-        $this->template = new Template('./themes/' . $this->theme . '/templates/members/members.html');
-        $this->template->AddEntry('{pagination}', $paginationTemplate->Template->templ);
+        $this->template = new Template('members', 'members');
+        $this->template->AddEntry('{pagination}', $this->totalMembers > $this->maximumResults ? $paginationTemplate->Template->template : '');
         $this->template->AddEntry('{members}', $this->members);
 
-        parent::RenderPage('./templates/members/styles.html');
+        parent::RenderPage('members');
     }
 }
 

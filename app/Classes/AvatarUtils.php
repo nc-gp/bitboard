@@ -20,9 +20,9 @@ class AvatarUtils
     static public function GetPath(string $theme, string $avatarName): string
     {
         if($avatarName == 'default.webp')
-            return UrlManager::GetPath() . '//themes//' . $theme . '/images/default.webp';
+            return UrlManager::GetPath() . 'themes\\' . $theme . '\images\default.webp';
         else
-            return UrlManager::GetPath() . '/assets/images/avatars/' . $avatarName;
+            return UrlManager::GetPath() . 'assets\images/avatars\\' . $avatarName;
     }
 }
 

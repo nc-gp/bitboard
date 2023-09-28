@@ -3,27 +3,82 @@
 namespace App\Classes;
 
 use Error;
+use App\BB;
 
-/**
- * The Template class provides functionality for loading, rendering, and replacing placeholders
- * in a template file.
- */
 class Template
 {
-    public string $templ;
-    private string $path;
-    private array $entries = [];
-    private array $replaces = [];
+    public $template;
+    private $fullPath;
+    private array $variables;
+    private array $replaces;
 
     /**
      * Constructor to initialize the Template object with a template file path.
      *
-     * @param string $path The path to the template file.
+     * @param string $theme         Current active theme name.
+     * @param string $category_path Templates category.
+     * @param string $name          Template file name without .html.
      */
-    public function __construct($path)
+    public function __construct(string $category_path, string $name)
     {
-        $this->path = $path;
+        $this->fullPath = './themes/' . BB::$Data['forum_theme'] . '/templates/' . $category_path . '/' . $name . '.html';
         $this->Load();
+    }
+
+    /**
+     * Load the template content from the specified file.
+     *
+     * @throws Error if the template file does not exist.
+     */
+    private function Load()
+    {
+        if (!file_exists($this->fullPath))
+            throw new Error("Template file does not exist: " . $this->fullPath);
+
+        $handle = fopen($this->fullPath, 'r');
+        if ($handle) 
+        {
+            if (flock($handle, LOCK_SH)) 
+            {
+                $this->template = fread($handle, filesize($this->fullPath));
+                flock($handle, LOCK_UN);
+            }
+
+            fclose($handle);
+        }
+    }
+
+    /**
+     * Add a single entry and its corresponding replacement value.
+     *
+     * @param string $variable  The name of the entry (placeholder).
+     * @param mixed $replace    The value to replace the entry with.
+     */
+    public function AddEntry(string $variable, $replace): void
+    {
+        $this->variables[] = $variable;
+        $this->replaces[] = $replace;
+    }
+
+    /**
+     * Add multiple entries and their corresponding replacement values.
+     *
+     * @param array $variables   An array of entry names (placeholders).
+     * @param array $replaces    An array of replacement values.
+     * @throws Error if the count of entries does not match the count of replacements.
+     */
+    public function AddEntries(array $variables = [], array $replaces = []): void
+    {
+        $variablesSize = count($variables);
+        $replacesSize = count($replaces);
+
+        if ($variables !== $replacesSize)
+            throw new Error("The entries size needs to be the same as replaces.");
+
+        for ($i = 0; $i < $variablesSize; $i++) {
+            $this->variables[] = $variables[$i];
+            $this->replaces[] = $replaces[$i];
+        }
     }
 
     /**
@@ -33,66 +88,10 @@ class Template
      */
     public function Render(bool $replace = false): void
     {
-        if ($replace) {
+        if ($replace)
             $this->Replace();
-        }
 
-        echo $this->templ;
-    }
-
-    /**
-     * Add a single entry and its corresponding replacement value.
-     *
-     * @param string $entryName The name of the entry (placeholder).
-     * @param mixed $replace    The value to replace the entry with.
-     */
-    public function AddEntry(string $entryName, $replace): void
-    {
-        $this->entries[] = $entryName;
-        $this->replaces[] = $replace;
-    }
-
-    /**
-     * Add multiple entries and their corresponding replacement values.
-     *
-     * @param array $entries   An array of entry names (placeholders).
-     * @param array $replaces  An array of replacement values.
-     * @throws Error if the count of entries does not match the count of replacements.
-     */
-    public function AddEntries(array $entries = [], array $replaces = []): void
-    {
-        $entriesSize = count($entries);
-        $replacesSize = count($replaces);
-
-        if ($entriesSize !== $replacesSize) {
-            throw new Error("The entries size needs to be the same as replaces.");
-        }
-
-        for ($i = 0; $i < $entriesSize; $i++) {
-            $this->entries[] = $entries[$i];
-            $this->replaces[] = $replaces[$i];
-        }
-    }
-
-    /**
-     * Load the template content from the specified file.
-     *
-     * @throws Error if the template file does not exist.
-     */
-    private function Load(): void
-    {
-        if (!file_exists($this->path)) {
-            throw new Error("Template file does not exist: " . $this->path);
-        }
-
-        $handle = fopen($this->path, 'r');
-        if ($handle) {
-            if (flock($handle, LOCK_SH)) {
-                $this->templ = fread($handle, filesize($this->path));
-                flock($handle, LOCK_UN);
-            }
-            fclose($handle);
-        }
+        echo $this->template;
     }
 
     /**
@@ -100,7 +99,7 @@ class Template
      */
     public function Replace(): void
     {
-        $this->templ = str_replace($this->entries, $this->replaces, $this->templ);
+        $this->template = str_replace($this->variables, $this->replaces, $this->template);
     }
 }
 

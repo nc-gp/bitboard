@@ -18,9 +18,9 @@ class StylesWidget
      * @param string $theme        The theme to use.
      * @param string $templatePath The path to the template file.
      */
-    public function __construct(string $theme, string $templatePath)
+    public function __construct(string $templateCategory)
     {
-        $this->Template = new Template('./themes/' . $theme . $templatePath);
+        $this->Template = new Template($templateCategory, 'styles');
         $this->Do();
     }
 

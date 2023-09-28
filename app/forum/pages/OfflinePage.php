@@ -25,7 +25,7 @@ class OfflinePage extends PageBase implements PageInterface
     {
         if ($this->forumData['forum_online'])
         {
-            UrlManager::Redirect();
+            UrlManager::Redirect($this->serverPath);
             return;
         }
 
@@ -38,10 +38,10 @@ class OfflinePage extends PageBase implements PageInterface
 
     public function Do()
     {
-        $this->template = new Template('./themes/' . $this->theme . '/templates/offline/main.html');
+        $this->template = new Template('offline', 'main');
         $this->template->AddEntry('{reason}', $this->message);
         
-        parent::RenderPage('./templates/offline/styles.html');
+        parent::RenderPage('offline');
     }
 }
 

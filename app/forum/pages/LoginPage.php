@@ -67,11 +67,11 @@ class LoginPage extends PageBase implements PageInterface
         if(!isset($_SESSION['bb-info-login']['msg']))
             return;
         
-        $errorTemplate = new Template('./themes/' . $this->theme . '/templates/login/error.html');
+        $errorTemplate = new Template('login', 'error');
         $errorTemplate->AddEntry('{error}', $_SESSION['bb-info-login']['msg']);
         $errorTemplate->Replace();
 
-        $this->error = $errorTemplate->templ;
+        $this->error = $errorTemplate->template;
 
         SessionManager::RemoveInformation('login');
     }
@@ -80,12 +80,12 @@ class LoginPage extends PageBase implements PageInterface
     {
         $this->CheckError();
 
-        $this->template = new Template('./themes/' . $this->theme . '/templates/login/login.html');
+        $this->template = new Template('login', 'login');
         $this->template->AddEntry('{forum_name}', $this->forumName);
         $this->template->AddEntry('{register_url}', $this->serverPath . 'register');
         $this->template->AddEntry('{error}', $this->error);
         
-        parent::RenderPage('/templates/login/styles.html');
+        parent::RenderPage('login');
     }
 }
 

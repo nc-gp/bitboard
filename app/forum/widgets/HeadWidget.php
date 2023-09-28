@@ -8,18 +8,16 @@ use App\Classes\UrlManager;
 class HeadWidget
 {
     public $Template;
-    private string $themePath;
     private string $forumName;
     private string $forumDesc;
     private string $stylesTemplate;
 
-    public function __construct(string $theme, string $forumName, string $forumDesc, string $stylesTemplate = '')
+    public function __construct(string $forumName, string $forumDesc, string $stylesTemplate = '')
     {
-        $this->themePath = './themes/' . $theme;
         $this->forumName = $forumName;
         $this->forumDesc = $forumDesc;
         $this->stylesTemplate = $stylesTemplate;
-        $this->Template = new Template($this->themePath . '/templates/head/head.html');
+        $this->Template = new Template('head', 'head');
         $this->Do();
     }
 

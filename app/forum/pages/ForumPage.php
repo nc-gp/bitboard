@@ -85,10 +85,10 @@ class ForumPage extends PageBase implements PageInterface
         {
             $lastPost = SubForumController::GetLastPost($this->database, $this->forumID, $subforum['id']);
 
-            $lastPostTemplate = new Template('./themes/' . $this->theme . '/templates/forum/subforum/subforum_nolastpost.html');
+            $lastPostTemplate = new Template('forum/subforum', 'subforum_nolastpost');
             if(!empty($lastPost))
             {
-                $lastPostTemplate = new Template('./themes/' . $this->theme . '/templates/forum/subforum/subforum_lastpost.html');
+                $lastPostTemplate = new Template('forum/subforum', 'subforum_lastpost');
                 $lastPostTemplate->AddEntry('{user_id}', $lastPost['id']);
                 $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($this->theme, $lastPost['avatar']));
                 $lastPostTemplate->AddEntry('{post_date}', RelativeTime::Convert($lastPost['post_timestamp']));
@@ -97,17 +97,17 @@ class ForumPage extends PageBase implements PageInterface
                 $lastPostTemplate->Replace();
             }
 
-            $subforumTemplate = new Template('./themes/' . $this->theme . '/templates/forum/subforum/subforum.html');
+            $subforumTemplate = new Template('forum/subforum', 'subforum');
             $subforumTemplate->AddEntry('{id}', $subforum['id']);
             $subforumTemplate->AddEntry('{subforum_title}', $subforum['subforum_name']);
             $subforumTemplate->AddEntry('{subforum_desc}', $subforum['subforum_desc']);
             $subforumTemplate->AddEntry('{post_count}', $subforum['post_count']);
             $subforumTemplate->AddEntry('{thread_count}', $subforum['thread_count']);
-            $subforumTemplate->AddEntry('{subforum_lastpost}', $lastPostTemplate->templ);
+            $subforumTemplate->AddEntry('{subforum_lastpost}', $lastPostTemplate->template);
             $subforumTemplate->AddEntry('{server_url}', $this->serverPath);
             $subforumTemplate->Replace();
 
-            $this->subforums .= $subforumTemplate->templ;
+            $this->subforums .= $subforumTemplate->template;
         }
     }
 
@@ -138,21 +138,21 @@ class ForumPage extends PageBase implements PageInterface
 
         if ($this->threadsCount <= 0)
         {
-            $nothreadsTemplate = new Template('./themes/' . $this->theme . '/templates/forum/thread/thread_nothreads.html');
-            $this->threads = $nothreadsTemplate->templ;
+            $nothreadsTemplate = new Template('forum/thread', 'thread_nothreads');
+            $this->threads = $nothreadsTemplate->template;
             return;
         }
 
         foreach ($threads as $thread) 
         {
-            $lastPostTemplate = new Template('./themes/' . $this->theme . '/templates/forum/thread/thread_nolastpost.html');
+            $lastPostTemplate = new Template('forum/thread', 'thread_nolastpost');
             $threadClosedTemplate = '';
             $threadPinnedTemplate = '';
 
             if ($thread['post_count'] > 0) {
                 $lastPost = ThreadController::GetLastPost($this->database, $thread['id']);
 
-                $lastPostTemplate = new Template('./themes/' . $this->theme . '/templates/forum/thread/thread_lastpost.html');
+                $lastPostTemplate = new Template('forum/thread', 'thread_lastpost');
                 $lastPostTemplate->AddEntry('{user_id}', $lastPost['id']);
                 $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($this->theme, $lastPost['avatar']));
                 $lastPostTemplate->AddEntry('{post_date}', RelativeTime::Convert($lastPost['post_timestamp']));
@@ -163,17 +163,17 @@ class ForumPage extends PageBase implements PageInterface
 
             if ($thread['is_closed'])
             {
-                $threadClosedTemplate = new Template('./themes/' . $this->theme . '/templates/forum/thread/thread_closed_prefix.html');
-                $threadClosedTemplate = $threadClosedTemplate->templ;
+                $threadClosedTemplate = new Template('forum/thread', 'thread_closed_prefix');
+                $threadClosedTemplate = $threadClosedTemplate->template;
             }
 
             if ($thread['is_pinned'])
             {
-                $threadPinnedTemplate = new Template('./themes/' . $this->theme . '/templates/forum/thread/thread_pinned_prefix.html');
-                $threadPinnedTemplate = $threadPinnedTemplate->templ;
+                $threadPinnedTemplate = new Template('forum/thread', 'thread_pinned_prefix');
+                $threadPinnedTemplate = $threadPinnedTemplate->template;
             }
 
-            $threadTemplate = new Template('./themes/' . $this->theme . '/templates/forum/thread/thread.html');
+            $threadTemplate = new Template('forum/thread', 'thread');
             $threadTemplate->AddEntry('{id}', $thread['id']);
             $threadTemplate->AddEntry('{closed_prefix}', $threadClosedTemplate);
             $threadTemplate->AddEntry('{pinned_prefix}', $threadPinnedTemplate);
@@ -182,11 +182,11 @@ class ForumPage extends PageBase implements PageInterface
             $threadTemplate->AddEntry('{thread_author_username}', UsernameUtils::Format($thread['rank_format'], $thread['username']));
             $threadTemplate->AddEntry('{thread_date}', RelativeTime::Convert($thread['thread_timestamp']));
             $threadTemplate->AddEntry('{thread_replies}', $thread['post_count']);
-            $threadTemplate->AddEntry('{thread_lastpost}', $lastPostTemplate->templ);
+            $threadTemplate->AddEntry('{thread_lastpost}', $lastPostTemplate->template);
             $threadTemplate->AddEntry('{server_url}', $this->serverPath);
             $threadTemplate->Replace();
 
-            $this->threads .= $threadTemplate->templ;
+            $this->threads .= $threadTemplate->template;
         }
     }
 
@@ -202,14 +202,14 @@ class ForumPage extends PageBase implements PageInterface
         $this->FetchSubForums();
         $this->FetchThreads();
 
-        $paginationTemplate = new PaginationWidget($this->theme, $this->forumPage, $this->threadsCount, $this->maximumResults, 'forum/' . $this->forumID . '/page/');
+        $paginationTemplate = new PaginationWidget($this->forumPage, $this->threadsCount, $this->maximumResults, 'forum/' . $this->forumID . '/page/');
 
-        $this->template = new Template('./themes/' . $this->theme . '/templates/forum/forum.html');
+        $this->template = new Template('forum', 'forum');
         $this->template->AddEntry('{subforums}', $this->subforums);
         $this->template->AddEntry('{threads}', $this->threads);
-        $this->template->AddEntry('{pagination}', $this->threadsCount > 0 ? $paginationTemplate->Template->templ : '');
+        $this->template->AddEntry('{pagination}', $this->threadsCount > $this->maximumResults ? $paginationTemplate->Template->template : '');
         
-        parent::RenderPage('/templates/forum/styles.html');
+        parent::RenderPage('forum');
     }
 }
 

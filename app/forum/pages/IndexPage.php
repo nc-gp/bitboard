@@ -91,32 +91,32 @@ class IndexPage extends PageBase implements PageInterface
         $subforumTemplate = '';
         foreach ($builded_data as $category)
         {
-            $categoryTemplate = new Template('./themes/' . $this->theme . '/templates/index/forum/category.html');
+            $categoryTemplate = new Template('index/forum', 'category');
 
             $forums = '';
             $subforums = '';
 
             foreach($category->forums as $forum)
             {
-                $forumTemplate = new Template('./themes/' . $this->theme . '/templates/index/forum/forum.html');
+                $forumTemplate = new Template('index/forum', 'forum');
 
                 foreach($forum->subforums as $subforum)
                 {
-                    $subforumTemplate = new Template('./themes/' . $this->theme . '/templates/index/forum/subforum.html');
+                    $subforumTemplate = new Template('index/forum', 'subforum');
                     $subforumTemplate->AddEntry('{subforum_title}', $subforum->name);
                     $subforumTemplate->AddEntry('{subforum_id}', $subforum->id);
                     $subforumTemplate->AddEntry('{server_url}', $this->serverPath);
                     $subforumTemplate->Replace();
 
-                    $subforums .= $subforumTemplate->templ;
+                    $subforums .= $subforumTemplate->template;
                 }
 
-                $lastPostTemplate = new Template('./themes/' . $this->theme . '/templates/index/forum/forum_nolastpost.html');
+                $lastPostTemplate = new Template('index/forum', 'forum_nolastpost');
                 if ($forum->postCount > 0)
                 {
                     $lastPost = ForumController::GetLastPost($this->database, $forum->id);
 
-                    $lastPostTemplate = new Template('./themes/' . $this->theme . '/templates/index/forum/forum_lastpost.html');
+                    $lastPostTemplate = new Template('index/forum', 'forum_lastpost');
                     $lastPostTemplate->AddEntry('{user_id}', $lastPost['id']);
                     $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($this->theme, $lastPost['avatar']));
                     $lastPostTemplate->AddEntry('{thread_id}', $lastPost['thread_id']);
@@ -134,11 +134,11 @@ class IndexPage extends PageBase implements PageInterface
                 $forumTemplate->AddEntry('{forum_posts}', $forum->postCount);
                 $forumTemplate->AddEntry('{forum_threads}', $forum->threadCount);
                 $forumTemplate->AddEntry('{subforums}', $subforums);
-                $forumTemplate->AddEntry('{forum_lastpost}', $lastPostTemplate->templ);
+                $forumTemplate->AddEntry('{forum_lastpost}', $lastPostTemplate->template);
                 $forumTemplate->AddEntry('{server_url}', $this->serverPath);
                 $forumTemplate->Replace();
 
-                $forums .= $forumTemplate->templ;
+                $forums .= $forumTemplate->template;
             }
 
             $categoryTemplate->AddEntry('{category_icon}', $category->icon);
@@ -147,7 +147,7 @@ class IndexPage extends PageBase implements PageInterface
             $categoryTemplate->AddEntry('{forums}', $forums);
             $categoryTemplate->Replace();
 
-            $this->cats .= $categoryTemplate->templ;
+            $this->cats .= $categoryTemplate->template;
         }
     }
 
@@ -157,7 +157,7 @@ class IndexPage extends PageBase implements PageInterface
         $this->FetchLastAccount();
         $this->FetchStats();
 
-        $lastRegistered = new Template('./themes/' . $this->theme . '/templates/index/stats/last_registered.html');
+        $lastRegistered = new Template('index/stats', 'last_registered');
         $lastRegistered->AddEntry('{id}', $this->lastAccount['id']);
         $lastRegistered->AddEntry('{avatar}', $this->lastAccount['avatar']);
         $lastRegistered->AddEntry('{username}', $this->lastAccount['formatted_username']);
@@ -165,18 +165,18 @@ class IndexPage extends PageBase implements PageInterface
         $lastRegistered->AddEntry('{server_url}', UrlManager::GetPath());
         $lastRegistered->Replace();
 
-        $statsTemplate = new Template('./themes/' . $this->theme . '/templates/index/stats.html');
+        $statsTemplate = new Template('index', 'stats');
         $statsTemplate->AddEntry('{totalPosts}', $this->totalPosts);
         $statsTemplate->AddEntry('{totalThreads}', $this->totalThreads);
         $statsTemplate->AddEntry('{totalUsers}', $this->totalUsers);
-        $statsTemplate->AddEntry('{lastRegistered}', $lastRegistered->templ);
+        $statsTemplate->AddEntry('{lastRegistered}', $lastRegistered->template);
         $statsTemplate->Replace();
 
-        $this->template = new Template('./themes/' . $this->theme . '/templates/index/index.html');
+        $this->template = new Template('index', 'index');
         $this->template->AddEntry('{categories}', $this->cats);
-        $this->template->AddEntry('{stats}', $statsTemplate->templ);
+        $this->template->AddEntry('{stats}', $statsTemplate->template);
         
-        parent::RenderPage('./templates/index/styles.html');
+        parent::RenderPage('index');
     }
 }
 
