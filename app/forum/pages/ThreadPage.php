@@ -40,7 +40,9 @@ class ThreadPage extends PageBase implements PageInterface
             !is_numeric($this->forumData['actionParameters'][1]) || // Check if the second segment is a numeric thread ID
             !is_numeric($this->forumData['actionParameters'][3]) // Check if the fourth segment is a numeric page number
         ) {
-            UrlManager::Redirect($this->serverPath . 'thread/1/page/1');
+            $threadID = is_numeric($this->forumData['actionParameters'][1]) ? $this->forumData['actionParameters'][1] : 1;
+
+            UrlManager::Redirect($this->serverPath . 'thread/' . $threadID . '/page/1');
             return;
         }
 
