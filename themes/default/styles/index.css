@@ -12,6 +12,10 @@
     width: 25%;
 }
 
+.category:not(:first-child) {
+    margin-top: 10px;
+}
+
 .category .category_info {
     display: flex;
     flex-direction: row;
@@ -28,12 +32,16 @@
     color: var(--primary);
 }
 
-.category .category_info h1 {
+.category .category_info h1,
+.category .category_info > hgroup {
     margin: 0;
 }
 
-.category .category_container .preforum {
+.category .category_container > .forum_stats:not(:first-child) {
     margin-top: 20px;
+}
+
+.category .category_container .preforum {
     transition: background 0.2s ease-out;
     position: relative;
     background-color: var(--opposite);
@@ -82,7 +90,7 @@
 
 .category .category_container .preforum .forum .subforum_l {
     font-size: 0.8rem;
-    display: block;
+    display: flex;
     color: gray;
     text-decoration: none;
     transition: color 0.1s;
