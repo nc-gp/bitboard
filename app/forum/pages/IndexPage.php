@@ -7,7 +7,6 @@ use App\Classes\Template;
 use App\Classes\UrlManager;
 use App\Classes\RelativeTime;
 use App\Classes\AvatarUtils;
-use App\Classes\Console;
 use App\Classes\UsernameUtils;
 
 use App\Interfaces\PageInterface;
@@ -82,8 +81,6 @@ class IndexPage extends PageBase implements PageInterface
                 $builded_data[$d['category_id']]->forums[$d['forum_id']]->subforums[$subforum->id] = $subforum;
             }
         }
-
-        Console::Log($builded_data);
 
         $lastPostTemplate = '';
         $categoryTemplate = '';
