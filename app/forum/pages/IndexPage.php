@@ -159,7 +159,6 @@ class IndexPage extends PageBase implements PageInterface
         $lastRegistered->AddEntry('{avatar}', $this->lastAccount['avatar']);
         $lastRegistered->AddEntry('{username}', $this->lastAccount['formatted_username']);
         $lastRegistered->AddEntry('{regdate}', RelativeTime::Convert($this->lastAccount['reg_date']));
-        $lastRegistered->AddEntry('{server_url}', UrlManager::GetPath());
         $lastRegistered->Replace();
 
         $statsTemplate = new Template('index', 'stats');

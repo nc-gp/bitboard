@@ -93,7 +93,6 @@ class ForumPage extends PageBase implements PageInterface
                 $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($this->theme, $lastPost['avatar']));
                 $lastPostTemplate->AddEntry('{post_date}', RelativeTime::Convert($lastPost['post_timestamp']));
                 $lastPostTemplate->AddEntry('{username}', UsernameUtils::Format($lastPost['rank_format'], $lastPost['username']));
-                $lastPostTemplate->AddEntry('{server_url}', $this->serverPath);
                 $lastPostTemplate->Replace();
             }
 
@@ -104,7 +103,6 @@ class ForumPage extends PageBase implements PageInterface
             $subforumTemplate->AddEntry('{post_count}', $subforum['post_count']);
             $subforumTemplate->AddEntry('{thread_count}', $subforum['thread_count']);
             $subforumTemplate->AddEntry('{subforum_lastpost}', $lastPostTemplate->template);
-            $subforumTemplate->AddEntry('{server_url}', $this->serverPath);
             $subforumTemplate->Replace();
 
             $this->subforums .= $subforumTemplate->template;
@@ -157,7 +155,6 @@ class ForumPage extends PageBase implements PageInterface
                 $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($this->theme, $lastPost['avatar']));
                 $lastPostTemplate->AddEntry('{post_date}', RelativeTime::Convert($lastPost['post_timestamp']));
                 $lastPostTemplate->AddEntry('{username}', UsernameUtils::Format($lastPost['rank_format'], $lastPost['username']));
-                $lastPostTemplate->AddEntry('{server_url}', $this->serverPath);
                 $lastPostTemplate->Replace();
             }
 
@@ -183,7 +180,6 @@ class ForumPage extends PageBase implements PageInterface
             $threadTemplate->AddEntry('{thread_date}', RelativeTime::Convert($thread['thread_timestamp']));
             $threadTemplate->AddEntry('{thread_replies}', $thread['post_count']);
             $threadTemplate->AddEntry('{thread_lastpost}', $lastPostTemplate->template);
-            $threadTemplate->AddEntry('{server_url}', $this->serverPath);
             $threadTemplate->Replace();
 
             $this->threads .= $threadTemplate->template;

@@ -18,7 +18,6 @@ class _404Page extends PageBase implements PageInterface
     public function Do()
     {
         $this->template = new Template('404', '404');
-        $this->template->AddEntry('{server_url}', $this->serverPath);
         parent::RenderPage('404');
     }
 }

@@ -89,7 +89,6 @@ class MembersPage extends PageBase implements PageInterface
 
             $memberTemplate = new Template('members', 'member');
             $memberTemplate->AddEntry('{id}', $member['id']);
-            $memberTemplate->AddEntry('{server_url}', $this->serverPath);
             $memberTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($this->theme, $member['avatar']));
             $memberTemplate->AddEntry('{username}', UsernameUtils::Format($member['rank_format'], $member['username']));
             $memberTemplate->AddEntry('{rank}', $member['rank_name']);
