@@ -8,7 +8,7 @@ use App\Classes\PageBase;
 use App\Classes\SessionManager;
 use App\Classes\PasswordUtils;
 use App\Classes\UrlManager;
-
+use App\Forum\Controllers\AccountController;
 use App\Interfaces\PageInterface;
 
 class LoginPage extends PageBase implements PageInterface
@@ -39,16 +39,16 @@ class LoginPage extends PageBase implements PageInterface
         if(!isset($_POST['username']))
             return;
 
-        $account = $this->database->Query('SELECT * FROM bit_accounts WHERE username = ? LIMIT 1', $_POST['username'])->FetchArray();
-        $permissions = $this->database->Query('SELECT rank_flags FROM bit_ranks WHERE id = ?', $account['rank_id'])->FetchArray();
-        $account['permissions'] = $permissions['rank_flags'];
-
-        if(count($account) <= 0)
+        $account = AccountController::GetAccountByName($this->database, $_POST['username']);
+        if(empty($account))
         {
-            SessionManager::AddInformation('login', 'Account with that username doesnt exists', true);
+            SessionManager::AddInformation('login', 'Account with that username doesnt exists.', true);
             UrlManager::Redirect($this->serverPath . 'login');
             return;
         }
+
+        $permissions = $this->database->Query('SELECT rank_flags FROM bit_ranks WHERE id = ?', $account['rank_id'])->FetchArray();
+        $account['permissions'] = $permissions['rank_flags'];
 
         if(!PasswordUtils::Verify($_POST['password'], $account['pass']))
         {
