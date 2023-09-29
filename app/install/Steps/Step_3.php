@@ -114,9 +114,9 @@ class Step_3 extends StepBase implements StepInterface
 		)');
 
 		$InstallDatabase->Query('INSERT INTO bit_settings 
-			(id,forum_name,forum_description,forum_online,forum_online_msg,forum_theme,reputation_negative) 
+			(id,forum_name,forum_description,forum_online,forum_online_msg,forum_theme) 
 			VALUES (?,?,?,?,?,?,?)', 
-			array(0, 'Forum', 'Your awesome forum', 1, 'Back soon.', 'default', 1)
+			array(0, 'Forum', 'Your awesome forum', 1, 'Back soon.', 'default')
 		);
 
 		CategoryController::CreateTable($InstallDatabase);

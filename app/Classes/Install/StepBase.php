@@ -22,7 +22,7 @@ class StepBase
 		$headTemplate->Replace();
 
 		$footerTemplate = new Template('./app/install/templates/', 'footer', true);
-		$footerTemplate->AddEntry('{year"', date('Y'));
+		$footerTemplate->AddEntry('{year}', date('Y'));
 		$footerTemplate->Replace();
 
         self::$template->AddEntry('{head}', $headTemplate->template);
