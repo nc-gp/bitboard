@@ -2,58 +2,11 @@
 
 namespace App\Forum\Controllers;
 
+use App\Classes\Database;
+
 class ThreadController
 {
-    public array $Data;
-    private int $ID;
-
-    public function __construct($db, int $id)
-    {
-        $this->ID = $id;
-        $this->Data = $db->Query('SELECT * FROM bit_threads WHERE id = ? LIMIT 1', $this->ID)->FetchArray();
-    }
-
-    public function UpdateAuthor($db, int $newAuthorID)
-    {
-        $db->Query('UPDATE bit_threads SET user_id = ? WHERE id = ?', [$newAuthorID, $this->ID]);
-    }
-
-    public function UpdateForumID($db, int $newForumID)
-    {
-        $db->Query('UPDATE bit_threads SET forum_id = ? WHERE id = ?', [$newForumID, $this->ID]);
-    }
-
-    public function UpdateSubForumID($db, int $newSubForumID)
-    {
-        $db->Query('UPDATE bit_threads SET subforum_id = ? WHERE id = ?', [$newSubForumID, $this->ID]);
-    }
-
-    public function UpdateTitle($db, string $newThreadTitle)
-    {
-        $db->Query('UPDATE bit_threads SET thread_title = ? WHERE id = ?', [$newThreadTitle, $this->ID]);
-    }
-
-    public function UpdateContent($db, string $newThreadContent)
-    {
-        $db->Query('UPDATE bit_threads SET thread_content = ? WHERE id = ?', [$newThreadContent, $this->ID]);
-    }
-
-    public function UpdateLikes($db, bool $addOrRemove = false)
-    {
-        $db->Query('UPDATE bit_threads SET thread_likes = ? WHERE id = ?', [$addOrRemove ? $this->Data['thread_likes'] + 1 : $this->Data['thread_likes'] - 1, $this->ID]);
-    }
-
-    public function UpdateClosed($db, bool $isClosed)
-    {
-        $db->Query('UPDATE bit_threads SET is_closed = ? WHERE id = ?', [$isClosed ? 1 : 0, $this->ID]);
-    }
-
-    public function UpdatePinned($db, bool $isPinned)
-    {
-        $db->Query('UPDATE bit_threads SET is_pinned = ? WHERE id = ?', [$isPinned ? 1 : 0, $this->ID]);
-    }
-
-    static public function GetLastPost($db, int $threadID)
+    static public function GetLastPost(Database $db, int $threadID)
     {
         return $db->Query('SELECT bit_posts.*, bit_accounts.avatar, bit_accounts.username, bit_accounts.rank_id, bit_ranks.rank_format
             FROM bit_posts
@@ -66,7 +19,31 @@ class ThreadController
         )->FetchArray();
     }
 
-    static public function Create($db, int $authorID, string $threadTitle, string $threadContent, bool $isClosed = false, bool $isPinned = false, int $forumID = -1, int $subForumID = -1)
+    static public function CreateTable(Database $db)
+    {
+        $db->Query('CREATE TABLE IF NOT EXISTS bit_threads (
+			id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+			user_id INT(6) NOT NULL,
+			thread_title VARCHAR(128) NOT NULL,
+			thread_content VARCHAR(4096) NOT NULL,
+			thread_likes INT(6) NOT NULL,
+			thread_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			thread_edited_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+			forum_id INT(6) NOT NULL,
+			subforum_id INT(6) NOT NULL,
+			is_closed TINYINT(1) NOT NULL,
+			is_pinned TINYINT(1) NOT NULL
+		)');
+
+        $db->Query('CREATE TABLE IF NOT EXISTS bit_threads_likes (
+            id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            user_id INT(6) NOT NULL,
+            thread_id INT(6) NOT NULL,
+            reputation_type TINYINT(1) NOT NULL
+        )');
+    }
+
+    static public function Create(Database $db, int $authorID, string $threadTitle, string $threadContent, bool $isClosed = false, bool $isPinned = false, int $forumID = -1, int $subForumID = -1)
     {
         $threadTime = date("Y-m-d H:i:s");
 

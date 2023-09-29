@@ -16,15 +16,15 @@ class Step_5 extends StepBase implements StepInterface
 	public static function Execute()
 	{
 		self::$step = 5;
-		self::$template = new Template("./app/install/templates/5.html");
+		self::$template = new Template('./app/install/templates/', '5', true);
 
 		if(isset($_SESSION['bb-info-forum']))
 		{
-			$err = new Template('./app/install/templates/other/error.html');
+			$err = new Template('./app/install/templates/other/', 'error', true);
 			$err->AddEntry('{error}', $_SESSION['bb-info-forum']['msg']);
 			$err->Replace();
 
-			self::$error = $err->templ;
+			self::$error = $err->template;
 
 			SessionManager::RemoveInformation('forum');
 		}

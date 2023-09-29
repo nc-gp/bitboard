@@ -11,7 +11,7 @@ class Step_1 extends StepBase implements StepInterface
 	public static function Execute()
 	{
 		self::$step = 1;
-		self::$template = new Template("./app/install/templates/1.html");
+		self::$template = new Template('./app/install/templates/', '1', true);
 		parent::RenderPage();
 	}
 

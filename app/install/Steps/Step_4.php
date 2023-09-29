@@ -21,20 +21,20 @@ class Step_4 extends StepBase implements StepInterface
 	public static function Execute()
 	{
 		self::$step = 4;
-		self::$template = new Template("./app/install/templates/4.html");
+		self::$template = new Template('./app/install/templates/', '4', true);
 
 		if(isset($_SESSION['bb-info-account']))
 		{
-			$err = new Template('./app/install/templates/other/error.html');
+			$err = new Template('./app/install/templates/other/', 'error', true);
 			$err->AddEntry('{error}', $_SESSION['bb-info-account']['msg']);
 			$err->Replace();
 
-			self::$error = $err->templ;
+			self::$error = $err->template;
 
 			SessionManager::RemoveInformation('account');
 		}
 
-		self::$template->AddEntry("{error}", self::$error);
+		self::$template->AddEntry('{error}', self::$error);
 
 		parent::RenderPage();
 	}

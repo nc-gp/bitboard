@@ -2,9 +2,11 @@
 
 namespace App\Forum\Controllers;
 
+use App\Classes\Database;
+
 class SubForumController
 {
-    static function GetLastPost($db, int $forumID, int $subforumID)
+    static function GetLastPost(Database $db, int $forumID, int $subforumID)
     {
         return $db->Query('SELECT p.post_timestamp, a.id, a.username, a.avatar, t.id AS thread_id, t.thread_title, r.rank_format 
             FROM bit_posts AS p 
@@ -18,7 +20,18 @@ class SubForumController
         )->FetchArray();
     }
 
-    static public function Create($db, int $forumID, string $subForumName, string $subForumDesc, bool $isLocked = false)
+    static public function CreateTable(Database $db)
+    {
+        $db->Query('CREATE TABLE IF NOT EXISTS bit_subforums (
+			id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+			forum_id INT(6) NOT NULL,
+			subforum_name VARCHAR(128) NOT NULL,
+			subforum_desc VARCHAR(256) NOT NULL,
+			is_locked TINYINT(1) NOT NULL
+		)');
+    }
+
+    static public function Create(Database $db, int $forumID, string $subForumName, string $subForumDesc, bool $isLocked = false)
     {
         $db->Query('INSERT INTO bit_subforums 
             (id,forum_id,subforum_name,subforum_desc,is_locked) 

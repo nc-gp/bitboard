@@ -12,7 +12,7 @@ class Step_6 extends StepBase implements StepInterface
 	public static function Execute()
 	{
 		self::$step = 6;
-		self::$template = new Template("./app/install/templates/6.html");
+		self::$template = new Template('./app/install/templates/', '6', true);
 
 		parent::RenderPage();
 	}

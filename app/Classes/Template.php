@@ -19,9 +19,13 @@ class Template
      * @param string $category_path Templates category.
      * @param string $name          Template file name without .html.
      */
-    public function __construct(string $category_path, string $name)
+    public function __construct(string $category_path, string $name, bool $custom = false)
     {
-        $this->fullPath = './themes/' . BB::$Data['forum_theme'] . '/templates/' . $category_path . '/' . $name . '.html';
+        if(!$custom)
+            $this->fullPath = './themes/' . BB::$Data['forum_theme'] . '/templates/' . $category_path . '/' . $name . '.html';
+        else
+            $this->fullPath = $category_path . $name . '.html';
+
         $this->Load();
     }
 

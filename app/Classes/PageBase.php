@@ -48,6 +48,7 @@ class PageBase
         $this->template->AddEntry('{head}', $headTemplate->Template->template);
         $this->template->AddEntry('{header}', $headerTemplate->Template->template);
         $this->template->AddEntry('{footer}', $footerTemplate->Template->template);
+        $this->template->Addentry('{server_url}', $this->serverPath);
     }
 }
 

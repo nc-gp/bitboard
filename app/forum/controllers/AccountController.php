@@ -11,6 +11,23 @@ class AccountController
         $db->Query('UPDATE bit_accounts SET last_active = ? WHERE id = ?', date("Y-m-d H:i:s"), $userId);
     }
 
+    static public function CreateTable(Database $db)
+    {
+        $db->Query('CREATE TABLE IF NOT EXISTS bit_accounts (
+			id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+			username VARCHAR(32) NOT NULL,
+			pass VARCHAR(1024) NOT NULL,
+			email VARCHAR(64) NOT NULL,
+			avatar VARCHAR(255) NULL DEFAULT NULL,
+			reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			reputation INT(6) NOT NULL DEFAULT 0,
+			last_ip VARCHAR(64),
+			last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+			rank_id INT(6) NOT NULL
+		)');
+    }
+
     static public function Create(Database $db, string $username, string $hashedPassword, string $email, int $rankId)
     {
         $registerDate = date("Y-m-d H:i:s");

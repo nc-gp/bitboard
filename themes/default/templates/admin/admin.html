@@ -3,8 +3,40 @@
 {head}
 <body>
 	<div class="bit-container">
+        <header>
+            <div id="i">
+                <div class="bg_container">
+                    <div id="bg"></div>
+                </div>
+                <img src="{server_url}/themes/default/images/bb.webp">
+            </div>
+            <nav>
+                <div class="nav-links">
+                    <form action="{server_url}admin">
+                        <button type="submit" aria-label="Home" data-microtip-position="bottom" role="tooltip"><i
+                                class="ti ti-home"></i></button>
+                    </form>
+                    <li role="list" dir="rtl">
+                        <button aria-haspopup="listbox" aria-label="Settings" data-microtip-position="top" role="tooltip"><i
+                            class="ti ti-settings-filled"></i></button>
+                        <ul role="listbox">
+                          <li><a href="{server_url}admin/settings">Forum</a></li>
+                        </ul>
+                    </li>
+                    <li role="list" dir="rtl">
+                        <button aria-haspopup="listbox" aria-label="Index" data-microtip-position="top" role="tooltip"><i
+                            class="ti ti-category-filled"></i></button>
+                        <ul role="listbox">
+                          <li><a href="{server_url}admin/categories">Categories</a></li>
+                          <li><a href="{server_url}admin/forums">Forums</a></li>
+                          <li><a href="{server_url}admin/subforums">Subforums</a></li>
+                        </ul>
+                    </li>
+                </div>
+            </nav>
+        </header>
 		<div id="content">
-			admin panel
+            {content}
 		</div>
 	</div>
 </body>
