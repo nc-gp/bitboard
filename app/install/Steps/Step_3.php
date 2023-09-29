@@ -115,7 +115,7 @@ class Step_3 extends StepBase implements StepInterface
 
 		$InstallDatabase->Query('INSERT INTO bit_settings 
 			(id,forum_name,forum_description,forum_online,forum_online_msg,forum_theme) 
-			VALUES (?,?,?,?,?,?,?)', 
+			VALUES (?,?,?,?,?,?)', 
 			array(0, 'Forum', 'Your awesome forum', 1, 'Back soon.', 'default')
 		);
 
