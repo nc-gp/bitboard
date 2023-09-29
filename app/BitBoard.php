@@ -64,8 +64,11 @@ class BitBoard
 		{
 			if(count($SplitedURL) > 1 || count($SplitedURL) <= 0)
 			{
-				UrlManager::Redirect(UrlManager::GetPath() . 'offline');
-				return;
+				if(!SessionManager::IsLogged() || SessionManager::IsLogged() && !$_SESSION['bitboard_user']->HasPermission(Permissions::VIEWING_FORUM_LOCKED))
+				{
+					UrlManager::Redirect(UrlManager::GetPath() . 'offline');
+					return;
+				}
 			}
 		}
 
