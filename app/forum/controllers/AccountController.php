@@ -6,6 +6,11 @@ use App\Classes\Database;
 
 class AccountController
 {
+	static public function GetAccountByName(Database $db, string $userName): array
+	{
+		return $db->Query('SELECT * FROM bit_accounts WHERE username = ? LIMIT 1', $userName)->FetchArray();
+	}
+
     static public function UpdateLastActive(Database $db, int $userId): void
     {
         $db->Query('UPDATE bit_accounts SET last_active = ? WHERE id = ?', date("Y-m-d H:i:s"), $userId);
