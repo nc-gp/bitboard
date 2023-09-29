@@ -17,16 +17,16 @@ class StepBase
 
     private static function CommonSetup(): void
     {
-        $headTemplate = new Template("./app/install/templates/head.html");
+        $headTemplate = new Template('./app/install/templates/', 'head', true);
 		$headTemplate->AddEntry("{step}", self::$step);
 		$headTemplate->Replace();
 
-		$footerTemplate = new Template("./app/install/templates/footer.html");
-		$footerTemplate->AddEntry("{year}", date("Y"));
+		$footerTemplate = new Template('./app/install/templates/', 'footer', true);
+		$footerTemplate->AddEntry('{year"', date('Y'));
 		$footerTemplate->Replace();
 
-        self::$template->AddEntry('{head}', $headTemplate->templ);
-        self::$template->AddEntry('{footer}', $footerTemplate->templ);
+        self::$template->AddEntry('{head}', $headTemplate->template);
+        self::$template->AddEntry('{footer}', $footerTemplate->template);
     }
 
     protected static function Handler()
