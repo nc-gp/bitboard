@@ -57,8 +57,6 @@ class BitBoard
 
 	private function Do()
 	{
-		Console::Log($_SESSION);
-
 		$actionParameters = isset($_GET['action']) ? $_GET['action'] : '';
 		$SplitedURL = !empty($actionParameters) ? explode('/', $_GET['action']) : array();
 
@@ -98,7 +96,6 @@ class BitBoard
 			$SplitedURL = explode('/', $_GET['action']);
 
 			$this->data->actionParameters = $SplitedURL;
-			Console::Log($this->data);
 
 			try {
 				$instance = PageFactory::CreatePage($SplitedURL[0], $this->database, $this->data);
