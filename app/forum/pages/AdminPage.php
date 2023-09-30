@@ -31,7 +31,7 @@ class AdminPage extends PageBase implements PageInterface
         if(!isset($_SESSION['bb-info-settings']))
             return;
 
-        $errorTemplate = new NotifyWidget($_SESSION['bb-info-settings']['msg']);
+        $errorTemplate = new NotifyWidget($_SESSION['bb-info-settings']['msg'], $_SESSION['bb-info-settings']['rgb']);
         $this->error = $errorTemplate->template;
 
         SessionManager::RemoveInformation('settings');
@@ -70,7 +70,7 @@ class AdminPage extends PageBase implements PageInterface
 
                     $this->database->Query('UPDATE bit_settings SET forum_name = ?, forum_description = ?, forum_online_msg = ?, forum_online = ? WHERE id = 0', "$forumName", "$forumDesc", "$forumOnlineMsg", $forumOnline);
 
-                    SessionManager::AddInformation('settings', 'Forum settings has been updated!', true);
+                    SessionManager::AddInformation('settings', 'Forum settings has been updated!', true, '53, 255, 53');
                     UrlManager::Redirect($this->serverPath . 'admin/settings');
                     return;
                 }

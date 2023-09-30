@@ -46,9 +46,14 @@ class SessionManager
      * @param mixed  $informationMessage The information message to store in the session.
      * @param bool   $instantSave        Saves and closes the seession instantly. (default: false)
      */
-    static public function AddInformation(string $informationType, mixed $informationMessage, bool $instantSave = false): void
+    static public function AddInformation(string $informationType, mixed $informationMessage, bool $instantSave = false, string $rgb = '255, 53, 53', int $duration = 5000, string $gravity = 'bottom', string $position = 'right'): void
     {
-        $_SESSION['bb-info-' . $informationType]['msg'] = $informationMessage;
+        $info = 'bb-info-' . $informationType;
+        $_SESSION[$info]['msg'] = $informationMessage;
+        $_SESSION[$info]['rgb'] = $rgb;
+        $_SESSION[$info]['duration'] = $duration;
+        $_SESSION[$info]['gravity'] = $gravity;
+        $_SESSION[$info]['position'] = $position;
 
         if($instantSave)
             session_write_close();
