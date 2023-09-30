@@ -14,26 +14,19 @@ use App\Classes\SessionManager;
 use App\Forum\Controllers\AccountController;
 use App\Forum\Pages\IndexPage;
 
-use Exception;
+use App\Forum\Structs\ForumDataStruct;
 
-class BB
-{
-	public function __construct(array $forumData)
-	{
-		foreach($forumData as $key => $value)
-			$this->{$key} = $value;
-	}
-}
+use Exception;
 
 class BitBoard
 {
-	private $file;
-	private $data;
-	private $database;
+	private File $lock;
+	private ForumDataStruct $data;
+	private Database $database;
 
 	public function __construct()
 	{
-		$this->file = new File('./app/install/lock');
+		$this->lock = new File('./app/install/lock');
 	}
 
 	public function Run(): void
@@ -47,7 +40,7 @@ class BitBoard
 		require_once './app/config.php';
 
 		$this->database = new Database($config['host'], $config['user'], $config['pass'], $config['name']);
-		$this->data = new BB($this->database->Query('SELECT * FROM bit_settings')->FetchArray());
+		$this->data = new ForumDataStruct($this->database->Query('SELECT * FROM bit_settings')->FetchArray());
 
 		define('BB_THEME', $this->data->forum_theme);
 
@@ -91,14 +84,12 @@ class BitBoard
 
 		// todo: option force to login/register
 
-		if (count($SplitedURL) > 0)
+		if (!empty($SplitedURL))
 		{
-			$SplitedURL = explode('/', $_GET['action']);
-
 			$this->data->actionParameters = $SplitedURL;
 
 			try {
-				$instance = PageFactory::CreatePage($SplitedURL[0], $this->database, $this->data);
+				$instance = PageFactory::CreatePage($this->data->actionParameters[0], $this->database, $this->data);
 			} catch (Exception $e) {
 				Console::Error($e->getMessage());
 			}
@@ -111,7 +102,7 @@ class BitBoard
 
 	private function IsInstalled(): bool
 	{
-		return $this->file->Exists();
+		return $this->lock->Exists();
 	}
 
 	private function IsOnline(): bool
