@@ -14,7 +14,7 @@ class Console
      */
     static public function Log($message)
     {
-        if (is_array($message))
+        if (is_array($message) || is_object($message))
             $message = json_encode($message);
         else
             $message = "'$message'";
