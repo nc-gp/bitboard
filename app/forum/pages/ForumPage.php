@@ -17,6 +17,7 @@ use App\Forum\Widgets\PaginationWidget;
 
 use App\Forum\Controllers\ThreadController;
 use App\Forum\Controllers\SubForumController;
+use App\Forum\Widgets\PrefixWidget;
 
 class ForumPage extends PageBase implements PageInterface
 {
@@ -160,13 +161,13 @@ class ForumPage extends PageBase implements PageInterface
 
             if ($thread['is_closed'])
             {
-                $threadClosedTemplate = new Template('forum/thread', 'thread_closed_prefix');
+                $threadClosedTemplate = new PrefixWidget($this->database, 1);
                 $threadClosedTemplate = $threadClosedTemplate->template;
             }
 
             if ($thread['is_pinned'])
             {
-                $threadPinnedTemplate = new Template('forum/thread', 'thread_pinned_prefix');
+                $threadPinnedTemplate = new PrefixWidget($this->database, 2);
                 $threadPinnedTemplate = $threadPinnedTemplate->template;
             }
 

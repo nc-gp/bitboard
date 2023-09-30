@@ -76,12 +76,22 @@
   align-content: center;
 }
 
-.pclosed {
+.prclose {
   background: rgba(255, 53, 53, 0.65);
 }
 
-.ppinned {
+.prf-ico-prclose::before  {
+  font-family: Tabler-Icons;
+  content: '\ea2e';
+}
+
+.prpinned {
   background: rgba(60, 255, 53, 0.65);
+}
+
+.prf-ico-prpinned::before  {
+  font-family: Tabler-Icons;
+  content: '\f68e';
 }
 
 .info {

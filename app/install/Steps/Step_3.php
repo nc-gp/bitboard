@@ -18,6 +18,7 @@ use App\Forum\Controllers\RankController;
 use App\Classes\Permissions;
 use App\Forum\Controllers\PostController;
 use App\Forum\Controllers\SubForumController;
+use App\Forum\Controllers\PrefixController;
 use Exception;
 
 class Step_3 extends StepBase implements StepInterface
@@ -139,6 +140,10 @@ class Step_3 extends StepBase implements StepInterface
 		RankController::Create($InstallDatabase, 'Admin', '<span style="color: #B22222">{username}</span>', Permissions::$All);
 		RankController::Create($InstallDatabase, 'User', '<span style="font-weight: bold">{username}</span>', Permissions::VIEWING_FORUM | Permissions::CREATING_POSTS | Permissions::CREATING_THREADS);
 		RankController::Create($InstallDatabase, 'Banned', '<span style="text-decoration: line-through">{username}</span>', 0);
+
+		PrefixController::CreateTable($InstallDatabase);
+		PrefixController::Create($InstallDatabase, 'Closed', 'prclose');
+		PrefixController::Create($InstallDatabase, 'Pinned', 'prpinned');
 
 		parent::Handler();
 	}
