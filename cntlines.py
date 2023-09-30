@@ -203,8 +203,9 @@ def count_lines() -> None:
                 with open(fulldir, encoding='utf8') as file_handle:
                     for line in file_handle:
                         line_stripped = line.strip()
-                        if line_stripped.startswith("//"):
-                            continue  # Skip single-line comments
+
+                        if not line_stripped or line_stripped.startswith("//"):
+                            continue  # Skip empty lines and single-line comments
 
                         if line_stripped.startswith("/*"):
                             in_block_comment = True
