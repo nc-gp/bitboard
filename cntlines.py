@@ -137,7 +137,6 @@ def modify_readme_fn():
         sys.exit()
     
     contents = file.read()
-    #Written in 50 lines in 5 files.
     token = 'Written in '
     ending_token = '</h4>'
     pos = contents.find(token)
@@ -198,7 +197,23 @@ def count_lines() -> None:
             if ext in extensions:
                 fulldir = os.path.join(subdir, file)
 
-                num_lines = sum(1 for _ in open(fulldir, encoding='utf8'))
+                # Open the file and count lines, ignoring single-line and block comments
+                num_lines = 0
+                in_block_comment = False
+                with open(fulldir, encoding='utf8') as file_handle:
+                    for line in file_handle:
+                        line_stripped = line.strip()
+                        if line_stripped.startswith("//"):
+                            continue  # Skip single-line comments
+
+                        if line_stripped.startswith("/*"):
+                            in_block_comment = True
+
+                        if not in_block_comment:
+                            num_lines += 1
+
+                        if line_stripped.endswith("*/"):
+                            in_block_comment = False
 
                 file_data = CountData.File(
                     fulldir, num_lines
