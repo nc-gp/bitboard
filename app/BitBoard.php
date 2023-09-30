@@ -64,7 +64,8 @@ class BitBoard
 		{
 			if(count($SplitedURL) > 1 || count($SplitedURL) <= 0)
 			{
-				if(!SessionManager::IsLogged() || SessionManager::IsLogged() && !$_SESSION['bitboard_user']->HasPermission(Permissions::VIEWING_FORUM_LOCKED))
+				// Check if the user is not logged in or doesn't have permission to view a locked forum
+				if((!SessionManager::IsLogged() || SessionManager::IsLogged() && !$_SESSION['bitboard_user']->HasPermission(Permissions::VIEWING_FORUM_LOCKED)) && $SplitedURL[0] !== 'login')
 				{
 					UrlManager::Redirect(UrlManager::GetPath() . 'offline');
 					return;
