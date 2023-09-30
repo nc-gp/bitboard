@@ -4,10 +4,10 @@ namespace App\Forum\Pages;
 
 use App\Classes\PageBase;
 use App\Classes\Template;
-use App\Classes\UrlManager;
 use App\Classes\RelativeTime;
 use App\Classes\AvatarUtils;
 use App\Classes\UsernameUtils;
+use App\Classes\Database;
 
 use App\Interfaces\PageInterface;
 
@@ -26,22 +26,19 @@ class IndexPage extends PageBase implements PageInterface
 
     private string $cats = '';
 
-    public function __construct($db, array $forumData)
+    public function __construct(Database $db, object $data)
     {
-        parent::__construct($db, $forumData);
-        $this->forumDesc = $forumData['forum_description'];
-        $this->Do(); // just for index page lol
+        parent::__construct($db, $data);
+        $this->forumDesc = $data->forum_description;
+
+        // This is here only for index page.
+        $this->Do();
     }
 
     private function FetchLastAccount()
     {
-        $this->lastAccount = $this->database->Query('SELECT a.*, r.rank_format 
-            FROM bit_accounts AS a 
-            JOIN bit_ranks AS r ON a.rank_id = r.id 
-            ORDER BY a.reg_date DESC 
-            LIMIT 1'
-        )->FetchArray();
-        $this->lastAccount['avatar'] = AvatarUtils::GetPath($this->theme, $this->lastAccount['avatar']);
+        $this->lastAccount = $this->database->Query('SELECT a.*, r.rank_format FROM bit_accounts AS a JOIN bit_ranks AS r ON a.rank_id = r.id ORDER BY a.reg_date DESC LIMIT 1')->FetchArray();
+        $this->lastAccount['avatar'] = AvatarUtils::GetPath($this->lastAccount['avatar']);
         $this->lastAccount['formatted_username'] = UsernameUtils::Format($this->lastAccount['rank_format'], $this->lastAccount['username']);
     }
 
@@ -115,7 +112,7 @@ class IndexPage extends PageBase implements PageInterface
 
                     $lastPostTemplate = new Template('index/forum', 'forum_lastpost');
                     $lastPostTemplate->AddEntry('{user_id}', $lastPost['id']);
-                    $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($this->theme, $lastPost['avatar']));
+                    $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($lastPost['avatar']));
                     $lastPostTemplate->AddEntry('{thread_id}', $lastPost['thread_id']);
                     $lastPostTemplate->AddEntry('{thread_title}', $lastPost['thread_title']);
                     $lastPostTemplate->AddEntry('{post_date}', RelativeTime::Convert($lastPost['post_timestamp']));

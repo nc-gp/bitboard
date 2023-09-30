@@ -6,7 +6,7 @@ use App\Classes\Database;
 
 interface PageInterface 
 {
-    public function __construct(Database $database, array $data);
+    public function __construct(Database $database, object $data);
     public function Do();
 }
 

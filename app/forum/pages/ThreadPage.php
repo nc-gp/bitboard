@@ -26,28 +26,28 @@ class ThreadPage extends PageBase implements PageInterface
     private int $maximumResults = 7;
     private int $postsCount = 0;
 
-    public function __construct(Database $db, array $forumData)
+    public function __construct(Database $db, object $data)
     {
-        parent::__construct($db, $forumData);
+        parent::__construct($db, $data);
         $this->UrlHandler();
     }
 
     private function UrlHandler()
     {
         if (
-            (count($this->forumData['actionParameters']) < 4) || // Check if the URL has enough segments
-            ($this->forumData['actionParameters'][2] !== 'page') || // Check if the segment after 'forum' is 'page'
-            !is_numeric($this->forumData['actionParameters'][1]) || // Check if the second segment is a numeric thread ID
-            !is_numeric($this->forumData['actionParameters'][3]) // Check if the fourth segment is a numeric page number
+            (count($this->forumData->actionParameters) < 4) || // Check if the URL has enough segments
+            ($this->forumData->actionParameters[2] !== 'page') || // Check if the segment after 'forum' is 'page'
+            !is_numeric($this->forumData->actionParameters[1]) || // Check if the second segment is a numeric thread ID
+            !is_numeric($this->forumData->actionParameters[3]) // Check if the fourth segment is a numeric page number
         ) {
-            $threadID = is_numeric($this->forumData['actionParameters'][1]) ? $this->forumData['actionParameters'][1] : 1;
+            $threadID = is_numeric($this->forumData->actionParameters[1]) ? $this->forumData->actionParameters[1] : 1;
 
             UrlManager::Redirect($this->serverPath . 'thread/' . $threadID . '/page/1');
             return;
         }
 
-        $this->threadPage = $this->forumData['actionParameters'][3];
-        $this->threadID = $this->forumData['actionParameters'][1];
+        $this->threadPage = $this->forumData->actionParameters[3];
+        $this->threadID = $this->forumData->actionParameters[1];
 
         if ($this->threadPage <= 0 || $this->threadID <= 0)
         {
@@ -95,7 +95,7 @@ class ThreadPage extends PageBase implements PageInterface
 
         $threadContentTemplate->AddEntry('{user_id}', $thread['user_id']);
         $threadContentTemplate->AddEntry('{user_name}', UsernameUtils::Format($thread['rank_format'], $thread['user_name']));
-        $threadContentTemplate->AddEntry('{user_avatar}', AvatarUtils::GetPath($this->theme, $thread['user_avatar']));
+        $threadContentTemplate->AddEntry('{user_avatar}', AvatarUtils::GetPath($thread['user_avatar']));
         $threadContentTemplate->AddEntry('{user_avatar_alt}', $thread['user_name']);
         $threadContentTemplate->AddEntry('{user_rank}', $thread['rank_name']);
         $threadContentTemplate->AddEntry('{user_stats}', $userStatsTemplate->template);
@@ -127,7 +127,7 @@ class ThreadPage extends PageBase implements PageInterface
             $postTemplate = new Template('thread', 'post');
             $postTemplate->AddEntry('{user_id}', $author['id']);
             $postTemplate->AddEntry('{user_name}', UsernameUtils::Format($author['rank_format'], $author['username']));
-            $postTemplate->AddEntry('{user_avatar}', AvatarUtils::GetPath($this->forumData['forum_theme'], $author['avatar']));
+            $postTemplate->AddEntry('{user_avatar}', AvatarUtils::GetPath($author['avatar']));
             $postTemplate->AddEntry('{user_avatar_alt}', $author['username']);
             $postTemplate->AddEntry('{user_rank}', $author['rank_name']);
             $postTemplate->AddEntry('{user_stats}', $userStatsTemplate->template);

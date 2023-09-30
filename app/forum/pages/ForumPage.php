@@ -29,26 +29,26 @@ class ForumPage extends PageBase implements PageInterface
     private int $maximumResults = 5;
     private int $threadsCount = 0;
 
-    public function __construct(Database $db, array $forumData)
+    public function __construct(Database $db, object $data)
     {
-        parent::__construct($db, $forumData);
+        parent::__construct($db, $data);
         $this->UrlHandler();
     }
 
     private function UrlHandler()
     {
         if (
-            (count($this->forumData['actionParameters']) < 4) || // Check if the URL has enough segments
-            ($this->forumData['actionParameters'][2] !== 'page') || // Check if the segment after 'forum' is 'page'
-            !is_numeric($this->forumData['actionParameters'][1]) || // Check if the second segment is a numeric forum ID
-            !is_numeric($this->forumData['actionParameters'][3]) // Check if the fourth segment is a numeric page number
+            (count($this->forumData->actionParameters) < 4) || // Check if the URL has enough segments
+            ($this->forumData->actionParameters[2] !== 'page') || // Check if the segment after 'forum' is 'page'
+            !is_numeric($this->forumData->actionParameters[1]) || // Check if the second segment is a numeric forum ID
+            !is_numeric($this->forumData->actionParameters[3]) // Check if the fourth segment is a numeric page number
         ) {
             UrlManager::Redirect($this->serverPath . 'forum/1/page/1');
             return;
         }
 
-        $this->forumPage = $this->forumData['actionParameters'][3];
-        $this->forumID = $this->forumData['actionParameters'][1];
+        $this->forumPage = $this->forumData->actionParameters[3];
+        $this->forumID = $this->forumData->actionParameters[1];
 
         if ($this->forumPage <= 0 || $this->forumID <= 0)
         {
@@ -90,7 +90,7 @@ class ForumPage extends PageBase implements PageInterface
             {
                 $lastPostTemplate = new Template('forum/subforum', 'subforum_lastpost');
                 $lastPostTemplate->AddEntry('{user_id}', $lastPost['id']);
-                $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($this->theme, $lastPost['avatar']));
+                $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($lastPost['avatar']));
                 $lastPostTemplate->AddEntry('{post_date}', RelativeTime::Convert($lastPost['post_timestamp']));
                 $lastPostTemplate->AddEntry('{username}', UsernameUtils::Format($lastPost['rank_format'], $lastPost['username']));
                 $lastPostTemplate->Replace();
@@ -152,7 +152,7 @@ class ForumPage extends PageBase implements PageInterface
 
                 $lastPostTemplate = new Template('forum/thread', 'thread_lastpost');
                 $lastPostTemplate->AddEntry('{user_id}', $lastPost['id']);
-                $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($this->theme, $lastPost['avatar']));
+                $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($lastPost['avatar']));
                 $lastPostTemplate->AddEntry('{post_date}', RelativeTime::Convert($lastPost['post_timestamp']));
                 $lastPostTemplate->AddEntry('{username}', UsernameUtils::Format($lastPost['rank_format'], $lastPost['username']));
                 $lastPostTemplate->Replace();

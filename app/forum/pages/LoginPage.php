@@ -15,9 +15,9 @@ class LoginPage extends PageBase implements PageInterface
 {
     private string $error = '';
 
-    public function __construct(Database $db, array $forumData)
+    public function __construct(Database $db, object $data)
     {
-        parent::__construct($db, $forumData);
+        parent::__construct($db, $data);
         $this->forumDesc = 'Login';
         $this->UrlHandler();
     }
@@ -30,7 +30,7 @@ class LoginPage extends PageBase implements PageInterface
             return;
         }
 
-        if(count($this->forumData['actionParameters']) > 1 && $this->forumData['actionParameters'][1] != 'process')
+        if(count($this->forumData->actionParameters) > 1 && $this->forumData->actionParameters[1] != 'process')
         {
             UrlManager::Redirect($this->serverPath . 'login');
             return;

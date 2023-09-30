@@ -23,9 +23,9 @@ class MembersPage extends PageBase implements PageInterface
 
     private string $members = '';
 
-    public function __construct(Database $db, array $forumData)
+    public function __construct(Database $db, object $data)
     {
-        parent::__construct($db, $forumData);
+        parent::__construct($db, $data);
         $this->UrlHandler();
         $this->forumDesc = 'Members list';
     }
@@ -34,13 +34,13 @@ class MembersPage extends PageBase implements PageInterface
     {
         $url = explode('/', $_GET['action']);
 
-        if (($this->forumData['actionParameters'][1] != 'page' || !is_numeric($this->forumData['actionParameters'][2])))
+        if (($this->forumData->actionParameters[1] != 'page' || !is_numeric($this->forumData->actionParameters[2])))
         {
             UrlManager::Redirect($this->serverPath . 'members/page/1');
             return;
         }
 
-        $this->page = $this->forumData['actionParameters'][2];
+        $this->page = $this->forumData->actionParameters[2];
     }
 
     private function FetchMembers()
@@ -89,7 +89,7 @@ class MembersPage extends PageBase implements PageInterface
 
             $memberTemplate = new Template('members', 'member');
             $memberTemplate->AddEntry('{id}', $member['id']);
-            $memberTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($this->theme, $member['avatar']));
+            $memberTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($member['avatar']));
             $memberTemplate->AddEntry('{username}', UsernameUtils::Format($member['rank_format'], $member['username']));
             $memberTemplate->AddEntry('{rank}', $member['rank_name']);
             $memberTemplate->AddEntry('{reputation}', $member['reputation']);

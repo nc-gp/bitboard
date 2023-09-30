@@ -22,7 +22,7 @@ class Template
     public function __construct(string $category_path, string $name, bool $custom = false)
     {
         if(!$custom)
-            $this->fullPath = './themes/' . BB::$Data['forum_theme'] . '/templates/' . $category_path . '/' . $name . '.html';
+            $this->fullPath = './themes/' . BB_THEME . '/templates/' . $category_path . '/' . $name . '.html';
         else
             $this->fullPath = $category_path . $name . '.html';
 

@@ -14,19 +14,21 @@ use App\Classes\SessionManager;
 use App\Forum\Controllers\AccountController;
 use App\Forum\Pages\IndexPage;
 
-use App\Install\Setup;
-
 use Exception;
 
 class BB
 {
-	static public array $Data;
+	public function __construct(array $forumData)
+	{
+		foreach($forumData as $key => $value)
+			$this->{$key} = $value;
+	}
 }
 
 class BitBoard
 {
 	private $file;
-	private $Install;
+	private $data;
 	private $database;
 
 	public function __construct()
@@ -38,18 +40,18 @@ class BitBoard
 	{
 		if (!$this->IsInstalled())
 		{
-			$this->Install = new Setup();
+			new \App\Install\Setup();
 			return;
 		}
 
 		require_once './app/config.php';
 
 		$this->database = new Database($config['host'], $config['user'], $config['pass'], $config['name']);
+		$this->data = new BB($this->database->Query('SELECT * FROM bit_settings')->FetchArray());
 
-		BB::$Data = $this->database->Query('SELECT * FROM bit_settings')->FetchArray();
-		
+		define('BB_THEME', $this->data->forum_theme);
+
 		$this->Do();
-
 		$this->database->Close();
 	}
 
@@ -95,10 +97,11 @@ class BitBoard
 		{
 			$SplitedURL = explode('/', $_GET['action']);
 
-			BB::$Data['actionParameters'] = $SplitedURL;
+			$this->data->actionParameters = $SplitedURL;
+			Console::Log($this->data);
 
 			try {
-				$instance = PageFactory::CreatePage($SplitedURL[0], $this->database, BB::$Data);
+				$instance = PageFactory::CreatePage($SplitedURL[0], $this->database, $this->data);
 			} catch (Exception $e) {
 				Console::Error($e->getMessage());
 			}
@@ -106,7 +109,7 @@ class BitBoard
 			return; 
 		}
 
-		new IndexPage($this->database, BB::$Data);
+		new IndexPage($this->database, $this->data);
 	}
 
 	private function IsInstalled(): bool
@@ -116,7 +119,7 @@ class BitBoard
 
 	private function IsOnline(): bool
 	{
-		return BB::$Data['forum_online'];
+		return $this->data->forum_online;
 	}
 }
 

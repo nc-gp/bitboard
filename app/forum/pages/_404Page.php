@@ -9,9 +9,9 @@ use App\Interfaces\PageInterface;
 
 class _404Page extends PageBase implements PageInterface
 {
-    public function __construct(Database $db, array $forumData)
+    public function __construct(Database $db, object $data)
     {
-        parent::__construct($db, $forumData);
+        parent::__construct($db, $data);
         $this->forumDesc = 'Bit has not been found!';
     }
 

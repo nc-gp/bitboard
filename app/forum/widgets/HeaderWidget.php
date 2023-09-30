@@ -2,7 +2,6 @@
 
 namespace App\Forum\Widgets;
 
-use App\BB;
 use App\Classes\Template;
 use App\Classes\UrlManager;
 use App\Classes\SessionManager;
@@ -12,12 +11,10 @@ use App\Classes\Permissions;
 class HeaderWidget
 {
     public $Template;
-    private $theme;
 
     public function __construct()
     {
         $this->Template = new Template('header', 'header');
-        $this->theme = BB::$Data['forum_theme'];
         $this->Do();
     }
 
@@ -34,7 +31,7 @@ class HeaderWidget
             $userOptions = '';
 
             $userTemplate = new Template('header/nav', 'user');
-            $userTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($this->theme, $_SESSION['bitboard_user']->avatar));
+            $userTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($_SESSION['bitboard_user']->avatar));
             $userTemplate->AddEntry('{username}', $_SESSION['bitboard_user']->name);
             $userTemplate->Replace();
 

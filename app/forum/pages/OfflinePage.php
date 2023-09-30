@@ -13,10 +13,10 @@ class OfflinePage extends PageBase implements PageInterface
 {
     private string $message;
 
-    public function __construct(Database $db, array $forumData)
+    public function __construct(Database $db, object $data)
     {
-        parent::__construct($db, $forumData);
-        $this->message = $forumData['forum_online_msg'];
+        parent::__construct($db, $data);
+        $this->message = $data->forum_online_msg;
         $this->forumDesc = 'Forum offline [' . $this->message . ']';
         $this->UrlHandler();
     }
@@ -29,7 +29,7 @@ class OfflinePage extends PageBase implements PageInterface
             return;
         }
 
-        if (($this->forumData['actionParameters'][0] !== 'offline' || count($this->forumData['actionParameters']) > 1))
+        if (($this->forumData->actionParameters[0] !== 'offline' || count($this->forumData->actionParameters) > 1))
         {
             UrlManager::Redirect($this->serverPath . 'offline');
             return;

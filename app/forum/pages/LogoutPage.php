@@ -11,7 +11,7 @@ use App\Interfaces\PageInterface;
 
 class LogoutPage extends PageBase implements PageInterface
 {
-    public function __construct(Database $database, array $data)
+    public function __construct(Database $database, object $data)
     {
         parent::__construct($database, $data);
     }
