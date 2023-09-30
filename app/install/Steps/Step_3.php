@@ -111,13 +111,14 @@ class Step_3 extends StepBase implements StepInterface
 			forum_description VARCHAR(256) NOT NULL,
 			forum_online TINYINT(1) NOT NULL,
 			forum_online_msg VARCHAR(1024) NOT NULL,
-			forum_theme VARCHAR(64) NOT NULL
+			forum_theme VARCHAR(64) NOT NULL,
+			forum_force_login TINYINT(1) NOT NULL
 		)');
 
 		$InstallDatabase->Query('INSERT INTO bit_settings 
-			(id,forum_name,forum_description,forum_online,forum_online_msg,forum_theme) 
-			VALUES (?,?,?,?,?,?)', 
-			array(0, 'Forum', 'Your awesome forum', 1, 'Back soon.', 'default')
+			(id,forum_name,forum_description,forum_online,forum_online_msg,forum_theme,forum_force_login) 
+			VALUES (?,?,?,?,?,?,?)', 
+			array(0, 'Forum', 'Your awesome forum', 1, 'Back soon.', 'default', 0)
 		);
 
 		CategoryController::CreateTable($InstallDatabase);

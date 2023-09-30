@@ -55,7 +55,7 @@ class BitBoard
 
 		if(!$this->IsOnline())
 		{
-			if(count($SplitedURL) > 1 || count($SplitedURL) <= 0)
+			if(count($SplitedURL) > 1 || empty($SplitedURL))
 			{
 				// Check if the user is not logged in or doesn't have permission to view a locked forum
 				if((!SessionManager::IsLogged() || SessionManager::IsLogged() && !$_SESSION['bitboard_user']->HasPermission(Permissions::VIEWING_FORUM_LOCKED)) && $SplitedURL[0] !== 'login')
@@ -74,7 +74,7 @@ class BitBoard
 			// Checking is user banned. (Reality this is checking if user has permission to view the forum)
 			if(!$_SESSION['bitboard_user']->HasPermission(Permissions::VIEWING_FORUM))
 			{
-				if(count($SplitedURL) > 1 || count($SplitedURL) <= 0)
+				if(count($SplitedURL) > 1 || empty($SplitedURL))
 				{
 					UrlManager::Redirect(UrlManager::GetPath() . 'banned');
 					return;
@@ -82,7 +82,14 @@ class BitBoard
 			}
 		}
 
-		// todo: option force to login/register
+		if($this->data->forum_force_login && !SessionManager::IsLogged())
+		{
+			if(empty($SplitedURL) || $SplitedURL[0] !== 'login')
+			{
+				UrlManager::Redirect(UrlManager::GetPath() . 'login');
+				return;
+			}
+		}
 
 		if (!empty($SplitedURL))
 		{

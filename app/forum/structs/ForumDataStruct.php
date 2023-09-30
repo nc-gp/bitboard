@@ -40,6 +40,11 @@ class ForumDataStruct
     public string $forum_theme;
 
     /**
+     * @var bool Force visitors to login before view the forum.
+     */
+    public bool $forum_force_login;
+
+    /**
      * @var array The array of splitted URL. (/)
      */
     public array $actionParameters;
