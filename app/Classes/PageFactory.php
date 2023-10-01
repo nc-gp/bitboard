@@ -17,6 +17,8 @@ class PageFactory
     {
         $className = 'App\Forum\Pages\\' . ucfirst($pageName) . 'Page';
 
+        // implement cache here
+
         if (class_exists($className)) {
             $page = new $className($database, $data);
             $page->Do();

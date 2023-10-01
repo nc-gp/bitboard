@@ -85,6 +85,31 @@ class AdminPage extends PageBase implements PageInterface
                 $this->content->Replace();
                 break;
             }
+            case 'prefixes':
+            {
+                $prefixes = 'empty';
+                $data = $this->database->Query('SELECT * FROM bit_prefixes WHERE id > 2')->FetchAll();
+
+                if(!empty($data))
+                {
+                    $prefixes = '';
+                    $prefix = '';
+                    foreach ($data as $prefix_data) 
+                    {
+                        $prefix = new Template('admin/main/other', 'prefix');
+                        $prefix->AddEntry('{prefix_name}', $prefix_data['prefix_name']);
+                        $prefix->AddEntry('{prefix_class}', $prefix_data['prefix_class']);
+                        $prefix->AddEntry('{prefix_id}', $prefix_data['id']);
+                        $prefix->Replace();
+                        $prefixes .= $prefix->template;
+                    }
+                }
+
+                $this->content = new Template('admin/main', 'prefixes');
+                $this->content->AddEntry('{prefixes}', $prefixes);
+                $this->content->Replace();
+                break;
+            }
             default:
             {
                 $this->content = new Template('admin/main', 'home');

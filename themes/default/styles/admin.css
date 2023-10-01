@@ -1,0 +1,26 @@
+.prefix {
+    transition: background 0.2s ease-out;
+    transition-duration: 0.2s;
+    transition-delay: 0s;
+    position: relative;
+    background-color: var(--opposite);
+    box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
+    border-radius: var(--border-radius);
+    display: grid;
+    grid-template-columns: 0.5fr 0.5fr 0.5fr;
+    grid-template-rows: 1fr;
+    gap: 0 10px;
+    grid-template-areas: ". . .";
+    align-items: center;
+    padding: 5px;
+}
+
+.prefix_options {
+    display: flex;
+    justify-content: end;
+    align-items: center;
+}
+
+#preprefixes {
+    width: 100%;
+}
