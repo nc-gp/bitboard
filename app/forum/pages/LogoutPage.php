@@ -19,10 +19,7 @@ class LogoutPage extends PageBase implements PageInterface
     public function Do()
     {
         if(!SessionManager::IsLogged())
-        {
             UrlManager::Redirect($this->serverPath);
-            return;
-        }
 
         SessionManager::Delete();
         UrlManager::Redirect($this->serverPath);

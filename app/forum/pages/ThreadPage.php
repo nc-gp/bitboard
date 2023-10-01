@@ -43,24 +43,17 @@ class ThreadPage extends PageBase implements PageInterface
             $threadID = is_numeric($this->forumData->actionParameters[1]) ? $this->forumData->actionParameters[1] : 1;
 
             UrlManager::Redirect($this->serverPath . 'thread/' . $threadID . '/page/1');
-            return;
         }
 
         $this->threadPage = $this->forumData->actionParameters[3];
         $this->threadID = $this->forumData->actionParameters[1];
 
         if ($this->threadPage <= 0 || $this->threadID <= 0)
-        {
             UrlManager::Redirect($this->serverPath . 'thread/1/page/1');
-            return;
-        }
 
         $threadID = $this->database->Query('SELECT id FROM bit_threads WHERE id = ?', $this->threadID)->FetchArray();
         if (empty($threadID))
-        {
             UrlManager::Redirect($this->serverPath . 'thread/1/page/1');
-            return;
-        }
     }
 
     private function fetchThread()

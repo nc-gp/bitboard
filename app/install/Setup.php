@@ -41,10 +41,7 @@ class Setup
 	private function UrlHandler()
 	{
 		if(isset($_GET['action']))
-		{
 			UrlManager::Redirect(UrlManager::GetPath());
-			return;
-		}
 	}
 
 	private function UpdateStep()
@@ -53,8 +50,7 @@ class Setup
 		$this->step->UpdateData($this->currentStep);
 		$this->step->Save();
 
-		UrlManager::Redirect();
-		return;
+		UrlManager::Redirect(UrlManager::GetPath());
 	}
 
 	private function ExecuteStep()

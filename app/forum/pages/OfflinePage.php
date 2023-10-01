@@ -23,17 +23,11 @@ class OfflinePage extends PageBase implements PageInterface
 
     private function UrlHandler()
     {
-        if ($this->forumData['forum_online'])
-        {
+        if ($this->forumData->forum_online)
             UrlManager::Redirect($this->serverPath);
-            return;
-        }
 
-        if (($this->forumData->actionParameters[0] !== 'offline' || count($this->forumData->actionParameters) > 1))
-        {
+        if ($this->forumData->actionParameters[0] !== 'offline' || !empty($this->forumData->actionParameters[1]))
             UrlManager::Redirect($this->serverPath . 'offline');
-            return;
-        }
     }
 
     public function Do()

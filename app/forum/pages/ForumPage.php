@@ -43,26 +43,18 @@ class ForumPage extends PageBase implements PageInterface
             ($this->forumData->actionParameters[2] !== 'page') || // Check if the segment after 'forum' is 'page'
             !is_numeric($this->forumData->actionParameters[1]) || // Check if the second segment is a numeric forum ID
             !is_numeric($this->forumData->actionParameters[3]) // Check if the fourth segment is a numeric page number
-        ) {
+        )
             UrlManager::Redirect($this->serverPath . 'forum/1/page/1');
-            return;
-        }
 
         $this->forumPage = $this->forumData->actionParameters[3];
         $this->forumID = $this->forumData->actionParameters[1];
 
         if ($this->forumPage <= 0 || $this->forumID <= 0)
-        {
             UrlManager::Redirect($this->serverPath . 'forum/1/page/1');
-            return;
-        }
 
         $forumID = $this->database->Query('SELECT id FROM bit_forums WHERE id = ?', $this->forumID)->FetchArray();
         if (empty($forumID))
-        {
             UrlManager::Redirect($this->serverPath . 'forum/1/page/1');
-            return;
-        }
     }
 
     private function FetchSubForums()

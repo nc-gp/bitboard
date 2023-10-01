@@ -26,10 +26,10 @@ class UrlManager
      * @param array  $params An associative array of query parameters (optional).
      * @return bool True if the redirect header was set successfully, false otherwise.
      */
-    static public function Redirect(string $url = './', array $params = array()): bool
+    static public function Redirect(string $url = './', array $params = array()): void
     {
-        header('Location: ' . $url . (sizeof($params) > 0 ? ('?' . http_build_query($params)) : ''));
-        return true;
+        header('Location: ' . $url . (!empty($params) ? ('?' . http_build_query($params)) : ''));
+        die();
     }
 
     /**

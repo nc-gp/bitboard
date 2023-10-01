@@ -59,10 +59,7 @@ class BitBoard
 			{
 				// Check if the user is not logged in or doesn't have permission to view a locked forum
 				if((!SessionManager::IsLogged() || SessionManager::IsLogged() && !$_SESSION['bitboard_user']->HasPermission(Permissions::VIEWING_FORUM_LOCKED)) && $SplitedURL[0] !== 'login')
-				{
 					UrlManager::Redirect(UrlManager::GetPath() . 'offline');
-					return;
-				}
 			}
 		}
 
@@ -75,20 +72,14 @@ class BitBoard
 			if(!$_SESSION['bitboard_user']->HasPermission(Permissions::VIEWING_FORUM))
 			{
 				if(count($SplitedURL) > 1 || empty($SplitedURL))
-				{
 					UrlManager::Redirect(UrlManager::GetPath() . 'banned');
-					return;
-				}
 			}
 		}
 
 		if($this->data->forum_force_login && !SessionManager::IsLogged())
 		{
 			if(empty($SplitedURL) || $SplitedURL[0] !== 'login')
-			{
 				UrlManager::Redirect(UrlManager::GetPath() . 'login');
-				return;
-			}
 		}
 
 		if (!empty($SplitedURL))

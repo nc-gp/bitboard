@@ -39,26 +39,18 @@ class SubforumPage extends PageBase implements PageInterface
             ($this->forumData->actionParameters[2] !== 'page') || // Check if the segment after 'forum' is 'page'
             !is_numeric($this->forumData->actionParameters[1]) || // Check if the second segment is a numeric forum ID
             !is_numeric($this->forumData->actionParameters[3]) // Check if the fourth segment is a numeric page number
-        ) {
+        )
             UrlManager::Redirect($this->serverPath . 'subforum/1/page/1');
-            return;
-        }
 
         $this->subforumPage = $this->forumData->actionParameters[3];
         $this->subforumID = $this->forumData->actionParameters[1];
 
         if ($this->subforumPage <= 0 || $this->subforumID <= 0)
-        {
             UrlManager::Redirect($this->serverPath . 'subforum/1/page/1');
-            return;
-        }
 
         $subforumID = $this->database->Query('SELECT id FROM bit_subforums WHERE id = ?', $this->subforumID)->FetchArray();
         if (empty($subforumID))
-        {
             UrlManager::Redirect($this->serverPath . 'subforum/1/page/1');
-            return;
-        }
     }
 
     private function FetchThreads()
@@ -68,10 +60,7 @@ class SubforumPage extends PageBase implements PageInterface
         $totalPages = ceil($this->threadsCount / $this->maximumResults);
 
         if ($this->subforumPage > $totalPages && $this->threadsCount > 0)
-        {
             UrlManager::Redirect($this->serverPath . 'forum/' . $this->subforumID . '/page/' . $totalPages);
-            return;
-        }
        
         $threads = $this->database->Query('SELECT bit_threads.*, bit_accounts.id AS author_id, bit_accounts.username, bit_accounts.rank_id, bit_ranks.rank_format, 
             COUNT(bit_posts.id) AS post_count, MAX(bit_posts.post_timestamp) AS latest_post_timestamp

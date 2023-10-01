@@ -35,10 +35,7 @@ class MembersPage extends PageBase implements PageInterface
         $url = explode('/', $_GET['action']);
 
         if (($this->forumData->actionParameters[1] != 'page' || !is_numeric($this->forumData->actionParameters[2])))
-        {
             UrlManager::Redirect($this->serverPath . 'members/page/1');
-            return;
-        }
 
         $this->page = $this->forumData->actionParameters[2];
     }
@@ -46,20 +43,14 @@ class MembersPage extends PageBase implements PageInterface
     private function FetchMembers()
     {
         if ($this->page <= 0)
-        {
             UrlManager::Redirect($this->serverPath . 'members/page/1');
-            return;
-        }
 
         $this->totalMembers = $this->database->Query('SELECT id FROM bit_accounts WHERE bit_accounts.id > 1')->NumRows();
 
         $totalPages = ceil($this->totalMembers / $this->maximumResults);
 
         if ($this->page > $totalPages)
-        {
             UrlManager::Redirect($this->serverPath . 'members/page/' . $totalPages);
-            return;
-        }
 
         $members = $this->database->Query('SELECT b.id, b.username, b.avatar, b.reg_date, b.reputation, b.last_active, b.rank_id, r.rank_format, r.rank_name,
             (SELECT COUNT(*) FROM bit_threads WHERE user_id = b.id) AS thread_count,

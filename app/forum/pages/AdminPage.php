@@ -40,12 +40,7 @@ class AdminPage extends PageBase implements PageInterface
     private function UrlHandler()
     {
         if(!SessionManager::IsLogged() || !$_SESSION['bitboard_user']->HasPermission(Permissions::ADMIN_PANEL_ACCESS))
-        {
             UrlManager::Redirect($this->serverPath);
-            return;
-        }
-
-        Console::Log($this->forumData);
 
         $option = isset($this->forumData->actionParameters[1]) ? $this->forumData->actionParameters[1] : 0;
 
@@ -55,7 +50,6 @@ class AdminPage extends PageBase implements PageInterface
             {
                 if(count($this->forumData->actionParameters) > 2)
                 {
-                    Console::Log($_POST);
                     $forumName = isset($_POST['forumname']) ? $_POST['forumname'] : '';
                     $forumDesc = isset($_POST['forumdesc']) ? $_POST['forumdesc'] : '';
                     $forumOnlineMsg = isset($_POST['forumonline']) ? $_POST['forumonline'] : '';
@@ -66,14 +60,12 @@ class AdminPage extends PageBase implements PageInterface
                     {
                         SessionManager::AddInformation('settings', 'Fields cannot be empty!', true);
                         UrlManager::Redirect($this->serverPath . 'admin/settings');
-                        return;
                     }
 
                     $this->database->Query('UPDATE bit_settings SET forum_name = ?, forum_description = ?, forum_online_msg = ?, forum_online = ?, forum_force_login = ? WHERE id = 0', "$forumName", "$forumDesc", "$forumOnlineMsg", $forumOnline, $forumForceLogin);
 
                     SessionManager::AddInformation('settings', 'Forum settings has been updated!', true, '53, 255, 53');
                     UrlManager::Redirect($this->serverPath . 'admin/settings');
-                    return;
                 }
 
                 $this->content = new Template('admin/main', 'settings');

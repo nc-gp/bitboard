@@ -25,16 +25,10 @@ class LoginPage extends PageBase implements PageInterface
     private function UrlHandler()
     {
         if(SessionManager::IsLogged())
-        {
             UrlManager::Redirect($this->serverPath);
-            return;
-        }
 
-        if(count($this->forumData->actionParameters) > 1 && $this->forumData->actionParameters[1] != 'process')
-        {
+        if(!empty($this->forumData->actionParameters[1]) && $this->forumData->actionParameters[1] !== 'process')
             UrlManager::Redirect($this->serverPath . 'login');
-            return;
-        }
 
         if(!isset($_POST['username']))
             return;
@@ -44,7 +38,6 @@ class LoginPage extends PageBase implements PageInterface
         {
             SessionManager::AddInformation('login', 'Account with that username doesnt exists.', true);
             UrlManager::Redirect($this->serverPath . 'login');
-            return;
         }
 
         $permissions = $this->database->Query('SELECT rank_flags FROM bit_ranks WHERE id = ?', $account['rank_id'])->FetchArray();
@@ -54,12 +47,10 @@ class LoginPage extends PageBase implements PageInterface
         {
             SessionManager::AddInformation('login', 'Invalid password', true);
             UrlManager::Redirect($this->serverPath . 'login');
-            return;
         }
 
         SessionManager::Set($account);
         UrlManager::Redirect($this->serverPath);
-        return;
     }
 
     private function CheckError()
