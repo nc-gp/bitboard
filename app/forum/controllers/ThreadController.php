@@ -31,7 +31,7 @@ class ThreadController
         $db->Query('CREATE TABLE IF NOT EXISTS bit_threads (
 			id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, user_id INT(6) NOT NULL, thread_title VARCHAR(128) NOT NULL, thread_content VARCHAR(4096) NOT NULL, thread_likes INT(6) NOT NULL, thread_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, thread_edited_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, forum_id INT(6) NOT NULL, subforum_id INT(6) NOT NULL, is_closed TINYINT(1) NOT NULL, is_pinned TINYINT(1) NOT NULL, prefix_id INT(6) NOT NULL)');
 
-        $db->Query('CREATE TABLE IF NOT EXISTS bit_threads_likes (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, user_id INT(6) NOT NULL, thread_id INT(6) NOT NULL,)');
+        $db->Query('CREATE TABLE IF NOT EXISTS bit_threads_likes (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, user_id INT(6) NOT NULL, thread_id INT(6) NOT NULL)');
     }
 
     /**

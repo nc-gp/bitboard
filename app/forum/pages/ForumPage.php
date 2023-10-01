@@ -142,11 +142,11 @@ class ForumPage extends PageBase implements PageInterface
             return;
         }
 
+        $threadPrefix = '';
         foreach ($threads as $thread) 
         {
             $lastPostTemplate = new Template('forum/thread', 'thread_nolastpost');
-            $threadClosedTemplate = '';
-            $threadPinnedTemplate = '';
+            $threadPrefix = '';
 
             if ($thread['post_count'] > 0) {
                 $lastPost = ThreadController::GetLastPost($this->database, $thread['id']);
@@ -159,22 +159,36 @@ class ForumPage extends PageBase implements PageInterface
                 $lastPostTemplate->Replace();
             }
 
+            $threadTemplate = new Template('forum/thread', 'thread');
+
             if ($thread['is_closed'])
             {
-                $threadClosedTemplate = new PrefixWidget($this->database, 1);
-                $threadClosedTemplate = $threadClosedTemplate->template;
+                $threadPrefix = new PrefixWidget($this->database, 1);
+                $threadPrefix = $threadPrefix->template;
             }
+
+            $threadTemplate->AddEntry('{closed_prefix}', $threadPrefix);
+            $threadPrefix = '';
 
             if ($thread['is_pinned'])
             {
-                $threadPinnedTemplate = new PrefixWidget($this->database, 2);
-                $threadPinnedTemplate = $threadPinnedTemplate->template;
+                $threadPrefix = new PrefixWidget($this->database, 2);
+                $threadPrefix = $threadPrefix->template;
             }
 
-            $threadTemplate = new Template('forum/thread', 'thread');
+            $threadTemplate->AddEntry('{pinned_prefix}', $threadPrefix);
+            $threadPrefix = '';
+
+            if ($thread['prefix_id'] > 2)
+            {
+                $threadPrefix = new PrefixWidget($this->database, $thread['prefix_id']);
+                $threadPrefix = $threadPrefix->template;
+            }
+
+            $threadTemplate->AddEntry('{custom_prefix}', $threadPrefix);
+            $threadPrefix = '';
+
             $threadTemplate->AddEntry('{id}', $thread['id']);
-            $threadTemplate->AddEntry('{closed_prefix}', $threadClosedTemplate);
-            $threadTemplate->AddEntry('{pinned_prefix}', $threadPinnedTemplate);
             $threadTemplate->AddEntry('{thread_title}', $thread['thread_title']);
             $threadTemplate->AddEntry('{thread_author_id}', $thread['author_id']);
             $threadTemplate->AddEntry('{thread_author_username}', UsernameUtils::Format($thread['rank_format'], $thread['username']));
