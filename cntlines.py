@@ -204,7 +204,7 @@ def count_lines() -> None:
                     for line in file_handle:
                         line_stripped = line.strip()
 
-                        if not line_stripped or line_stripped.startswith("//"):
+                        if not line_stripped or line_stripped.startswith("//") or line_stripped.startswith("<?php") or line_stripped.startswith("?>"):
                             continue  # Skip empty lines and single-line comments
 
                         if line_stripped.startswith("/*"):
