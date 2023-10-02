@@ -23,8 +23,7 @@ class Setup
 		if(isset($_POST['step']))
 		{
 			$this->ExecuteStepHandler();
-			UrlManager::Redirect();
-			return;
+			UrlManager::Redirect(UrlManager::GetPath());
 		}
 
 		if(isset($_SESSION['next'])) // hmm..
@@ -32,7 +31,6 @@ class Setup
 			unset($_SESSION['next']);
 			session_write_close();
 			$this->UpdateStep();
-			return;
 		}
 
 		$this->ExecuteStep();

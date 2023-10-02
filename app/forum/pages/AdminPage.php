@@ -105,7 +105,7 @@ class AdminPage extends PageBase implements PageInterface
             default:
             {
                 $this->content = new Template('admin/main', 'home');
-                $this->content->AddEntry('{username}', $_SESSION['bitboard_user']->name);
+                $this->content->AddEntry('{username}', $_SESSION['bitboard_user']->username);
                 $this->content->AddEntry('{rankname}', RankController::GetRankNameByID($this->database, $_SESSION['bitboard_user']->rank_id));
                 $this->content->Replace();
                 break;

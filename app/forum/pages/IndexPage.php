@@ -62,19 +62,46 @@ class IndexPage extends PageBase implements PageInterface
 
             if(!isset($builded_data[$d['category_id']]))
             {
-                $category = new CategoryStruct($d['category_id'], $d['category_name'], $d['category_icon'], $d['category_desc'], $d['category_position']);
+                $categoryData = [
+                    'id' => $d['category_id'],
+                    'category_name' => $d['category_name'],
+                    'category_icon' => $d['category_icon'],
+                    'category_desc' => $d['category_desc'],
+                    'category_position' => $d['category_position'],
+                ];
+                
+                $category = new CategoryStruct($categoryData);
                 $builded_data[$d['category_id']] = $category;
             }
 
             if($d['forum_id'] > 0 && $d['category_id'] == $d['forum_catid'])
             {
-                $forum = new ForumStruct($d['forum_id'], $d['forum_name'], $d['forum_icon'], $d['forum_desc'], $d['forum_position'], $d['forum_locked'], $d['thread_count'], $d['post_count']);
+                $forumData = [
+                    'id' => $d['forum_id'],
+                    'forum_name' => $d['forum_name'],
+                    'forum_icon' => $d['forum_icon'],
+                    'forum_desc' => $d['forum_desc'],
+                    'forum_position' => $d['forum_position'],
+                    'is_locked' => $d['forum_locked'],
+                    'thread_count' => $d['thread_count'],
+                    'post_count' => $d['post_count'],
+                ];
+
+                $forum = new ForumStruct($forumData);
                 $builded_data[$d['category_id']]->forums[$forum->id] = $forum;
             }
 
             if($d['subforum_id'] > 0 && $d['forum_id'] == $d['subforum_forumid'])
             {
-                $subforum = new SubForumStruct($d['subforum_id'], $d['subforum_name'], $d['subforum_desc'], $d['subforum_locked']);
+                $subforumData = [
+                    'id' => $d['subforum_id'],
+                    'forum_id' => $d['forum_id'],
+                    'subforum_name' => $d['subforum_name'],
+                    'subforum_desc' => $d['subforum_desc'],
+                    'is_locked' => $d['subforum_locked'],
+                ];
+                
+                $subforum = new SubForumStruct($subforumData);
                 $builded_data[$d['category_id']]->forums[$d['forum_id']]->subforums[$subforum->id] = $subforum;
             }
         }
@@ -86,27 +113,25 @@ class IndexPage extends PageBase implements PageInterface
         foreach ($builded_data as $category)
         {
             $categoryTemplate = new Template('index/forum', 'category');
-
             $forums = '';
-            $subforums = '';
 
             foreach($category->forums as $forum)
             {
+                $subforums = '';
                 $forumTemplate = new Template('index/forum', 'forum');
 
                 foreach($forum->subforums as $subforum)
                 {
                     $subforumTemplate = new Template('index/forum', 'subforum');
-                    $subforumTemplate->AddEntry('{subforum_title}', $subforum->name);
+                    $subforumTemplate->AddEntry('{subforum_title}', $subforum->subforum_name);
                     $subforumTemplate->AddEntry('{subforum_id}', $subforum->id);
-                    $subforumTemplate->AddEntry('{server_url}', $this->serverPath);
                     $subforumTemplate->Replace();
 
                     $subforums .= $subforumTemplate->template;
                 }
 
                 $lastPostTemplate = new Template('index/forum', 'forum_nolastpost');
-                if ($forum->postCount > 0)
+                if ($forum->post_count > 0)
                 {
                     $lastPost = ForumController::GetLastPost($this->database, $forum->id);
 
@@ -117,27 +142,25 @@ class IndexPage extends PageBase implements PageInterface
                     $lastPostTemplate->AddEntry('{thread_title}', $lastPost['thread_title']);
                     $lastPostTemplate->AddEntry('{post_date}', RelativeTime::Convert($lastPost['post_timestamp']));
                     $lastPostTemplate->AddEntry('{username}', UsernameUtils::Format($lastPost['rank_format'], $lastPost['username']));
-                    $lastPostTemplate->AddEntry('{server_url}', $this->serverPath);
                     $lastPostTemplate->Replace();
                 }
 
                 $forumTemplate->AddEntry('{forum_id}', $forum->id);
-                $forumTemplate->AddEntry('{forum_icon}', $forum->icon);
-                $forumTemplate->AddEntry('{forum_title}', $forum->name);
-                $forumTemplate->AddEntry('{forum_description}', $forum->description);
-                $forumTemplate->AddEntry('{forum_posts}', $forum->postCount);
-                $forumTemplate->AddEntry('{forum_threads}', $forum->threadCount);
+                $forumTemplate->AddEntry('{forum_icon}', $forum->forum_icon);
+                $forumTemplate->AddEntry('{forum_title}', $forum->forum_name);
+                $forumTemplate->AddEntry('{forum_description}', $forum->forum_desc);
+                $forumTemplate->AddEntry('{forum_posts}', $forum->post_count);
+                $forumTemplate->AddEntry('{forum_threads}', $forum->thread_count);
                 $forumTemplate->AddEntry('{subforums}', $subforums);
                 $forumTemplate->AddEntry('{forum_lastpost}', $lastPostTemplate->template);
-                $forumTemplate->AddEntry('{server_url}', $this->serverPath);
                 $forumTemplate->Replace();
 
                 $forums .= $forumTemplate->template;
             }
 
-            $categoryTemplate->AddEntry('{category_icon}', $category->icon);
-            $categoryTemplate->AddEntry('{category_title}', $category->name);
-            $categoryTemplate->AddEntry('{category_description}', $category->description);
+            $categoryTemplate->AddEntry('{category_icon}', $category->category_icon);
+            $categoryTemplate->AddEntry('{category_title}', $category->category_name);
+            $categoryTemplate->AddEntry('{category_description}', $category->category_desc);
             $categoryTemplate->AddEntry('{forums}', $forums);
             $categoryTemplate->Replace();
 

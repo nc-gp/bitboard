@@ -27,7 +27,7 @@ class SessionManager
     static public function Set(array $userData): void
     {
         $_SESSION['bitboard_logged'] = true;
-        $_SESSION['bitboard_user'] = new AccountStruct($userData['id'], $userData['username'], $userData['pass'], $userData['avatar'], $userData['reg_date'], $userData['reputation'], $userData['last_ip'], $userData['last_active'], $userData['last_login'], $userData['rank_id'], $userData['permissions']);
+        $_SESSION['bitboard_user'] = new AccountStruct($userData);
     }
 
     /**

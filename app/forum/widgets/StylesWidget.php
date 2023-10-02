@@ -3,7 +3,6 @@
 namespace App\Forum\Widgets;
 
 use App\Classes\Template;
-use App\Classes\UrlManager;
 
 /**
  * The StylesWidget class provides methods for rendering styles using a template.
@@ -21,16 +20,6 @@ class StylesWidget
     public function __construct(string $templateCategory)
     {
         $this->Template = new Template($templateCategory, 'styles');
-        $this->Do();
-    }
-
-    /**
-     * Perform the rendering of styles using the template.
-     */
-    private function Do()
-    {
-        $this->Template->AddEntry('{server_url}', UrlManager::GetPath());
-        $this->Template->Replace();
     }
 }
 

@@ -43,9 +43,13 @@ class PageBase
         $headerTemplate = new HeaderWidget();
         $footerTemplate = new FooterWidget();
 
-        $this->template->AddEntry('{head}', $headTemplate->Template->template);
-        $this->template->AddEntry('{header}', $headerTemplate->Template->template);
-        $this->template->AddEntry('{footer}', $footerTemplate->Template->template);
+        /**
+         * Here we can add more global variables in HTML.
+         * Just remember we actually don't need to.
+         */
+        $this->template->AddEntry('{head}', $headTemplate->template);
+        $this->template->AddEntry('{header}', $headerTemplate->template);
+        $this->template->AddEntry('{footer}', $footerTemplate->template);
         $this->template->Addentry('{server_url}', $this->serverPath);
     }
 }

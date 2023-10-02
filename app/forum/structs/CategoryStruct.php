@@ -4,20 +4,46 @@ namespace App\Forum\Structs;
 
 class CategoryStruct
 {
+    /**
+     * @var int The unique identifier of the category.
+     */
     public $id;
-    public $name;
-    public $icon;
-    public $description;
-    public $position;
+
+    /**
+     * @var string The name of the category.
+     */
+    public $category_name;
+
+    /**
+     * @var string The description of the category.
+     */
+    public $category_desc;
+
+    /**
+     * @var string The icon associated with the category.
+     */
+    public $category_icon;
+
+    /**
+     * @var int The position of the category.
+     */
+    public $category_position;
+
+    /**
+     * @var array The array of forums.
+     * Note: Can be empty.
+     */
     public $forums = [];
 
-    public function __construct($id, $name, $icon, $description, $position) 
+    /**
+     * CategoryStruct constructor.
+     *
+     * @param array $categoryData An associative array containing category data.
+     */
+    public function __construct(array $categoryData) 
     {
-        $this->id = $id;
-        $this->name = $name;
-        $this->icon = $icon;
-        $this->description = $description;
-        $this->position = $position;
+		foreach($categoryData as $key => $value)
+            $this->{$key} = $value;
     }
 }
 

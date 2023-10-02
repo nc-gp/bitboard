@@ -46,6 +46,7 @@ class ForumDataStruct
 
     /**
      * @var array The array of splitted URL. (/)
+     * Note: Can be empty.
      */
     public array $actionParameters;
 
@@ -56,7 +57,6 @@ class ForumDataStruct
      */
     public function __construct(array $forumData)
 	{
-        // Initialize the properties of the object with the provided forum data.
 		foreach($forumData as $key => $value)
 			$this->{$key} = $value;
 	}
