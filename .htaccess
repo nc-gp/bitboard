@@ -3,6 +3,10 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  # Rewrite URLs containing 'api' to api.php
+  RewriteCond %{REQUEST_URI} api
+  RewriteRule ^(.*)$ api.php?data=$1 [QSA,L]
+  
   # Rewrite all other URLs to index.php
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d

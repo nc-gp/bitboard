@@ -1,4 +1,4 @@
-<form method="post" action="{server_url}admin/settings/process">
+<form id="settingsForm" method="post" action="{server_url}admin/settings/process">
     <input type="text" name="forumname" placeholder="Forum name" aria-label="Forum name" required="" value="{forum_name}">
     <input type="text" name="forumdesc" placeholder="Forum description" aria-label="Forum description" required="" value="{forum_desc}">
 
@@ -15,5 +15,38 @@
             Force visitors to login
         </label>
     </fieldset>
-    <button type="submit">Update settings</button>
 </form>
+<button id="settings">Update settings</button>
+
+<script>
+    window.onload = () => {
+        const btn = document.querySelector('#settings');
+        btn.addEventListener('click', () => {
+            const formData = new FormData(document.getElementById('settingsForm'));
+            
+            const formObject = {};
+            formData.forEach((value, key) => {
+                formObject[key] = value;
+            });
+
+            toast('Trying to update..', 2, '180, 180, 53');
+            req('POST', '{server_url}/api/settings', JSON.stringify(formObject), (msg, data) => {
+                if(msg !== null) {
+                    toast(msg);
+                    return;
+                }
+
+                try {
+                    if (data !== null) {
+                        let d = JSON.parse(data);
+                        toast(d.data.message, 5, '53, 255, 53');
+                    } else {
+                        toast('Data is null');
+                    }
+                } catch (error) {
+                    toast('Error parsing JSON data: ' + error.message);
+                }
+            });
+        });
+    }
+</script>

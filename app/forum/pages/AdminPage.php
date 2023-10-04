@@ -48,26 +48,6 @@ class AdminPage extends PageBase implements PageInterface
         {
             case 'settings':
             {
-                if(count($this->forumData->actionParameters) > 2)
-                {
-                    $forumName = isset($_POST['forumname']) ? $_POST['forumname'] : '';
-                    $forumDesc = isset($_POST['forumdesc']) ? $_POST['forumdesc'] : '';
-                    $forumOnlineMsg = isset($_POST['forumonline']) ? $_POST['forumonline'] : '';
-                    $forumOnline = isset($_POST['online']) ? 1 : 0;
-                    $forumForceLogin = isset($_POST['forum_force_login']) ? 1 : 0;
-
-                    if(strlen($forumName) <= 0 || strlen($forumDesc) <= 0 || strlen($forumOnlineMsg) <= 0)
-                    {
-                        SessionManager::AddInformation('settings', 'Fields cannot be empty!', true);
-                        UrlManager::Redirect($this->serverPath . 'admin/settings');
-                    }
-
-                    $this->database->Query('UPDATE bit_settings SET forum_name = ?, forum_description = ?, forum_online_msg = ?, forum_online = ?, forum_force_login = ? WHERE id = 0', "$forumName", "$forumDesc", "$forumOnlineMsg", $forumOnline, $forumForceLogin);
-
-                    SessionManager::AddInformation('settings', 'Forum settings has been updated!', true, '53, 255, 53');
-                    UrlManager::Redirect($this->serverPath . 'admin/settings');
-                }
-
                 $this->content = new Template('admin/main', 'settings');
                 $this->content->AddEntry('{forum_name}', $this->forumData->forum_name);
                 $this->content->AddEntry('{forum_desc}', $this->forumData->forum_description);

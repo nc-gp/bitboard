@@ -51,7 +51,7 @@ class BitBoard
 	private function Do()
 	{
 		//SessionManager::Delete();
-		$actionParameters = isset($_GET['action']) ? $_GET['action'] : '';
+		$actionParameters = $_GET['action'] ?? '';
 		$SplitedURL = !empty($actionParameters) ? explode('/', $_GET['action']) : array();
 
 		if(!$this->IsOnline())
