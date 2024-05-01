@@ -38,11 +38,11 @@
     position: relative;
 }
 
-#thread-author>div,
-.post-author>div {
-    min-width: 100%;
+#thread-author > div > div,
+.post-author > div > div {
     display: flex;
     justify-content: center;
+    flex-wrap: wrap;
 }
 
 #thread-userstats ul,
@@ -50,6 +50,33 @@
     padding: 0;
     margin: 0;
     list-style-type: none;
+    position: absolute;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+}
+
+#thread-userstats ul li,
+.post-userstats ul li {
+    list-style: none;
+    margin: 0;
+    display: block;
+    text-align: center;
+}
+
+#thread-userstats ul li span,
+.post-userstats ul li span {
+    display: block;
+    text-transform: uppercase;
+}
+
+#thread-userstats ul li span:first-letter,
+.post-userstats ul li span:first-letter {
+    font-weight: bold;
+}
+
+div#thread-userstats {
+    margin-top: 35px;
 }
 
 #thread-username,

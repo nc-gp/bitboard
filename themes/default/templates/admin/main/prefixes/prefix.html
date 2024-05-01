@@ -1,0 +1,27 @@
+<div class="prefix">
+    <div class="prefix_name">{prefix_name}</div>
+    <div class="prefix_class">{prefix_class}</div>
+    <div class="prefix_options">
+        <button style="margin: 0" bb-action="display" target="#delete-{prefix_id}" type="submit"><i class="ti ti-trash-filled"></i></button>
+        <button style="margin: 0" bb-action="display" target="#edit-{prefix_id}" type="submit"><i class="ti ti-pencil"></i></button>
+    </div>
+</div>
+
+<div id="edit-{prefix_id}" class="modal" hidden>
+    <form>
+        <input type="hidden" name="type" value="edit">
+        <input type="hidden" name="prefixid" value="{prefix_id}">
+        <input type="text" name="prefixname" value="{prefix_name}">
+        <input type="text" name="prefixclass" value="{prefix_class}">
+    </form>
+    <button style="margin: 0" type="submit">Save</button>
+</div>
+
+<div id="delete-{prefix_id}" class="modal" hidden>
+    <form>
+        <input type="hidden" name="type" value="delete">
+        <input type="hidden" name="prefixid" value="{prefix_id}">
+    </form>
+    <p>Do you want to delete prefix "{prefix_name}"?</p>
+    <button style="margin: 0" type="submit">Delete</button>
+</div>

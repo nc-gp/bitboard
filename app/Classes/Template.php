@@ -9,6 +9,7 @@ class Template
 {
     public $template;
     private $fullPath;
+    private string $name;
     private array $variables;
     private array $replaces;
 
@@ -21,10 +22,12 @@ class Template
      */
     public function __construct(string $category_path, string $name, bool $custom = false)
     {
+        $this->name = $name;
+
         if(!$custom)
-            $this->fullPath = './themes/' . BB_THEME . '/templates/' . $category_path . '/' . $name . '.html';
+            $this->fullPath = './themes/' . BB_THEME . '/templates/' . $category_path . '/' . $this->name . '.html';
         else
-            $this->fullPath = $category_path . $name . '.html';
+            $this->fullPath = $category_path . $this->name . '.html';
 
         $this->Load();
     }
@@ -44,12 +47,15 @@ class Template
         {
             if (flock($handle, LOCK_SH)) 
             {
-                $this->template = fread($handle, filesize($this->fullPath));
+                $this->template = '<!-- start: ' . $this->name . ' -->';
+                $this->template .= fread($handle, filesize($this->fullPath));
                 flock($handle, LOCK_UN);
             }
 
             fclose($handle);
         }
+
+        $this->template .= '<!-- end: ' . $this->name . ' -->';
     }
 
     /**

@@ -51,6 +51,10 @@ class PageBase
         $this->template->AddEntry('{header}', $headerTemplate->template);
         $this->template->AddEntry('{footer}', $footerTemplate->template);
         $this->template->Addentry('{server_url}', $this->serverPath);
+
+        // Adding global javascripts..
+        $globalJS = new Template('footer', 'end');
+        $this->template->template .= $globalJS->template;
     }
 }
 

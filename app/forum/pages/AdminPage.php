@@ -59,7 +59,8 @@ class AdminPage extends PageBase implements PageInterface
             }
             case 'prefixes':
             {
-                $prefixes = 'empty';
+                $prefixes = new Template('admin/main/prefixes', 'empty');
+                $prefixes = $prefixes->template;
                 $data = $this->database->Query('SELECT * FROM bit_prefixes WHERE id > 2')->FetchAll();
 
                 if(!empty($data))
@@ -68,7 +69,7 @@ class AdminPage extends PageBase implements PageInterface
                     $prefix = '';
                     foreach ($data as $prefix_data) 
                     {
-                        $prefix = new Template('admin/main/other', 'prefix');
+                        $prefix = new Template('admin/main/prefixes', 'prefix');
                         $prefix->AddEntry('{prefix_name}', $prefix_data['prefix_name']);
                         $prefix->AddEntry('{prefix_class}', $prefix_data['prefix_class']);
                         $prefix->AddEntry('{prefix_id}', $prefix_data['id']);

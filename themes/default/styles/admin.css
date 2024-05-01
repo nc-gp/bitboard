@@ -1,3 +1,16 @@
+article {
+    background: #321c4d;
+}
+
+article > footer {
+    border: none;
+    background: #27143f;
+}
+
+nav li {
+    padding: 14px 10px 14px 0;
+}
+
 .prefix {
     transition: background 0.2s ease-out;
     transition-duration: 0.2s;
@@ -7,7 +20,7 @@
     box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
     border-radius: var(--border-radius);
     display: grid;
-    grid-template-columns: 0.5fr 0.5fr 0.5fr;
+    grid-template-columns: 0.5fr 0.5fr 0.1fr;
     grid-template-rows: 1fr;
     gap: 0 10px;
     grid-template-areas: ". . .";
@@ -15,10 +28,15 @@
     padding: 5px;
 }
 
+.prefix:not(:last-child) {
+    margin-bottom: 15px;
+}
+
 .prefix_options {
     display: flex;
     justify-content: end;
     align-items: center;
+    gap: 5px;
 }
 
 #preprefixes {

@@ -1,6 +1,3 @@
-console.log("loaded " + document.scripts[document.scripts.length - 1].src);
-
-//Embedder code
 const action_elements = document.querySelectorAll('[bb-action]')
 const embedder = document.querySelector('embedder')
 const embed = document.querySelector('#embed')
@@ -29,18 +26,14 @@ action_elements.forEach(element => {
     })
 });
 
-let observer = new MutationObserver(function (mutations) {
-    mutations.forEach(function (mutation) {
+const observer = new MutationObserver((mutations) => {
+    mutations.forEach((mutation) => {
         if (mutation.target === embedder) {
-            if (mutation.type === "attributes" && mutation.attributeName === 'visibility') {
-                if (embedder.getAttribute('visibility') === 'true') {
-                    document.body.style.overflow = 'hidden'
-                } else {
-                    document.body.style.overflow = 'auto'
-                }
+            if (mutation.type === 'attributes' && mutation.attributeName === 'visibility') {
+                document.body.style.overflow = embedder.getAttribute('visibility') === 'true' ? 'hidden' : 'auto';
             }
         }
-    })
+    });
 });
 
 observer.observe(embedder, {
@@ -48,28 +41,60 @@ observer.observe(embedder, {
 });
 
 
-//Embedder functions
-function web(target) {
-    if (target != 'none') {
-        embed.innerHTML = ''
-        let iframe = document.createElement('iframe')
-        embed.appendChild(iframe)
-        iframe.setAttribute('src', target)
+const web = (target) => {
+    if (target !== 'none') {
+        embed.innerHTML = '';
+        const iframe = document.createElement('iframe');
+        embed.appendChild(iframe);
+        iframe.setAttribute('src', target);
     }
 };
 
-function display(identifier) {
-    let target = document.querySelector(identifier)
-    let clone = target.cloneNode(true)
+const display = (identifier) => {
+    const target = document.querySelector(identifier);
+    //const clone = target.cloneNode(true);
 
-    embed.innerHTML = ''
-    embed.appendChild(clone)
+    embed.innerHTML = '';
+    embed.appendChild(target);
 
-    let embed_child = document.querySelector('#embed').firstElementChild
-    if (embed_child.hasAttribute('hidden')) {
-        embed_child.removeAttribute('hidden')
+    const embedChild = document.querySelector('#embed').firstElementChild;
+    if (embedChild.hasAttribute('hidden')) {
+        embedChild.removeAttribute('hidden');
     }
 };
+
+/**
+ * Function makes an API call to the specified URL with the method.
+ * @param {String}      method      Method request type
+ * @param {String}      url         URL to call
+ * @param {String}      data        Data to send to the API
+ * @param {Function}    callback    Callback returns data or error from the call
+ */
+const req = (method, url, data = null, callback = null) => {
+    const xhr = new XMLHttpRequest();
+
+    xhr.onload = () => {
+        if (xhr.status >= 200 && xhr.status < 300) {
+            if (callback !== null) {
+                callback(null, xhr.responseText);
+            }
+        } else {
+            if (callback !== null) {
+                callback(`Request failed with status ${xhr.status}`, null);
+            }
+        }
+    };
+
+    xhr.onerror = () => {
+        if (callback !== null) {
+            callback('Request failed due to a network error', null);
+        }
+    };
+
+    xhr.open(method, url);
+    xhr.send(data);
+};
+
 
 //Theme switcher
 const themeSwitcher = {

@@ -12,10 +12,10 @@
             </div>
             <nav>
                 <div class="nav-links">
-                    <form action="{server_url}admin">
+                    <a href="{server_url}admin">
                         <button type="submit" aria-label="Home" data-microtip-position="bottom" role="tooltip"><i
                                 class="ti ti-home"></i></button>
-                    </form>
+                    </a>
                     <li role="list" dir="rtl">
                         <button aria-haspopup="listbox" aria-label="Settings" data-microtip-position="top" role="tooltip"><i
                             class="ti ti-settings-filled"></i></button>
@@ -33,6 +33,10 @@
                             <li><a href="{server_url}admin/subforums">Subforums</a></li>
                         </ul>
                     </li>
+                    <a href="{server_url}" target="_blank">
+                        <button type="submit" aria-label="View forum" data-microtip-position="bottom" role="tooltip"><i
+                                class="ti ti-zoom-filled"></i></button>
+                    </a>
                 </div>
             </nav>
         </header>
@@ -43,7 +47,6 @@
 
     <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
     {error}
-    <script src="{server_url}assets\javascripts\request.js"></script>
     <script src="{server_url}assets\javascripts\toastify.js"></script>
 </body>
 </html>

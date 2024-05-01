@@ -1,3 +1,39 @@
 <div id="preprefixes">
     {prefixes}
 </div>
+
+<script>
+    window.onload = () => {
+        const modals = document.querySelectorAll('.modal');
+        let modal = null;
+
+        modals.forEach(modal => {
+            const button = modal.querySelector('button');
+            button.addEventListener('click', () => {
+                const formData = new FormData(modal.querySelector('form'));
+            
+                const formObject = {};
+                formData.forEach((value, key) => {
+                    formObject[key] = value;
+                });
+                
+                let uri = '{server_url}/api/prefixes/' + formObject.type + '/' + formObject.prefixid;
+                req('POST', uri, JSON.stringify(formObject), (msg, data) => {
+                    if(msg !== null)
+                        toast(msg);
+
+                    try {
+                        if (data !== null) {
+                            let d = JSON.parse(data);
+                            toast(d.data.message, 5, '53, 255, 53');
+                        } else {
+                            toast('Data is null');
+                        }
+                    } catch (error) {
+                        toast('Error parsing JSON data: ' + error.message);
+                    }
+                });
+            });
+        });
+    }
+</script>

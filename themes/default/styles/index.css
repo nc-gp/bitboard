@@ -51,6 +51,7 @@
 
 .category .category_container .preforum h2 {
     cursor: pointer;
+    margin: 0;
 }
 
 .category .category_container .preforum:first-of-type {
