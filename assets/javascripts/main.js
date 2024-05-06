@@ -6,7 +6,9 @@ action_elements.forEach(element => {
     element.addEventListener('click', event => {
         let action = event.target.getAttribute('bb-action')
         let target = event.target.getAttribute('target')
-        embedder.setAttribute('visibility', true)
+        if (target) {
+            embedder.setAttribute('visibility', true)
+        }
 
         switch (action) {
             case 'web':
@@ -21,6 +23,9 @@ action_elements.forEach(element => {
                 break;
             case 'window':
                 window.open(target)
+                break;
+            case 'modal':
+                modal(title, message, customAction)
                 break;
         }
     })
@@ -52,10 +57,10 @@ const web = (target) => {
 
 const display = (identifier) => {
     const target = document.querySelector(identifier);
-    //const clone = target.cloneNode(true);
+    const clone = target.cloneNode(true);
 
     embed.innerHTML = '';
-    embed.appendChild(target);
+    embed.appendChild(clone);
 
     const embedChild = document.querySelector('#embed').firstElementChild;
     if (embedChild.hasAttribute('hidden')) {
@@ -95,7 +100,42 @@ const req = (method, url, data = null, callback = null) => {
     xhr.send(data);
 };
 
+const modal = (title, message, customAction) => {
+    // Create modal elements
+    let modal = document.createElement('div');
+    modal.classList.add('modal');
 
+    let modalContent = document.createElement('div');
+    modalContent.classList.add('modal-content');
+
+    let modalTitle = document.createElement('h2');
+    modalTitle.textContent = title;
+
+    let modalMessage = document.createElement('p');
+    modalMessage.textContent = message;
+
+    let cancelButton = document.createElement('button');
+    cancelButton.innerHTML = 'NO';
+    cancelButton.addEventListener('click', function () {
+        document.body.removeChild(modal);
+    });
+
+    let okButton = document.createElement('button');
+    okButton.innerHTML = 'YES';
+    okButton.addEventListener('click', function () {
+        customAction();
+        document.body.removeChild(modal);
+    });
+
+    modalContent.appendChild(modalTitle);
+    modalContent.appendChild(modalMessage);
+    modalContent.appendChild(okButton);
+    modalContent.appendChild(cancelButton);
+    modal.appendChild(modalContent);
+
+    // Append modal to the body
+    document.body.appendChild(modal);
+}
 //Theme switcher
 const themeSwitcher = {
 
