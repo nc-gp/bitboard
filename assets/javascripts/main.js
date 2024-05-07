@@ -25,7 +25,10 @@ action_elements.forEach(element => {
                 window.open(target)
                 break;
             case 'modal':
-                modal(title, message, customAction)
+                let title = event.target.getAttribute('title')
+                let message = event.target.getAttribute('message')
+                let onconfirm = event.target.getAttribute('onconfirm')
+                modal(title, message, onconfirm)
                 break;
         }
     })
@@ -50,8 +53,10 @@ const web = (target) => {
     if (target !== 'none') {
         embed.innerHTML = '';
         const iframe = document.createElement('iframe');
+        iframe.setAttribute('allow', 'autoplay'); // Allow autoplay
         embed.appendChild(iframe);
         iframe.setAttribute('src', target);
+        embedder.setAttribute('visibility', true);
     }
 };
 
@@ -100,8 +105,8 @@ const req = (method, url, data = null, callback = null) => {
     xhr.send(data);
 };
 
-const modal = (title, message, customAction) => {
-    // Create modal elements
+const modal = (title, message, onconfirm) => {
+    document.body.style.overflow = 'hidden';
     let modal = document.createElement('div');
     modal.classList.add('modal');
 
@@ -115,15 +120,17 @@ const modal = (title, message, customAction) => {
     modalMessage.textContent = message;
 
     let cancelButton = document.createElement('button');
-    cancelButton.innerHTML = 'NO';
+    cancelButton.innerHTML = 'Close';
     cancelButton.addEventListener('click', function () {
+        document.body.style.overflow = '';
         document.body.removeChild(modal);
     });
 
     let okButton = document.createElement('button');
-    okButton.innerHTML = 'YES';
+    okButton.innerHTML = 'Continue';
     okButton.addEventListener('click', function () {
-        customAction();
+        eval(onconfirm);
+        document.body.style.overflow = '';
         document.body.removeChild(modal);
     });
 
@@ -133,7 +140,6 @@ const modal = (title, message, customAction) => {
     modalContent.appendChild(cancelButton);
     modal.appendChild(modalContent);
 
-    // Append modal to the body
     document.body.appendChild(modal);
 }
 //Theme switcher
