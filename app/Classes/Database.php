@@ -2,6 +2,7 @@
 
 namespace App\Classes;
 
+use Exception;
 use mysqli;
 
 /**
@@ -11,7 +12,6 @@ class Database
 {
     private $connection;
     private $query;
-    private bool $show_errors = true;
     private bool $query_closed = true;
     public int $query_count = 0;
 
@@ -24,15 +24,14 @@ class Database
      * @param string $dbname   The database name.
      * @param string $charset  The character set for the database connection.
      */
-    public function __construct(string $dbhost = 'localhost', string $dbuser = 'root', string $dbpass = '', string $dbname = 'bitboard', string $charset = 'utf8')
+    public function __construct(string $dbhost = 'localhost', string $dbuser = 'root', string $dbpass = '', string $charset = 'utf8')
     {
         $this->connection = new mysqli($dbhost, $dbuser, $dbpass);
 
         if ($this->connection->connect_error)
-            $this->Error('Failed to connect to MySQL - ' . $this->connection->connect_error);
+            throw new Exception('Failed to connect: ' . $this->connection->connect_error);
 
         $this->connection->set_charset($charset);
-        $this->SelectDatabase($dbname);
     }
 
     /**
@@ -88,13 +87,13 @@ class Database
             $this->query->execute();
 
             if ($this->query->errno)
-                $this->Error('Unable to process MySQL query (check your params) - ' . $this->query->error);
+                throw new Exception('Unable to process MySQL query (check your params) - ' . $this->query->error);
 
             $this->query_closed = false;
             $this->query_count++;
         } 
         else
-            $this->Error('Unable to prepare MySQL statement (check your syntax) - ' . $this->connection->error);
+            throw new Exception('Unable to prepare MySQL statement (check your syntax) - ' . $this->connection->error);
 
         return $this;
     }
@@ -207,17 +206,6 @@ class Database
     public function LastInsertID()
     {
         return $this->connection->insert_id;
-    }
-
-    /**
-     * Display an error message and exit if show_errors is enabled.
-     *
-     * @param string $error The error message to display.
-     */
-    public function Error($error)
-    {
-        if ($this->show_errors)
-            exit($error);
     }
 
     /**
