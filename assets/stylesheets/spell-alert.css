@@ -1,0 +1,82 @@
+.sa-container-pre {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    z-index: 9999;
+}
+
+.sa-container {
+    max-width: 300px;
+    overflow: hidden;
+}
+
+.sa-notify {
+    background-color: #590096;
+    color: #fff;
+    padding: 10px 15px;
+    border-radius: 5px;
+    box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+    width: 240px;
+    animation: fadeIn .5s ease-in-out forwards;
+    transition: all .5s ease;
+    cursor: pointer;
+}
+
+.sa-notify:not(:last-child) {
+    margin-bottom: 10px;
+}
+
+.sa-notify h2 {
+    margin: 0;
+    font-size: 1.2rem;
+}
+
+.sa-notify p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: rgb(210, 210, 210);
+}
+
+.sa-notify-out {
+    animation: fadeOut .5s ease-in-out forwards;
+}
+
+.sa-notify-progress-bar {
+    background: rgba(0, 0, 0, 0.11);
+    height: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation-name: progressWidth;
+    animation-timing-function: linear;
+    animation-fill-mode: forwards;
+}
+
+@keyframes fadeIn {
+    0% {
+        opacity: 0;
+        transform: translateX(240px);
+    }
+    100% {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+@keyframes fadeOut {
+    0% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+    }
+}
+
+@keyframes progressWidth {
+    0% {
+        width: 100%;
+    }
+    100% {
+        width: 0%;
+    }
+}
