@@ -39,7 +39,8 @@ class BitBoard
 
 		require_once './app/config.php';
 
-		$this->database = new Database($config['host'], $config['user'], $config['pass'], $config['name']);
+		$this->database = new Database($config['host'], $config['user'], $config['pass']);
+		$this->database->SelectDatabase($config['name']);
 		$this->data = new ForumDataStruct($this->database->Query('SELECT * FROM bit_settings')->FetchArray());
 
 		define('BB_THEME', $this->data->forum_theme);
