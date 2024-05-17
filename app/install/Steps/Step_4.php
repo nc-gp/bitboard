@@ -13,6 +13,7 @@ use App\Classes\PasswordUtils;
 
 use App\Forum\Controllers\AccountController;
 use App\Classes\Database;
+use Exception;
 
 class Step_4 extends StepBase implements StepInterface
 {
@@ -78,17 +79,25 @@ class Step_4 extends StepBase implements StepInterface
 		}
 
 		require_once './app/config.php';
-		$NewUserDatabase = new Database($config['host'], $config['user'], $config['pass'], $config['name']);
 
-		AccountController::Create(
-			$NewUserDatabase,
-			$_POST['username'],
-			PasswordUtils::GetHash($_POST['password']),
-			$_POST['email'],
-			1
-		);
+		try {
+			$NewUserDatabase = new Database($config['host'], $config['user'], $config['pass']);
+			$NewUserDatabase->SelectDatabase($config['name']);
 
-		$NewUserDatabase->Close();
+			AccountController::Create(
+				$NewUserDatabase,
+				$_POST['username'],
+				PasswordUtils::GetHash($_POST['password']),
+				$_POST['email'],
+				1
+			);
+
+			$NewUserDatabase->Close();
+		}
+		catch (Exception $e) {
+			SessionManager::AddInformation('account', $e->getMessage(), true);
+			return;
+		}
 
 		parent::Handler();
 	}

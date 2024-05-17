@@ -19,6 +19,7 @@ use App\Classes\Permissions;
 use App\Forum\Controllers\PostController;
 use App\Forum\Controllers\SubForumController;
 use App\Forum\Controllers\PrefixController;
+
 use Exception;
 
 class Step_3 extends StepBase implements StepInterface
@@ -73,27 +74,6 @@ class Step_3 extends StepBase implements StepInterface
 			'name' => $_POST['name']
 		);
 
-		try 
-		{
-			$mysqli = mysqli_connect($config['host'], $config['user'], $config['pass']);
-			if(mysqli_connect_errno())
-			{
-				SessionManager::AddInformation('mysql', mysqli_connect_error(), true);
-				return;
-			}
-
-			if(!mysqli_query($mysqli, 'CREATE DATABASE IF NOT EXISTS ' . $config['name']))
-			{
-				SessionManager::AddInformation('mysql', mysqli_error($mysqli), true);
-				return;
-			}
-		} 
-		catch (Exception $e) 
-		{
-			SessionManager::AddInformation('mysql', $e->getMessage(), true);
-			return;
-		}
-
 		$configFile = new File('./app/config.php');
 		$data = '<?php' . "\n\n";
 		$data .= '$config["host"] = \'' . $config['host'] . '\';' . "\n";
@@ -103,48 +83,61 @@ class Step_3 extends StepBase implements StepInterface
 		$configFile->UpdateData($data);
 		$configFile->Save();
 
-		$InstallDatabase = new Database($config['host'], $config['user'], $config['pass'], $config['name']);
+		try {
+			$InstallDatabase = new Database($config['host'], $config['user'], $config['pass']);
 
-		$InstallDatabase->Query('CREATE TABLE IF NOT EXISTS bit_settings (
-			id TINYINT(1) UNSIGNED PRIMARY KEY,
-			forum_name VARCHAR(64) NOT NULL,
-			forum_description VARCHAR(256) NOT NULL,
-			forum_online TINYINT(1) NOT NULL,
-			forum_online_msg VARCHAR(1024) NOT NULL,
-			forum_theme VARCHAR(64) NOT NULL,
-			forum_force_login TINYINT(1) NOT NULL
-		)');
+			$InstallDatabase->Query('CREATE DATABASE IF NOT EXISTS ' . $config['name']);
 
-		$InstallDatabase->Query('INSERT INTO bit_settings 
-			(id,forum_name,forum_description,forum_online,forum_online_msg,forum_theme,forum_force_login) 
-			VALUES (?,?,?,?,?,?,?)', 
-			array(0, 'Forum', 'Your awesome forum', 1, 'Back soon.', 'default', 0)
-		);
+			$InstallDatabase->SelectDatabase($config['name']);
 
-		CategoryController::CreateTable($InstallDatabase);
-		CategoryController::Create($InstallDatabase, 'Global', 'Everything goes here', 'world');
+			$InstallDatabase->Query('CREATE TABLE IF NOT EXISTS bit_settings (
+				id TINYINT(1) UNSIGNED PRIMARY KEY,
+				forum_name VARCHAR(64) NOT NULL,
+				forum_description VARCHAR(256) NOT NULL,
+				forum_online TINYINT(1) NOT NULL,
+				forum_online_msg VARCHAR(1024) NOT NULL,
+				forum_theme VARCHAR(64) NOT NULL,
+				forum_force_login TINYINT(1) NOT NULL
+			)');
 
-		ForumController::CreateTable($InstallDatabase);
-		ForumController::Create($InstallDatabase, 1, 'Welcomes', 'Everyone says hello!', 'hand-stop', 1);
+			$InstallDatabase->Query('INSERT INTO bit_settings 
+				(id,forum_name,forum_description,forum_online,forum_online_msg,forum_theme,forum_force_login) 
+				VALUES (?,?,?,?,?,?,?)', 
+				array(0, 'Forum', 'Your awesome forum', 1, 'Back soon.', 'default', 0)
+			);
 
-		SubForumController::CreateTable($InstallDatabase);
+			CategoryController::CreateTable($InstallDatabase);
+			CategoryController::Create($InstallDatabase, 'Global', 'Everything goes here', 'world');
 
-		AccountController::CreateTable($InstallDatabase);
-		AccountController::Create($InstallDatabase, 'BitBot', '-', '-', 1);
+			ForumController::CreateTable($InstallDatabase);
+			ForumController::Create($InstallDatabase, 1, 'Welcomes', 'Everyone says hello!', 'hand-stop', 1);
 
-		ThreadController::CreateTable($InstallDatabase);
-		ThreadController::Create($InstallDatabase, 1, 'Hi!', '<h2>Welcome to Bitboard!</h2><br><p>Bitboard has been successfully installed.</p><br><p>If you have any questions or need assistance, feel free to explore our issues section on github. We\'re here to make your experience with BitBoard as smooth as possible.</p><br><br><p>Thank you for choosing BitBoard. We hope you enjoy using our app to its fullest!</p>', true, false, 0, 1);
+			SubForumController::CreateTable($InstallDatabase);
 
-		PostController::CreateTable($InstallDatabase);
+			AccountController::CreateTable($InstallDatabase);
+			AccountController::Create($InstallDatabase, 'BitBot', '-', '-', 1);
 
-		RankController::CreateTable($InstallDatabase);
-		RankController::Create($InstallDatabase, 'Admin', '<span style="color: #B22222">{username}</span>', Permissions::$All);
-		RankController::Create($InstallDatabase, 'User', '<span style="font-weight: bold">{username}</span>', Permissions::VIEWING_FORUM | Permissions::CREATING_POSTS | Permissions::CREATING_THREADS);
-		RankController::Create($InstallDatabase, 'Banned', '<span style="text-decoration: line-through">{username}</span>', 0);
+			ThreadController::CreateTable($InstallDatabase);
+			ThreadController::Create($InstallDatabase, 1, 'Hi!', '<h2>Welcome to Bitboard!</h2><br><p>Bitboard has been successfully installed.</p><br><p>If you have any questions or need assistance, feel free to explore our issues section on github. We\'re here to make your experience with BitBoard as smooth as possible.</p><br><br><p>Thank you for choosing BitBoard. We hope you enjoy using our app to its fullest!</p>', true, false, 0, 1);
 
-		PrefixController::CreateTable($InstallDatabase);
-		PrefixController::Create($InstallDatabase, 'Closed', 'prclose');
-		PrefixController::Create($InstallDatabase, 'Pinned', 'prpinned');
+			PostController::CreateTable($InstallDatabase);
+
+			RankController::CreateTable($InstallDatabase);
+			RankController::Create($InstallDatabase, 'Admin', '<span style="color: #B22222">{username}</span>', Permissions::$All);
+			RankController::Create($InstallDatabase, 'User', '<span style="font-weight: bold">{username}</span>', Permissions::VIEWING_FORUM | Permissions::CREATING_POSTS | Permissions::CREATING_THREADS);
+			RankController::Create($InstallDatabase, 'Banned', '<span style="text-decoration: line-through">{username}</span>', 0);
+
+			PrefixController::CreateTable($InstallDatabase);
+			PrefixController::Create($InstallDatabase, 'Closed', 'prclose');
+			PrefixController::Create($InstallDatabase, 'Pinned', 'prpinned');
+
+			$InstallDatabase->Close();
+		}
+		catch (Exception $e)
+		{
+			SessionManager::AddInformation('mysql', $e->getMessage(), true);
+			return;
+		}
 
 		parent::Handler();
 	}
