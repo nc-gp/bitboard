@@ -600,7 +600,7 @@ body>main {
 }
 
 section {
-    margin-bottom: var(--block-spacing-vertical)
+    /* margin-bottom: var(--block-spacing-vertical) */
 }
 
 figure {

@@ -2,6 +2,7 @@ html,
 body {
     font-family: -apple-system, BlinkMacSystemFont, "Avenir Next", Avenir, "Nimbus Sans L", Roboto, "Noto Sans", "Segoe UI", Arial, Helvetica, "Helvetica Neue", sans-serif;
     scroll-behavior: smooth;
+    align-content: center;
 }
 
 [role=button]:hover,
@@ -207,11 +208,18 @@ embedder #embed IFRAME {
     width: 100%;
     height: 100%;
     background-color: var(--opposite-x2);
+    backdrop-filter: blur(2px);
+}
+
+.modal BUTTON {
+    display: inline-block;
+    width: auto;
+    margin: 0 2px;
 }
 
 .modal-content {
     background-color: var(--background-color);
     padding: 20px;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
 }
