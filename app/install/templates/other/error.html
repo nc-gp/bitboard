@@ -1,14 +1,12 @@
 <script>
-    Toastify({
-        text: "{error}",
-        duration: 5000,
-        close: true,
-        gravity: "bottom",
-        position: "right",
-        stopOnFocus: true,
-        style: {
-            background: "rgb(255, 53, 53)",
-            boxShadow: "0 3px 6px -1px rgba(255, 53, 53,.12),0 10px 36px -4px rgba(255, 53, 53,.3)"
-        }
-    }).showToast();
+    // actually we can create html element casually without javascript. then fetch and pass element through parameter...
+    const el_error = spell_element.f('div', {}, [
+        spell_element.f('h2', {}, ['Error has occured!']),
+        spell_element.f('p', {}, [`{error}`]),
+        spell_element.f('div', {}, [
+            spell_element.f('button', {sm_action: 'close'}, ['Got it'])
+        ])
+    ]);
+
+    spell_modal.Cast(el_error);
 </script>

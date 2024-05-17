@@ -9,18 +9,11 @@ const showErrorToast = (name, text) =>
     if(!showError)
         return;
 
-    Toastify({
-        text: name + text,
-        duration: 5000,
-        close: true,
-        gravity: "bottom",
-        position: "right",
-        stopOnFocus: true,
-        style: {
-            background: "rgb(255, 53, 53)",
-            boxShadow: "0 3px 6px -1px rgba(255, 53, 53,.12),0 10px 36px -4px rgba(255, 53, 53,.3)"
-        }
-    }).showToast();
+    spell_alert.Cast({
+        title: name,
+        description: text,
+        time: 5000
+    });
 }
 
 // Function to validate a single input element
