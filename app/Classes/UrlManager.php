@@ -35,17 +35,23 @@ class UrlManager
     /**
      * Get the base URL path for the current application.
      *
-     * @return string The base URL path (e.g., "http://example.com/myapp").
+     * Always returns a value with a trailing slash and forward slashes so it can
+     * be safely concatenated with relative routes such as "login" or "forum/1".
+     *
+     * @return string The base URL (e.g., "https://example.com/myapp/").
      */
     static public function GetPath(): string
     {
         $protocol = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https://' : 'http://';
-        $host = $_SERVER['HTTP_HOST'];
+        $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 
-        $directory = dirname($_SERVER['PHP_SELF']);
-        $urlPath = $protocol . $host . $directory;
+        $script = $_SERVER['SCRIPT_NAME'] ?? $_SERVER['PHP_SELF'] ?? '/index.php';
+        $directory = rtrim(str_replace('\\', '/', dirname($script)), '/');
 
-        return $urlPath;
+        if ($directory === '.' || $directory === '/')
+            $directory = '';
+
+        return $protocol . $host . $directory . '/';
     }
 }
 
