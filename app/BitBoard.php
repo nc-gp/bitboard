@@ -12,7 +12,6 @@ use App\Classes\Console;
 use App\Classes\Permissions;
 use App\Classes\SessionManager;
 use App\Forum\Controllers\AccountController;
-use App\Forum\Pages\IndexPage;
 
 use App\Forum\Structs\ForumDataStruct;
 
@@ -97,7 +96,7 @@ class BitBoard
 			return; 
 		}
 
-		new IndexPage($this->database, $this->data);
+		PageFactory::CreatePage('index', $this->database, $this->data);
 	}
 
 	private function IsInstalled(): bool
