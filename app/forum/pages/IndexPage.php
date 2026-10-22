@@ -30,9 +30,6 @@ class IndexPage extends PageBase implements PageInterface
     {
         parent::__construct($db, $data);
         $this->forumDesc = $data->forum_description;
-
-        // This is here only for index page.
-        $this->Do();
     }
 
     private function FetchLastAccount()
