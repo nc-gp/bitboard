@@ -66,9 +66,10 @@
 
 ### Platform note
 
-BitBoard has been developed on Windows. The current autoloader and a few asset paths use
-Windows backslashes, so Linux hosting currently requires the autoloader/path fixes that are
-tracked as **P0** in [TODO.md](TODO.md). Apache with `mod_rewrite` is the supported setup.
+BitBoard runs on Windows and Linux. The autoloader maps namespaces to directories with
+forward slashes, and `UrlManager::GetPath()` returns a normalized base URL with exactly one
+trailing slash, so root and subdirectory installs both work. Apache with `mod_rewrite` is the
+supported setup.
 
 ## Installation
 
@@ -141,7 +142,7 @@ location ^~ /app/ {
 ```text
 index.php                 Front controller (all forum pages)
 api.php                   JSON API front controller
-auto_loader.php           Class autoloader (P0: migrate to PSR-4)
+auto_loader.php           Class autoloader (PSR-4-style prefix mapping)
 .htaccess                 Pretty URLs and API routing
 app/
   BitBoard.php            Bootstrap: install check, config, DB, routing
@@ -180,8 +181,8 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 
 ### Now — correctness and security
 
-- [ ] Replace the autoloader with PSR-4 mapping and use forward slashes in URLs/paths (Linux support).
-- [ ] Fix the page lifecycle so pages are not rendered twice (`PageFactory` + `IndexPage`).
+- [x] Replace the autoloader with PSR-4-style mapping and use forward slashes in URLs/paths (Linux support).
+- [x] Fix the page lifecycle so pages are not rendered twice (`PageFactory` + `IndexPage`).
 - [ ] Add CSRF protection to login and admin API requests.
 - [ ] Escape user-controlled output and sanitize rich post content.
 - [ ] Harden sessions: regenerate ID on login, cookie flags, proper logout.

@@ -13,19 +13,20 @@ Items marked **good first issue** are small and self-contained.
 
 ### Platform and bootstrap
 
-- [ ] **Replace the autoloader with a PSR-4 implementation.** `auto_loader.php` builds paths
-  from the raw namespaced class name, which only works with Windows path separators.
-  On Linux the first `App\BitBoard` lookup fails. Map `App\` → `app/`, `Api\` → `Api/`, and
-  convert `\` to `/`. Add Composer autoloading later.
-- [ ] **Remove remaining backslash paths in URLs.** See `app/Classes/AvatarUtils.php:23-25`,
-  `themes/default/templates/footer/end.html:11`, and
-  `themes/default/templates/admin/admin.html:50`. Browsers and Linux servers expect `/`.
+- [x] **Replace the autoloader with a PSR-4-style implementation.** `auto_loader.php` now maps
+  explicit namespace prefixes (`App\Classes\`, `App\Forum\*`, `App\Install\`, `App\Interfaces\`,
+  `Api\Classes\`, `Api\POST\`) to directories with `__DIR__`, converts `\` to `/`, and uses
+  `require_once`. Composer autoloading remains a P3 item.
+- [x] **Remove remaining backslash paths in URLs.** Avatar, footer script, admin script, and
+  `ELEMENTS.html` asset URLs now use forward slashes on all platforms.
+- [x] **Normalize the application base URL.** `UrlManager::GetPath()` uses `SCRIPT_NAME`, converts
+  backslashes, and always returns exactly one trailing slash, so root and subdirectory installs
+  concatenate routes correctly.
 - [ ] **Create the missing avatar directory or stop linking to it.**
   `AvatarUtils::GetPath()` returns `assets/images/avatars/...`, but `assets/images` does not
   exist. Use a theme fallback and validate the stored filename.
-- [ ] **Fix the page lifecycle.** `PageFactory::CreatePage()` calls `Do()`, while
-  `IndexPage::__construct()` already calls `Do()`, so `/index` renders the page twice.
-  Standardize on one contract: constructor prepares, `Do()` renders, factory calls it once.
+- [x] **Fix the page lifecycle.** `IndexPage::__construct()` no longer calls `Do()`; `PageFactory`
+  is now the single caller, so `/` and `/index` render once.
 - [ ] **Guard the empty-URL path in `BitBoard::Do()`.** `app/BitBoard.php:60-65` reads
   `$SplitedURL[0]` when the array is empty. Restructure the offline/force-login checks and
   add tests for `/`, `/offline`, and `/login`.
@@ -151,7 +152,7 @@ Items marked **good first issue** are small and self-contained.
 - [ ] **Return real 404s for missing IDs.** Forum/thread/subforum handlers currently
   redirect invalid IDs to hardcoded IDs such as `forum/1/page/1`. Render `_404Page` with an
   HTTP 404 status instead.
-- [ ] **Fix `/index` duplicating output** (also listed under P0) and add a routing test.
+- [x] **Fix `/index` duplicating output** (also listed under P0); a routing test is still pending.
 - [ ] **Remove leftover template placeholders.** `themes/default/templates/index/index.html`
   contains `{top_stats}`, which `IndexPage` never replaces.
 - [ ] **Reduce query counts.**
