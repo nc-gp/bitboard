@@ -30,7 +30,7 @@
             });
 
             toast('Trying to update..', 2, '180, 180, 53');
-            req('POST', '{server_url}/api/settings', JSON.stringify(formObject), (msg, data) => {
+            req('POST', '{server_url}api/settings', JSON.stringify(formObject), (msg, data) => {
                 if(msg !== null) {
                     toast(msg);
                     return;
