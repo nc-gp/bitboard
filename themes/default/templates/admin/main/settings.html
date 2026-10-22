@@ -1,4 +1,5 @@
 <form id="settingsForm" method="post" action="{server_url}admin/settings/process">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
     <input type="text" name="forumname" placeholder="Forum name" aria-label="Forum name" required="" value="{forum_name}">
     <input type="text" name="forumdesc" placeholder="Forum description" aria-label="Forum description" required="" value="{forum_desc}">
 

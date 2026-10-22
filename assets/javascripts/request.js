@@ -14,6 +14,7 @@
  */
 const req = (method, url, data = null, callback = null) => {
     const xhr = new XMLHttpRequest();
+    const csrfMeta = document.querySelector('meta[name="csrf-token"]');
 
     xhr.onload = () => {
         if (xhr.status >= 200 && xhr.status < 300) {
@@ -22,7 +23,18 @@ const req = (method, url, data = null, callback = null) => {
             }
         } else {
             if (callback !== null) {
-                callback(`Request failed with status ${xhr.status}`, null);
+                let message = `Request failed with status ${xhr.status}`;
+
+                try {
+                    const response = JSON.parse(xhr.responseText);
+                    if (response !== null && response.data !== null && response.data.message) {
+                        message = response.data.message;
+                    }
+                } catch (error) {
+                    // Keep the HTTP status message when the body is not JSON.
+                }
+
+                callback(message, null);
             }
         }
     };
@@ -34,5 +46,10 @@ const req = (method, url, data = null, callback = null) => {
     };
 
     xhr.open(method, url);
+
+    if (csrfMeta !== null) {
+        xhr.setRequestHeader('X-CSRF-Token', csrfMeta.getAttribute('content'));
+    }
+
     xhr.send(data);
 };

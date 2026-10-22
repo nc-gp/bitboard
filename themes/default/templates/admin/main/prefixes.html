@@ -20,7 +20,10 @@
                 let uri = '{server_url}api/prefixes/' + formObject.type + '/' + formObject.prefixid;
                 req('POST', uri, JSON.stringify(formObject), (msg, data) => {
                     if(msg !== null)
+                    {
                         toast(msg);
+                        return;
+                    }
 
                     try {
                         if (data !== null) {

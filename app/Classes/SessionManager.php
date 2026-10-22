@@ -45,6 +45,50 @@ class SessionManager
     }
 
     /**
+     * Get the CSRF token for the current session, creating it when needed.
+     *
+     * @return string The session CSRF token.
+     */
+    static public function CsrfToken(): string
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE)
+            self::Start();
+
+        if (empty($_SESSION['bb_csrf_token']) || !is_string($_SESSION['bb_csrf_token']))
+            $_SESSION['bb_csrf_token'] = bin2hex(random_bytes(32));
+
+        return $_SESSION['bb_csrf_token'];
+    }
+
+    /**
+     * Validate a CSRF token against the one stored in the session.
+     *
+     * @param mixed $token The token submitted by the client.
+     * @return bool True when the token is valid.
+     */
+    static public function ValidateCsrfToken(mixed $token): bool
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE)
+            return false;
+
+        if (!isset($_SESSION['bb_csrf_token']) || !is_string($_SESSION['bb_csrf_token']) || !is_string($token))
+            return false;
+
+        return hash_equals($_SESSION['bb_csrf_token'], $token);
+    }
+
+    /**
+     * Replace the CSRF token with a fresh one.
+     */
+    static public function RotateCsrfToken(): void
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE)
+            self::Start();
+
+        $_SESSION['bb_csrf_token'] = bin2hex(random_bytes(32));
+    }
+
+    /**
      * Authenticate the user and regenerate the session ID.
      *
      * @param array $userData Account data.
@@ -58,6 +102,7 @@ class SessionManager
             throw new \RuntimeException('Unable to regenerate the session ID.');
 
         self::Set($userData);
+        self::RotateCsrfToken();
     }
 
     /**

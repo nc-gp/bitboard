@@ -29,16 +29,30 @@ class ApiMain
         $this->HandleURL();
         $this->HandleData();
 
+        if($this->req_method === 'POST' && !$this->IsCsrfTokenValid())
+            ApiResponse::Generate(ApiCodes::FORBIDDEN, ['message' => 'Invalid CSRF token']);
+
         $className = '\Api\\' . $this->req_method . '\\' . $this->for;
 
         if(!class_exists($className))
             ApiResponse::Generate(ApiCodes::BAD_REQUEST, ['message' => 'Bad request']);
 
         require_once './app/config.php';
-        $db = new Database($config['host'], $config['user'], $config['pass'], $config['name']);
+        $db = new Database($config['host'], $config['user'], $config['pass']);
+        $db->SelectDatabase($config['name']);
         $api = new $className($db, $this->data);
         $api->Response();
         $db->Close();
+    }
+
+    private function IsCsrfTokenValid(): bool
+    {
+        $headerToken = $_SERVER['HTTP_X_CSRF_TOKEN'] ?? '';
+        if(SessionManager::ValidateCsrfToken($headerToken))
+            return true;
+
+        $bodyToken = is_array($this->data) ? ($this->data['csrf_token'] ?? '') : '';
+        return SessionManager::ValidateCsrfToken($bodyToken);
     }
 
     private function IsAuthorizated()

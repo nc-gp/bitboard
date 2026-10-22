@@ -9,6 +9,7 @@
 
 <div id="edit-{prefix_id}" class="modal" hidden>
     <form>
+        <input type="hidden" name="csrf_token" value="{csrf_token}">
         <input type="hidden" name="type" value="edit">
         <input type="hidden" name="prefixid" value="{prefix_id}">
         <input type="text" name="prefixname" value="{prefix_name}">
@@ -19,6 +20,7 @@
 
 <div id="delete-{prefix_id}" class="modal" hidden>
     <form>
+        <input type="hidden" name="csrf_token" value="{csrf_token}">
         <input type="hidden" name="type" value="delete">
         <input type="hidden" name="prefixid" value="{prefix_id}">
     </form>

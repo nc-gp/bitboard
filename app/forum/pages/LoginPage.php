@@ -33,6 +33,12 @@ class LoginPage extends PageBase implements PageInterface
         if(!isset($_POST['username']))
             return;
 
+        if(!SessionManager::ValidateCsrfToken($_POST['csrf_token'] ?? ''))
+        {
+            SessionManager::AddInformation('login', 'Invalid request. Please try again.', true);
+            UrlManager::Redirect($this->serverPath . 'login');
+        }
+
         $account = AccountController::GetAccountByName($this->database, $_POST['username']);
         if(empty($account))
         {
