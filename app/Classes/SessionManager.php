@@ -10,6 +10,31 @@ use App\Forum\Structs\AccountStruct;
 class SessionManager
 {
     /**
+     * Start the session with hardened cookie settings.
+     */
+    static public function Start(): void
+    {
+        if (session_status() === PHP_SESSION_ACTIVE)
+            return;
+
+        $secure = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
+
+        ini_set('session.use_strict_mode', '1');
+        ini_set('session.use_only_cookies', '1');
+
+        session_set_cookie_params([
+            'lifetime' => 0,
+            'path' => '/',
+            'domain' => '',
+            'secure' => $secure,
+            'httponly' => true,
+            'samesite' => 'Lax'
+        ]);
+
+        session_start();
+    }
+
+    /**
      * Check if a user is currently logged in.
      *
      * @return bool True if a user is logged in; false otherwise.
@@ -20,12 +45,31 @@ class SessionManager
     }
 
     /**
-     * Check if a user is currently logged in.
+     * Authenticate the user and regenerate the session ID.
+     *
+     * @param array $userData Account data.
+     */
+    static public function Login(array $userData): void
+    {
+        if (session_status() !== PHP_SESSION_ACTIVE)
+            self::Start();
+
+        if (!session_regenerate_id(true))
+            throw new \RuntimeException('Unable to regenerate the session ID.');
+
+        self::Set($userData);
+    }
+
+    /**
+     * Store the authenticated user in the session.
      *
      * @param array $userData Account data.
      */
     static public function Set(array $userData): void
     {
+        if (session_status() !== PHP_SESSION_ACTIVE)
+            self::Start();
+
         $_SESSION['bitboard_logged'] = true;
         $_SESSION['bitboard_user'] = new AccountStruct($userData);
     }
@@ -35,8 +79,26 @@ class SessionManager
      */
     static public function Delete(): void
     {
-        unset($_SESSION['bitboard_user']);
-        unset($_SESSION['bitboard_logged']);
+        $_SESSION = [];
+
+        if (session_status() !== PHP_SESSION_ACTIVE)
+            return;
+
+        $params = session_get_cookie_params();
+
+        if (ini_get('session.use_cookies'))
+        {
+            setcookie(session_name(), '', [
+                'expires' => time() - 42000,
+                'path' => $params['path'],
+                'domain' => $params['domain'],
+                'secure' => $params['secure'],
+                'httponly' => $params['httponly'],
+                'samesite' => $params['samesite'] ?? 'Lax'
+            ]);
+        }
+
+        session_destroy();
     }
 
     /**

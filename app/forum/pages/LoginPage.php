@@ -49,7 +49,7 @@ class LoginPage extends PageBase implements PageInterface
             UrlManager::Redirect($this->serverPath . 'login');
         }
 
-        SessionManager::Set($account);
+        SessionManager::Login($account);
         UrlManager::Redirect($this->serverPath);
     }
 
