@@ -2,8 +2,6 @@
 
 namespace App;
 
-session_start();
-
 use App\Classes\Database;
 use App\Classes\PageFactory;
 use App\Classes\File;
@@ -16,6 +14,8 @@ use App\Forum\Controllers\AccountController;
 use App\Forum\Structs\ForumDataStruct;
 
 use Exception;
+
+SessionManager::Start();
 
 class BitBoard
 {
