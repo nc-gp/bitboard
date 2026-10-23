@@ -6,6 +6,8 @@ use App\Classes\PageBase;
 use App\Classes\Database;
 use App\Classes\UrlManager;
 use App\Classes\Template;
+use App\Classes\Permissions;
+use App\Classes\SessionManager;
 use App\Forum\Widgets\PaginationWidget;
 use App\Interfaces\PageInterface;
 
@@ -48,9 +50,16 @@ class SubforumPage extends PageBase implements PageInterface
         if ($this->subforumPage <= 0 || $this->subforumID <= 0)
             UrlManager::Redirect($this->serverPath . 'subforum/1/page/1');
 
-        $subforumID = $this->database->Query('SELECT id FROM bit_subforums WHERE id = ?', $this->subforumID)->FetchArray();
-        if (empty($subforumID))
+        $subforum = $this->database->Query('SELECT sf.id, sf.forum_id, sf.is_locked, f.is_locked AS forum_locked
+            FROM bit_subforums AS sf
+            JOIN bit_forums AS f ON f.id = sf.forum_id
+            WHERE sf.id = ?', $this->subforumID)->FetchArray();
+        if (empty($subforum))
             UrlManager::Redirect($this->serverPath . 'subforum/1/page/1');
+
+        $isLocked = (int) $subforum['is_locked'] === 1 || (int) $subforum['forum_locked'] === 1;
+        if ($isLocked && !SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED))
+            UrlManager::Redirect($this->serverPath);
     }
 
     private function FetchThreads()

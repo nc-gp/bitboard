@@ -116,6 +116,21 @@ class SessionManager
     }
 
     /**
+     * Check whether the current session belongs to a user with a permission.
+     *
+     * @param int $permission The permission bit to check.
+     * @return bool True when a logged-in user has the permission.
+     */
+    static public function HasPermission(int $permission): bool
+    {
+        return self::IsLogged()
+            && isset($_SESSION['bitboard_user'])
+            && is_object($_SESSION['bitboard_user'])
+            && method_exists($_SESSION['bitboard_user'], 'HasPermission')
+            && $_SESSION['bitboard_user']->HasPermission($permission);
+    }
+
+    /**
      * Get the CSRF token for the current session, creating it when needed.
      *
      * @return string The session CSRF token.

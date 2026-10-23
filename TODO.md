@@ -65,9 +65,12 @@ Items marked **good first issue** are small and self-contained.
   10 per IP in a 15-minute sliding window. Successful logins clear that account's failures,
   and rows older than 7 days are pruned as new failures are recorded. New installs create
   the table in step 3; existing installs create it on the first login attempt.
-- [ ] **Enforce locked forum/subforum permissions.** `is_locked` exists on forums and
-  subforums but is never checked. Apply `Permissions::VIEWING_FORUM_LOCKED` in
-  `ForumPage`, `SubforumPage`, `ThreadPage`, and the API.
+- [x] **Enforce locked forum/subforum permissions.** `is_locked` is now checked in
+  `ForumPage`, `SubforumPage`, and `ThreadPage`. Users without
+  `Permissions::VIEWING_FORUM_LOCKED` are redirected to the forum index, and a locked
+  parent forum also protects its subforums and their threads. The current API exposes
+  only settings/prefix routes, so there is no forum-content API surface yet; future
+  forum endpoints must apply the same check.
 - [x] **Use granular API permissions.** `ApiMain` now resolves a route before applying its
   declared permission. Settings and prefix updates require both `ADMIN_PANEL_ACCESS` and
   `MANAGING_SETTINGS`; guests receive `401`, authenticated users without the required

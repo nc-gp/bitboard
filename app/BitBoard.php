@@ -57,9 +57,7 @@ class BitBoard
 
 		if(!$this->IsOnline())
 		{
-			$canViewLocked = SessionManager::IsLogged()
-				&& isset($_SESSION['bitboard_user'])
-				&& $_SESSION['bitboard_user']->HasPermission(Permissions::VIEWING_FORUM_LOCKED);
+			$canViewLocked = SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED);
 
 			if((count($SplitedURL) > 1 || empty($SplitedURL)) && !$canViewLocked && $firstParameter !== 'login')
 				UrlManager::Redirect(UrlManager::GetPath() . 'offline');
@@ -78,7 +76,7 @@ class BitBoard
 			$_SESSION['bitboard_user']->Update($this->database);
 			
 			// Checking is user banned. (Reality this is checking if user has permission to view the forum)
-			if(!$_SESSION['bitboard_user']->HasPermission(Permissions::VIEWING_FORUM))
+			if(!SessionManager::HasPermission(Permissions::VIEWING_FORUM))
 			{
 				if(count($SplitedURL) > 1 || empty($SplitedURL))
 					UrlManager::Redirect(UrlManager::GetPath() . 'banned');

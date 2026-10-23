@@ -10,6 +10,8 @@ use App\Classes\UsernameUtils;
 use App\Classes\RelativeTime;
 use App\Classes\UrlManager;
 use App\Classes\HtmlSanitizer;
+use App\Classes\Permissions;
+use App\Classes\SessionManager;
 
 use App\Interfaces\PageInterface;
 
@@ -51,9 +53,17 @@ class ThreadPage extends PageBase implements PageInterface
         if ($this->threadPage <= 0 || $this->threadID <= 0)
             UrlManager::Redirect($this->serverPath . 'thread/1/page/1');
 
-        $threadID = $this->database->Query('SELECT id FROM bit_threads WHERE id = ?', $this->threadID)->FetchArray();
-        if (empty($threadID))
+        $thread = $this->database->Query('SELECT t.id, f.is_locked AS forum_locked, sf.is_locked AS subforum_locked
+            FROM bit_threads AS t
+            JOIN bit_forums AS f ON f.id = t.forum_id
+            LEFT JOIN bit_subforums AS sf ON sf.id = t.subforum_id
+            WHERE t.id = ?', $this->threadID)->FetchArray();
+        if (empty($thread))
             UrlManager::Redirect($this->serverPath . 'thread/1/page/1');
+
+        $isLocked = (int) $thread['forum_locked'] === 1 || (int) ($thread['subforum_locked'] ?? 0) === 1;
+        if ($isLocked && !SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED))
+            UrlManager::Redirect($this->serverPath);
     }
 
     private function fetchThread()

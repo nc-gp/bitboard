@@ -35,6 +35,7 @@
 - Page/controller/widget/template architecture with a bundled default theme.
 - Categories → forums → subforums browsing.
 - Thread and post viewing with relative timestamps.
+- Locked forums/subforums and their threads require the `VIEWING_FORUM_LOCKED` permission.
 - User login/logout with bcrypt password hashes, username or email login, and bitmask-based
   ranks/permissions.
 - Session idle/absolute timeouts (30 minutes idle, 12 hours absolute) with re-login notices.
@@ -201,6 +202,7 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] Restore notifications; remove references to missing Toastify assets.
 - [x] Use generic login errors and support username or email login; remove the ignored "remember me" option.
 - [x] Add login rate limiting and failure logging.
+- [x] Enforce locked forum/subforum permissions.
 
 ### Next — a usable forum
 

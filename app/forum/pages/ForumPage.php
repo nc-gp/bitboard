@@ -10,6 +10,8 @@ use App\Classes\AvatarUtils;
 use App\Classes\UsernameUtils;
 use App\Classes\RelativeTime;
 use App\Classes\UrlManager;
+use App\Classes\Permissions;
+use App\Classes\SessionManager;
 
 use App\Interfaces\PageInterface;
 
@@ -52,9 +54,12 @@ class ForumPage extends PageBase implements PageInterface
         if ($this->forumPage <= 0 || $this->forumID <= 0)
             UrlManager::Redirect($this->serverPath . 'forum/1/page/1');
 
-        $forumID = $this->database->Query('SELECT id FROM bit_forums WHERE id = ?', $this->forumID)->FetchArray();
-        if (empty($forumID))
+        $forum = $this->database->Query('SELECT id, is_locked FROM bit_forums WHERE id = ?', $this->forumID)->FetchArray();
+        if (empty($forum))
             UrlManager::Redirect($this->serverPath . 'forum/1/page/1');
+
+        if ((int) $forum['is_locked'] === 1 && !SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED))
+            UrlManager::Redirect($this->serverPath);
     }
 
     private function FetchSubForums()
