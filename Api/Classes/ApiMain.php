@@ -12,9 +12,19 @@ use App\Classes\Database;
 class ApiMain
 {
     // Explicit route allowlist. Never derive a class name directly from request input.
+    // Each route also declares the permission required to use it.
     private const ROUTES = [
         'POST' => [
-            'api/settings' => 'Settings',
+            'api/settings' => [
+                'class' => 'Settings',
+                'permission' => Permissions::MANAGING_SETTINGS,
+            ],
+            // Prefix edit/delete requests arrive as api/prefixes/{edit|delete}/{id}.
+            // HandleURL() maps those paths to this entry and injects the route parameters.
+            'api/prefixes' => [
+                'class' => 'Prefixes',
+                'permission' => Permissions::MANAGING_SETTINGS,
+            ],
         ],
     ];
 
@@ -24,17 +34,28 @@ class ApiMain
     private $req_method;
     private $for;
 
+    private int $requiredPermission = 0;
+    private array $routeParameters = [];
+
     public function __construct()
     {
         $this->req_method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         if(!in_array($this->req_method, $this->methods))
             ApiResponse::Generate(ApiCodes::METHOD_NOT_ALLOWED, ['message' => 'Method not allowed']);
 
-        if(!$this->IsAuthorizated())
+        if(!$this->IsAuthenticated())
             ApiResponse::Generate(ApiCodes::UNAUTHORIZED, ['message' => 'Unauthorized']);
 
         $this->HandleURL();
+
+        if(!$this->HasRequiredPermission())
+            ApiResponse::Generate(ApiCodes::FORBIDDEN, ['message' => 'Forbidden']);
+
         $this->HandleData();
+
+        // Route parameters are authoritative over values repeated in the JSON body.
+        if(!empty($this->routeParameters))
+            $this->data = array_merge($this->data, $this->routeParameters);
 
         if($this->req_method === 'POST' && !$this->IsCsrfTokenValid())
             ApiResponse::Generate(ApiCodes::FORBIDDEN, ['message' => 'Invalid CSRF token']);
@@ -70,9 +91,22 @@ class ApiMain
         return SessionManager::ValidateCsrfToken($bodyToken);
     }
 
-    private function IsAuthorizated()
+    private function IsAuthenticated(): bool
     {
-        return SessionManager::IsLogged() && $_SESSION['bitboard_user']->HasPermission(Permissions::ADMIN_PANEL_ACCESS);
+        return SessionManager::IsLogged()
+            && isset($_SESSION['bitboard_user'])
+            && is_object($_SESSION['bitboard_user'])
+            && method_exists($_SESSION['bitboard_user'], 'HasPermission');
+    }
+
+    private function HasRequiredPermission(): bool
+    {
+        $user = $_SESSION['bitboard_user'];
+
+        if(!$user->HasPermission(Permissions::ADMIN_PANEL_ACCESS))
+            return false;
+
+        return $this->requiredPermission === 0 || $user->HasPermission($this->requiredPermission);
     }
 
     private function HandleData()
@@ -101,9 +135,32 @@ class ApiMain
         $route = self::ROUTES[$this->req_method][$api] ?? null;
 
         if($route === null)
+        {
+            // Prefix edits/deletes carry their action and ID in the path.
+            $segments = explode('/', $api);
+
+            if(
+                count($segments) === 4 &&
+                $segments[0] === 'api' &&
+                $segments[1] === 'prefixes' &&
+                in_array($segments[2], array('edit', 'delete'), true) &&
+                ctype_digit($segments[3]) &&
+                (int) $segments[3] > 0
+            )
+            {
+                $route = self::ROUTES[$this->req_method]['api/prefixes'] ?? null;
+                $this->routeParameters = [
+                    'type' => $segments[2],
+                    'prefixid' => (int) $segments[3],
+                ];
+            }
+        }
+
+        if($route === null)
             ApiResponse::Generate(ApiCodes::BAD_REQUEST, ['message' => 'Bad request']);
 
-        $this->for = $route;
+        $this->for = $route['class'];
+        $this->requiredPermission = (int) $route['permission'];
     }
 }
 

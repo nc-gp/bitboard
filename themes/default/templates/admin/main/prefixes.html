@@ -3,40 +3,126 @@
 </div>
 
 <script>
-    window.onload = () => {
-        const modals = document.querySelectorAll('.modal');
-        let modal = null;
+    const closeEmbed = () => {
+        const embedder = document.querySelector('embedder');
+        const embed = document.querySelector('#embed');
 
-        modals.forEach(modal => {
-            const button = modal.querySelector('button');
-            button.addEventListener('click', () => {
-                const formData = new FormData(modal.querySelector('form'));
-            
-                const formObject = {};
-                formData.forEach((value, key) => {
-                    formObject[key] = value;
-                });
-                
-                let uri = '{server_url}api/prefixes/' + formObject.type + '/' + formObject.prefixid;
-                req('POST', uri, JSON.stringify(formObject), (msg, data) => {
-                    if(msg !== null)
-                    {
-                        toast(msg);
-                        return;
-                    }
+        if (embedder !== null)
+            embedder.setAttribute('visibility', 'false');
 
-                    try {
-                        if (data !== null) {
-                            let d = JSON.parse(data);
-                            toast(d.data.message, 5, '53, 255, 53');
-                        } else {
-                            toast('Data is null');
-                        }
-                    } catch (error) {
-                        toast('Error parsing JSON data: ' + error.message);
-                    }
-                });
-            });
+        if (embed !== null)
+            embed.innerHTML = '';
+    };
+
+    const updatePrefixRow = (type, prefixId, formObject) => {
+        const editModal = document.getElementById('edit-' + prefixId);
+        const deleteModal = document.getElementById('delete-' + prefixId);
+        const prefixRow = editModal !== null ? editModal.previousElementSibling : null;
+
+        if (type === 'delete') {
+            if (prefixRow !== null)
+                prefixRow.remove();
+
+            if (editModal !== null)
+                editModal.remove();
+
+            if (deleteModal !== null)
+                deleteModal.remove();
+
+            return;
+        }
+
+        const prefixName = (formObject.prefixname || '').trim();
+        const prefixClass = (formObject.prefixclass || '').trim();
+
+        if (prefixRow !== null) {
+            const nameElement = prefixRow.querySelector('.prefix_name');
+            const classElement = prefixRow.querySelector('.prefix_class');
+
+            if (nameElement !== null)
+                nameElement.textContent = prefixName;
+
+            if (classElement !== null)
+                classElement.textContent = prefixClass;
+        }
+
+        if (editModal !== null) {
+            const nameInput = editModal.querySelector('input[name="prefixname"]');
+            const classInput = editModal.querySelector('input[name="prefixclass"]');
+
+            if (nameInput !== null)
+                nameInput.value = prefixName;
+
+            if (classInput !== null)
+                classInput.value = prefixClass;
+        }
+
+        if (deleteModal !== null) {
+            const question = deleteModal.querySelector('p');
+
+            if (question !== null)
+                question.textContent = 'Do you want to delete prefix "' + prefixName + '"?';
+        }
+    };
+
+    // The modal is cloned by main.js when it is displayed, so listeners attached to the
+    // original hidden modal would be lost. Delegate from the document instead.
+    document.addEventListener('click', event => {
+        const button = event.target.closest('#embed .modal button[type="submit"]');
+
+        if (button === null)
+            return;
+
+        const modal = button.closest('.modal');
+        const form = modal !== null ? modal.querySelector('form') : null;
+
+        if (form === null)
+            return;
+
+        event.preventDefault();
+
+        const formData = new FormData(form);
+        const formObject = {};
+
+        formData.forEach((value, key) => {
+            formObject[key] = value;
         });
-    }
+
+        const type = formObject.type;
+        const prefixId = formObject.prefixid;
+
+        if ((type !== 'edit' && type !== 'delete') || !/^\d+$/.test(prefixId)) {
+            toast('Invalid prefix data.');
+            return;
+        }
+
+        const uri = '{server_url}api/prefixes/' + type + '/' + prefixId;
+
+        req('POST', uri, JSON.stringify(formObject), (msg, data) => {
+            if (msg !== null) {
+                toast(msg);
+                return;
+            }
+
+            if (data === null) {
+                toast('Data is null');
+                return;
+            }
+
+            try {
+                const response = JSON.parse(data);
+
+                if (response === null || response.data === null || !response.data.message) {
+                    toast('Invalid API response');
+                    return;
+                }
+
+                toast(response.data.message, 5, '53, 255, 53');
+                updatePrefixRow(type, prefixId, formObject);
+                closeEmbed();
+            } catch (error) {
+                toast('Error parsing JSON data: ' + error.message);
+            }
+        });
+    });
 </script>

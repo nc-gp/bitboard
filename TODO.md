@@ -64,9 +64,10 @@ Items marked **good first issue** are small and self-contained.
 - [ ] **Enforce locked forum/subforum permissions.** `is_locked` exists on forums and
   subforums but is never checked. Apply `Permissions::VIEWING_FORUM_LOCKED` in
   `ForumPage`, `SubforumPage`, `ThreadPage`, and the API.
-- [ ] **Use granular API permissions.** `ApiMain::IsAuthorizated()` only checks
-  `ADMIN_PANEL_ACCESS`; settings updates should require `MANAGING_SETTINGS`, prefix changes
-  the matching permission, and so on.
+- [x] **Use granular API permissions.** `ApiMain` now resolves a route before applying its
+  declared permission. Settings and prefix updates require both `ADMIN_PANEL_ACCESS` and
+  `MANAGING_SETTINGS`; guests receive `401`, authenticated users without the required
+  permission receive `403`.
 - [ ] **Remove the installer from the public path after setup.** `app/install/lock` is the
   only guard. Ensure the installer directory is not writable by the app in production and
   document the lock/step files as sensitive.
@@ -88,13 +89,15 @@ Items marked **good first issue** are small and self-contained.
   passing the database name as the charset and calls `SelectDatabase($config['name'])`.
 - [x] **Validate API routes.** `ApiMain::HandleURL()` now uses an explicit method/route/class
   allowlist, rejects non-string or unknown routes before `class_exists()`/autoloading, and
-  currently exposes `api/settings` only. Add new endpoints to the allowlist.
-- [ ] **Fix `Api/POST/Prefixes.php`.** The file declares `class Settings`, so
-  `ApiMain` can never find `Api\POST\Prefixes`. Rename the class and implement edit/delete
-  with authorization, validation, and prepared statements.
-- [ ] **Tighten `Api/POST/Settings.php`.** `empty($data['forumonline'])` rejects a valid empty
-  offline message; there are no length/type checks. Validate input, use `isset()`, and return
-  structured errors.
+  exposes `api/settings` plus the prefix edit/delete routes. New endpoints must be added to
+  the allowlist.
+- [x] **Fix `Api/POST/Prefixes.php`.** The file now declares `class Prefixes` and implements
+  edit/delete with route-authoritative IDs, prepared statements, name/class length and CSS
+  class validation, built-in-prefix protection, not-found handling, and a conflict check when
+  a prefix is still used by threads.
+- [x] **Tighten `Api/POST/Settings.php`.** The endpoint now validates field presence and types,
+  enforces the database column limits, accepts an empty offline message, parses boolean flags
+  explicitly, uses prepared statements, and returns field-level errors for bad input.
 - [x] **Restrict CORS and response details.** `api.php` no longer sends wildcard CORS
   headers. Invalid JSON returns a generic message, and endpoint/database exceptions are
   logged and returned as a generic 500 instead of leaking details.
@@ -243,7 +246,7 @@ Items marked **good first issue** are small and self-contained.
 - [ ] Rank/permission matrix editor with readable labels for every bit flag.
 - [ ] Audit log for admin actions and moderator actions.
 - [ ] Admin dashboard statistics and recent activity.
-- [ ] Finish the prefix edit/delete API and add validation.
+- [x] Finish the prefix edit/delete API and add validation.
 
 ### Discovery and profiles
 

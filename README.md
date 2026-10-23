@@ -38,21 +38,21 @@
 - User login/logout with bcrypt password hashes, username or email login, and bitmask-based
   ranks/permissions.
 - Members list with online/offline state.
-- Admin panel shell with forum settings and prefix list.
+- Admin panel shell with forum settings and prefix management (edit/delete).
 - Theme system with the bundled `default` theme and light/dark/auto switcher.
 - Offline mode, force-login mode, banned page, and a 404 page.
 - Output escaping for user-controlled text and allowlist sanitization for rich thread/post HTML.
 
 ### Incomplete or not implemented yet
 
-- **Admin JSON API** — session auth, CSRF, route allowlisting, and the settings endpoint
-  work; the prefixes endpoint is unfinished.
+- **Admin JSON API** — session auth, CSRF, route allowlisting, granular permission checks,
+  and the settings and prefix edit/delete endpoints work. There is no prefix creation UI yet.
 - **Registration** — the UI links to `/register`, but the page does not exist yet.
 - **Creating, replying to, editing, or deleting threads/posts** — no write UI yet.
 - **Profiles** — `ProfilePage` renders an empty template and does not load a user.
 - **Account settings** — the user menu links to `/settings`, which is not implemented.
 - **Admin CRUD** — categories, forums, subforums, users, and ranks are not manageable yet.
-- **Prefix editing** — the admin API route and class names do not match yet.
+- **Prefix creation** — existing custom prefixes can be edited/deleted, but there is no create UI yet.
 - **Likes, reports, moderation tools, search, avatars/uploads.**
 - **Email verification and password reset.**
 - **Login rate limiting and session idle/absolute timeouts.**
@@ -131,7 +131,8 @@ location @bitboard {
 }
 
 location ^~ /api/ {
-    # ApiMain expects the "api/" prefix in data, for example data=api/settings.
+    # ApiMain expects the "api/" prefix in data, for example data=api/settings
+    # or data=api/prefixes/edit/3.
     rewrite ^/api/(.*)$ /api.php?data=api/$1 last;
 }
 
@@ -193,6 +194,7 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] Fix installer validation and escape values written to `app/config.php`.
 - [x] Fix the API database connection.
 - [x] Validate API route/class names against an explicit allowlist.
+- [x] Add granular API permissions and finish settings/prefix validation.
 - [ ] Fix pagination bugs (threads, members, subforums, previous pages).
 - [x] Restore notifications; remove references to missing Toastify assets.
 - [x] Use generic login errors and support username or email login; remove the ignored "remember me" option.
