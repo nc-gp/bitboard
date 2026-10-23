@@ -22,46 +22,45 @@ Items marked **good first issue** are small and self-contained.
 - [x] **Normalize the application base URL.** `UrlManager::GetPath()` uses `SCRIPT_NAME`, converts
   backslashes, and always returns exactly one trailing slash, so root and subdirectory installs
   concatenate routes correctly.
-- [ ] **Create the missing avatar directory or stop linking to it.**
-  `AvatarUtils::GetPath()` returns `assets/images/avatars/...`, but `assets/images` does not
-  exist. Use a theme fallback and validate the stored filename.
+- [x] **Create the missing avatar directory or stop linking to it.**
+  `AvatarUtils::GetPath()` now rejects path components, allows only common image extensions,
+  and falls back to the theme default when the avatar file or directory is missing.
 - [x] **Fix the page lifecycle.** `IndexPage::__construct()` no longer calls `Do()`; `PageFactory`
   is now the single caller, so `/` and `/index` render once.
-- [ ] **Guard the empty-URL path in `BitBoard::Do()`.** `app/BitBoard.php:60-65` reads
-  `$SplitedURL[0]` when the array is empty. Restructure the offline/force-login checks and
-  add tests for `/`, `/offline`, and `/login`.
-- [ ] **Fix `BannedPage` for guests.** `BannedPage.php:23` dereferences
-  `$_SESSION['bitboard_user']` without checking `SessionManager::IsLogged()`. Guests should
-  be redirected home/login, not crash.
-- [ ] **Fix the installer validation bug.** In `Step_5.php:43-67`,
-  `strlen($forumName <= 0)` evaluates a boolean, so empty/short values are not rejected
-  reliably. Use `empty(trim($value))` and `mb_strlen($value) < 2`.
-- [ ] **Escape values written to `app/config.php`.** `Step_3.php:78-84` concatenates raw
-  `$_POST` values into PHP source. A quote in the password breaks the file and can inject
-  code. Use `var_export()` and validate the database name against
-  `^[A-Za-z0-9_]+$`.
-- [ ] **Stop logging the session during installation.** `Setup.php:17` prints `$_SESSION`
-  to the browser console. Remove it before release.
+- [x] **Guard the empty-URL path in `BitBoard::Do()`.** `app/BitBoard.php` now derives the
+  first segment with a null-safe fallback and no longer reads `$SplitedURL[0]` when the URL is
+  empty. Manually verified `/`, `/offline`, `/login`, and `/forum/1` in online, offline, and
+  force-login modes.
+- [x] **Fix `BannedPage` for guests.** `BannedPage` now checks `SessionManager::IsLogged()`
+  and the session user before reading permissions. Guests are redirected home instead of
+  hitting an undefined session user.
+- [x] **Fix the installer validation bug.** `Step_5.php` now trims values, rejects empty and
+  short input with `mb_strlen()`, and enforces the 64/256-character column limits.
+- [x] **Escape values written to `app/config.php`.** `Step_3.php` now validates POST values,
+  restricts the database name to `^[A-Za-z0-9_]+$`, quotes it in `CREATE DATABASE`, and writes
+  every config value with `var_export()`.
+- [x] **Stop logging the session during installation.** Removed the `$_SESSION` console log
+  from `Setup` and the unused `Console` import.
 
 ### Authentication, sessions, and authorization
 
-- [ ] **Add CSRF protection** to the login form, admin settings, and every `Api/POST/*`
-  endpoint. Use a per-session token, verify it server-side, and reject non-matching requests.
+- [x] **Add CSRF protection** to the login form, admin settings, and every `Api/POST/*`
+  endpoint. A per-session token is rendered in the page meta tag and forms, sent as
+  `X-CSRF-Token` for API calls, rotated after login, and verified server-side.
 - [ ] **Harden sessions.**
-  - Regenerate the session ID after login (`session_regenerate_id(true)`).
-  - Set `HttpOnly`, `SameSite=Lax/Strict`, and `Secure` (when HTTPS) cookie flags before
+  - [x] Regenerate the session ID after login (`session_regenerate_id(true)`).
+  - [x] Set `HttpOnly`, `SameSite=Lax/Strict`, and `Secure` (when HTTPS) cookie flags before
     `session_start()`.
-  - Destroy the session and cookie on logout; `SessionManager::Delete()` currently only
-    unsets two keys.
-  - Add an idle/absolute timeout.
-- [ ] **Add login rate limiting and generic errors.** `LoginPage` reveals whether a username
-  exists and allows unlimited password attempts. Use one generic error message, per-IP and
-  per-account throttling, and log failures.
-- [ ] **Finish or remove the "remember me" option.** The login form has a checkbox that is
-  ignored. Implement hashed persistent tokens or remove the checkbox.
-- [ ] **Add server-side login validation.** The form advertises email login but
-  `AccountController::GetAccountByName()` only matches usernames. Support email, trim input,
-  and test both.
+  - [x] Destroy the session and cookie on logout.
+  - [ ] Add an idle/absolute timeout.
+- [x] **Use generic login errors and support username/email login.** `LoginPage` now trims
+  the identifier, verifies the password before loading permissions, and returns the same
+  error for unknown users and wrong passwords. `GetAccountByLogin()` matches username or
+  email.
+- [x] **Remove the ignored "remember me" option.** The checkbox was removed from the login
+  form; persistent login tokens are not implemented.
+- [ ] **Add login rate limiting and failure logging.** Password attempts are still unlimited.
+  Add per-IP and per-account throttling and log failures.
 - [ ] **Enforce locked forum/subforum permissions.** `is_locked` exists on forums and
   subforums but is never checked. Apply `Permissions::VIEWING_FORUM_LOCKED` in
   `ForumPage`, `SubforumPage`, `ThreadPage`, and the API.
@@ -81,26 +80,25 @@ Items marked **good first issue** are small and self-contained.
   - Keep `rank_format` as an explicit, admin-only HTML field.
   - Sanitize rich post content with an allowlist (for example HTMLPurifier) or render
     Markdown after escaping.
-- [ ] **Fix the API database connection.** `ApiMain.php:38` passes `$config['name']` as the
-  fourth `Database` argument, but that argument is the charset. The database is never
-  selected afterwards. Construct with the charset or call `SelectDatabase($config['name'])`.
-- [ ] **Validate API routes.** `ApiMain::HandleURL()` derives a class name from
-  `$_GET['data']` with no allowlist. Restrict endpoints to explicit route names and reject
-  anything else before `class_exists()`/autoloading.
+- [x] **Fix the API database connection.** `ApiMain` now constructs the connection without
+  passing the database name as the charset and calls `SelectDatabase($config['name'])`.
+- [x] **Validate API routes.** `ApiMain::HandleURL()` now uses an explicit method/route/class
+  allowlist, rejects non-string or unknown routes before `class_exists()`/autoloading, and
+  currently exposes `api/settings` only. Add new endpoints to the allowlist.
 - [ ] **Fix `Api/POST/Prefixes.php`.** The file declares `class Settings`, so
   `ApiMain` can never find `Api\POST\Prefixes`. Rename the class and implement edit/delete
   with authorization, validation, and prepared statements.
 - [ ] **Tighten `Api/POST/Settings.php`.** `empty($data['forumonline'])` rejects a valid empty
-  offline message; there are no length/type checks; and all responses return HTTP 200.
-  Validate input, use `isset()`, set real HTTP status codes, and return structured errors.
-- [ ] **Restrict CORS and response details.** `api.php` sends
-  `Access-Control-Allow-Origin: *`; remove it unless a cross-origin client is supported.
-  Do not leak exception messages or SQL errors to clients.
+  offline message; there are no length/type checks. Validate input, use `isset()`, and return
+  structured errors.
+- [x] **Restrict CORS and response details.** `api.php` no longer sends wildcard CORS
+  headers. Invalid JSON returns a generic message, and endpoint/database exceptions are
+  logged and returned as a generic 500 instead of leaking details.
 - [ ] **Remove `eval()` from the modal helper.** `assets/javascripts/main.js:132` executes the
   `onconfirm` attribute. Accept a callback or dispatch a custom event instead.
-- [ ] **Escape console output.** `Console::Log()`/`Console::Error()` inject raw strings into
-  `<script>`; an exception message containing a quote breaks the page. Use
-  `json_encode()` or remove debug output entirely.
+- [x] **Escape console output.** `Console::Log()`/`Console::Error()` now encode values with
+  `json_encode()` and `JSON_HEX_*` flags, so quotes and `</script>` cannot break out of the
+  generated script tag. Removed the leftover `ThreadPage` debug log.
 
 ---
 
@@ -179,10 +177,9 @@ Items marked **good first issue** are small and self-contained.
 - [ ] **Append the global JS inside `<body>`.** `PageBase::CommonSetup()` appends
   `footer/end.html` after `</html>`, producing invalid markup. Add a `{scripts}` placeholder
   to every layout, or append before the closing body tag.
-- [ ] **Restore notifications.** Templates call `toast()`, but `main.js` no longer defines it;
-  `assets/stylesheets/toastify.css` and `assets/javascripts/toastify.js` are missing while
-  `head.html` and `admin.html` still reference them. Either restore Toastify or migrate the
-  admin pages to `spell_alert`.
+- [x] **Restore notifications.** Restored `assets/javascripts/toastify.js` and
+  `assets/stylesheets/toastify.css`; the local `toast()` wrapper uses the existing Toastify
+  CDN and provides a small local fallback. Admin settings save was verified end-to-end.
 - [ ] **Remove the old toast include from the login page** if it is not used
   (`themes/default/templates/login/login.html:29`).
 - [ ] **Align requirement with the client validator.** `install/form.js` requires an
@@ -327,16 +324,16 @@ Items marked **good first issue** are small and self-contained.
 
 ## Good first issues
 
-- [ ] Remove the broken Toastify includes and switch admin notifications to `spell_alert`.
+- [x] Restore the missing Toastify assets instead of switching admin notifications to `spell_alert`.
 - [ ] Remove the "CSS ELEMENTS" link from the production navigation.
 - [ ] Fix backslashes in `AvatarUtils`, `footer/end.html`, and `admin.html`.
 - [ ] Fix `Template::AddEntries()` count comparison and initialize arrays.
-- [ ] Fix `Step_5` `strlen($value <= 0)` validation.
+- [x] Fix `Step_5` `strlen($value <= 0)` validation.
 - [ ] Fix `RankController::Create()` default flags (`0000000000` is octal zero; use `0`).
 - [ ] Remove the leftover `{top_stats}` placeholder.
 - [ ] Add `config.example.php`.
 - [ ] Replace the four "Test" footer links.
-- [ ] Remove `Console::Log()` debug calls from `ThreadPage` and `Setup`.
+- [x] Remove `Console::Log()` debug calls from `ThreadPage` and `Setup`.
 
 ---
 

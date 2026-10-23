@@ -5,8 +5,6 @@ namespace App\Install;
 use App\Classes\UrlManager;
 use App\Classes\File;
 
-use App\Classes\Console;
-
 class Setup
 {
 	private File $step;
@@ -14,7 +12,6 @@ class Setup
 
 	public function __construct()
 	{
-		Console::Log($_SESSION);
 		$this->UrlHandler();
 
 		$this->step = new File('./app/install/step');

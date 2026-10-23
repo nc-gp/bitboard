@@ -7,6 +7,7 @@ use App\Classes\Database;
 use App\Classes\Template;
 use App\Classes\UrlManager;
 use App\Classes\Permissions;
+use App\Classes\SessionManager;
 use App\Interfaces\PageInterface;
 
 class BannedPage extends PageBase implements PageInterface
@@ -20,7 +21,7 @@ class BannedPage extends PageBase implements PageInterface
 
     private function UrlHandler()
     {
-        if($_SESSION['bitboard_user']->HasPermission(Permissions::VIEWING_FORUM))
+        if(!SessionManager::IsLogged() || !isset($_SESSION['bitboard_user']) || $_SESSION['bitboard_user']->HasPermission(Permissions::VIEWING_FORUM))
             UrlManager::Redirect(UrlManager::GetPath());
     }
 

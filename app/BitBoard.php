@@ -51,17 +51,18 @@ class BitBoard
 	private function Do()
 	{
 		//SessionManager::Delete();
-		$actionParameters = $_GET['action'] ?? '';
-		$SplitedURL = !empty($actionParameters) ? explode('/', $_GET['action']) : array();
+		$actionParameters = isset($_GET['action']) && is_string($_GET['action']) ? $_GET['action'] : '';
+		$SplitedURL = $actionParameters !== '' ? explode('/', $actionParameters) : array();
+		$firstParameter = $SplitedURL[0] ?? '';
 
 		if(!$this->IsOnline())
 		{
-			if(count($SplitedURL) > 1 || empty($SplitedURL))
-			{
-				// Check if the user is not logged in or doesn't have permission to view a locked forum
-				if((!SessionManager::IsLogged() || SessionManager::IsLogged() && !$_SESSION['bitboard_user']->HasPermission(Permissions::VIEWING_FORUM_LOCKED)) && $SplitedURL[0] !== 'login')
-					UrlManager::Redirect(UrlManager::GetPath() . 'offline');
-			}
+			$canViewLocked = SessionManager::IsLogged()
+				&& isset($_SESSION['bitboard_user'])
+				&& $_SESSION['bitboard_user']->HasPermission(Permissions::VIEWING_FORUM_LOCKED);
+
+			if((count($SplitedURL) > 1 || empty($SplitedURL)) && !$canViewLocked && $firstParameter !== 'login')
+				UrlManager::Redirect(UrlManager::GetPath() . 'offline');
 		}
 
 		if(SessionManager::IsLogged())
@@ -86,7 +87,7 @@ class BitBoard
 
 		if($this->data->forum_force_login && !SessionManager::IsLogged())
 		{
-			if(empty($SplitedURL) || $SplitedURL[0] !== 'login')
+			if($firstParameter !== 'login')
 				UrlManager::Redirect(UrlManager::GetPath() . 'login');
 		}
 
@@ -95,7 +96,7 @@ class BitBoard
 			$this->data->actionParameters = $SplitedURL;
 
 			try {
-				$instance = PageFactory::CreatePage($this->data->actionParameters[0], $this->database, $this->data);
+				$instance = PageFactory::CreatePage($firstParameter, $this->database, $this->data);
 			} catch (Exception $e) {
 				Console::Error($e->getMessage());
 			}

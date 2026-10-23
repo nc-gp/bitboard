@@ -9,7 +9,6 @@ use App\Classes\AvatarUtils;
 use App\Classes\UsernameUtils;
 use App\Classes\RelativeTime;
 use App\Classes\UrlManager;
-use App\Classes\Console;
 
 use App\Interfaces\PageInterface;
 
@@ -71,8 +70,6 @@ class ThreadPage extends PageBase implements PageInterface
         $threadCount = $this->database->Query('SELECT COUNT(*) AS thread_count FROM bit_threads WHERE user_id = ?', $thread['user_id'])->FetchArray();
         $postCount = $this->database->Query('SELECT COUNT(*) AS post_count FROM bit_posts WHERE user_id = ?', $thread['user_id'])->FetchArray();
         $userPostCount = $threadCount['thread_count'] + $postCount['post_count'];
-
-        Console::Log($thread);
 
         $userStatsTemplate = new Template('thread', 'thread_user_stats');
         $userStatsTemplate->AddEntry('{user_reputation}', $thread['user_reputation']);

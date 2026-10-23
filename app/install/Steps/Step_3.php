@@ -49,44 +49,55 @@ class Step_3 extends StepBase implements StepInterface
 
 	public static function Handler()
 	{
-		if(strlen($_POST['host']) <= 0)
+		$host = isset($_POST['host']) && is_string($_POST['host']) ? trim($_POST['host']) : '';
+		$name = isset($_POST['name']) && is_string($_POST['name']) ? trim($_POST['name']) : '';
+		$username = isset($_POST['username']) && is_string($_POST['username']) ? trim($_POST['username']) : '';
+		$password = isset($_POST['password']) && is_string($_POST['password']) ? $_POST['password'] : '';
+
+		if($host === '')
 		{
 			SessionManager::AddInformation('mysql', 'Host can\'t be empty!', true);
 			return;
 		}
 
-		if(strlen($_POST['name']) <= 0)
+		if($name === '')
 		{
 			SessionManager::AddInformation('mysql', 'Database name can\'t be empty!', true);
 			return;
 		}
 
-		if(strlen($_POST['username']) <= 0)
+		if(!preg_match('/^[A-Za-z0-9_]+$/', $name))
+		{
+			SessionManager::AddInformation('mysql', 'Database name may only contain letters, numbers, and underscores.', true);
+			return;
+		}
+
+		if($username === '')
 		{
 			SessionManager::AddInformation('mysql', 'Username can\'t be empty!', true);
 			return;
 		}
 
 		$config = array(
-			'host' => $_POST['host'],
-			'user' => $_POST['username'],
-			'pass' => $_POST['password'],
-			'name' => $_POST['name']
+			'host' => $host,
+			'user' => $username,
+			'pass' => $password,
+			'name' => $name
 		);
 
 		$configFile = new File('./app/config.php');
 		$data = '<?php' . "\n\n";
-		$data .= '$config["host"] = \'' . $config['host'] . '\';' . "\n";
-		$data .= '$config["user"] = \'' . $config['user'] . '\';' . "\n";
-		$data .= '$config["pass"] = \'' . $config['pass'] . '\';' . "\n";
-		$data .= '$config["name"] = \'' . $config['name'] . '\';' . "\n\n?>";
+		$data .= '$config["host"] = ' . var_export($config['host'], true) . ';' . "\n";
+		$data .= '$config["user"] = ' . var_export($config['user'], true) . ';' . "\n";
+		$data .= '$config["pass"] = ' . var_export($config['pass'], true) . ';' . "\n";
+		$data .= '$config["name"] = ' . var_export($config['name'], true) . ';' . "\n\n?>";
 		$configFile->UpdateData($data);
 		$configFile->Save();
 
 		try {
 			$InstallDatabase = new Database($config['host'], $config['user'], $config['pass']);
 
-			$InstallDatabase->Query('CREATE DATABASE IF NOT EXISTS ' . $config['name']);
+			$InstallDatabase->Query('CREATE DATABASE IF NOT EXISTS `' . $config['name'] . '`');
 
 			$InstallDatabase->SelectDatabase($config['name']);
 

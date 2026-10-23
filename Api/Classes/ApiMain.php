@@ -11,6 +11,13 @@ use App\Classes\Database;
 
 class ApiMain
 {
+    // Explicit route allowlist. Never derive a class name directly from request input.
+    private const ROUTES = [
+        'POST' => [
+            'api/settings' => 'Settings',
+        ],
+    ];
+
     private $data;
     private $methods = array('POST');
 
@@ -19,7 +26,7 @@ class ApiMain
 
     public function __construct()
     {
-        $this->req_method = $_SERVER['REQUEST_METHOD'];
+        $this->req_method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
         if(!in_array($this->req_method, $this->methods))
             ApiResponse::Generate(ApiCodes::METHOD_NOT_ALLOWED, ['message' => 'Method not allowed']);
 
@@ -34,15 +41,23 @@ class ApiMain
 
         $className = '\Api\\' . $this->req_method . '\\' . $this->for;
 
-        if(!class_exists($className))
-            ApiResponse::Generate(ApiCodes::BAD_REQUEST, ['message' => 'Bad request']);
+        try
+        {
+            if(!class_exists($className))
+                ApiResponse::Generate(ApiCodes::BAD_REQUEST, ['message' => 'Bad request']);
 
-        require_once './app/config.php';
-        $db = new Database($config['host'], $config['user'], $config['pass']);
-        $db->SelectDatabase($config['name']);
-        $api = new $className($db, $this->data);
-        $api->Response();
-        $db->Close();
+            require_once './app/config.php';
+            $db = new Database($config['host'], $config['user'], $config['pass']);
+            $db->SelectDatabase($config['name']);
+            $api = new $className($db, $this->data);
+            $api->Response();
+            $db->Close();
+        }
+        catch (\Throwable $e)
+        {
+            error_log('BitBoard API error: ' . $e->getMessage());
+            ApiResponse::Generate(ApiCodes::INTERNAL_SERVER_ERROR, ['message' => 'Internal server error']);
+        }
     }
 
     private function IsCsrfTokenValid(): bool
@@ -64,10 +79,12 @@ class ApiMain
     {
         if($this->req_method === 'POST')
         {
-            $this->data = json_decode(file_get_contents('php://input'), true);
+            $data = json_decode(file_get_contents('php://input'), true);
 
-            if (json_last_error() !== JSON_ERROR_NONE)
-                ApiResponse::Generate(ApiCodes::BAD_REQUEST, ['message' => 'Invalid JSON: ' . json_last_error_msg()]);
+            if (json_last_error() !== JSON_ERROR_NONE || !is_array($data))
+                ApiResponse::Generate(ApiCodes::BAD_REQUEST, ['message' => 'Invalid JSON body']);
+
+            $this->data = $data;
         }
     }
 
@@ -75,11 +92,18 @@ class ApiMain
     {
         $api = $_GET['data'] ?? null;
 
-        if(!$api)
+        if(!is_string($api))
             ApiResponse::Generate(ApiCodes::BAD_REQUEST, ['message' => 'Bad request']);
 
-        $parts = explode('/', $api);
-        $this->for = ucfirst($parts[1] ?? '');
+        // Apache on Windows can normalize "api" to the on-disk "Api" directory,
+        // so compare routes case-insensitively.
+        $api = strtolower(trim($api, '/'));
+        $route = self::ROUTES[$this->req_method][$api] ?? null;
+
+        if($route === null)
+            ApiResponse::Generate(ApiCodes::BAD_REQUEST, ['message' => 'Bad request']);
+
+        $this->for = $route;
     }
 }
 

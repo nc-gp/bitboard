@@ -10,26 +10,31 @@ class Console
     /**
      * Log a message to the browser console.
      *
-     * @param string $message The message to log.
+     * @param mixed $message The message to log.
      */
-    static public function Log($message)
+    static public function Log(mixed $message): void
     {
-        if (is_array($message) || is_object($message))
-            $message = json_encode($message);
-        else
-            $message = "'$message'";
+        $encoded = json_encode($message, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
 
-        echo '<script>console.log(' . $message . ')</script>';
+        if ($encoded === false)
+            $encoded = 'null';
+
+        echo '<script>console.log(' . $encoded . ');</script>';
     }
 
     /**
      * Log an error message to the browser console.
      *
-     * @param string $message The error message to log.
+     * @param mixed $message The error message to log.
      */
-    static public function Error($message)
+    static public function Error(mixed $message): void
     {
-        echo '<script>console.error("' . $message . '")</script>';
+        $encoded = json_encode($message, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+
+        if ($encoded === false)
+            $encoded = '"Error"';
+
+        echo '<script>console.error(' . $encoded . ');</script>';
     }
 }
 

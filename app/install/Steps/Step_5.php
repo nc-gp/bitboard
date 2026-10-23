@@ -38,31 +38,43 @@ class Step_5 extends StepBase implements StepInterface
 
 	public static function Handler() 
 	{
-		$forumName = isset($_POST['name']) ? $_POST['name'] : '';
+		$forumName = isset($_POST['name']) && is_string($_POST['name']) ? trim($_POST['name']) : '';
 
-		if(strlen($forumName <= 0))
+		if($forumName === '')
 		{
 			SessionManager::AddInformation('forum', 'Forum name cannot be empty.', true);
 			return;
 		}
 
-		if(strlen($forumName <= 2))
+		if(mb_strlen($forumName) < 2)
 		{
-			SessionManager::AddInformation('forum', 'Forum name is too short! ( 2 >= )', true);
+			SessionManager::AddInformation('forum', 'Forum name must be at least 2 characters long.', true);
 			return;
 		}
 
-		$forumDesc = isset($_POST['description']) ? $_POST['description'] : '';
+		if(mb_strlen($forumName) > 64)
+		{
+			SessionManager::AddInformation('forum', 'Forum name cannot be longer than 64 characters.', true);
+			return;
+		}
 
-		if(strlen($forumDesc <= 0))
+		$forumDesc = isset($_POST['description']) && is_string($_POST['description']) ? trim($_POST['description']) : '';
+
+		if($forumDesc === '')
 		{
 			SessionManager::AddInformation('forum', 'Forum description cannot be empty.', true);
 			return;
 		}
 
-		if(strlen($forumDesc <= 2))
+		if(mb_strlen($forumDesc) < 2)
 		{
-			SessionManager::AddInformation('forum', 'Forum description is too short! ( 2 >= )', true);
+			SessionManager::AddInformation('forum', 'Forum description must be at least 2 characters long.', true);
+			return;
+		}
+
+		if(mb_strlen($forumDesc) > 256)
+		{
+			SessionManager::AddInformation('forum', 'Forum description cannot be longer than 256 characters.', true);
 			return;
 		}
 
@@ -72,7 +84,7 @@ class Step_5 extends StepBase implements StepInterface
 			$db = new Database($config['host'], $config['user'], $config['pass']);
 			$db->SelectDatabase($config['name']);
 
-			$db->Query('UPDATE bit_settings SET forum_name = ?, forum_description = ? WHERE id = ?', "$forumName", "$forumDesc", 0);
+			$db->Query('UPDATE bit_settings SET forum_name = ?, forum_description = ? WHERE id = ?', $forumName, $forumDesc, 0);
 
 			$db->Close();
 		}

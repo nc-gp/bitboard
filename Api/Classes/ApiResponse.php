@@ -8,12 +8,10 @@ class ApiResponse
     {
         http_response_code($code);
 
-        print_r(
-            json_encode(array(
-                'code' => $code,
-                'data' => $data
-            ))
-        );
+        echo json_encode(array(
+            'code' => $code,
+            'data' => $data
+        ));
         die();
     }
 }

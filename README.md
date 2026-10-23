@@ -35,7 +35,8 @@
 - Page/controller/widget/template architecture with a bundled default theme.
 - Categories → forums → subforums browsing.
 - Thread and post viewing with relative timestamps.
-- User login/logout with bcrypt password hashes and bitmask-based ranks/permissions.
+- User login/logout with bcrypt password hashes, username or email login, and bitmask-based
+  ranks/permissions.
 - Members list with online/offline state.
 - Admin panel shell with forum settings and prefix list.
 - Theme system with the bundled `default` theme and light/dark/auto switcher.
@@ -43,8 +44,8 @@
 
 ### Incomplete or not implemented yet
 
-- **Admin JSON API** — routing, session auth, and response scaffolding exist, but the
-  settings endpoint has a database-connection bug and the prefixes endpoint is unfinished.
+- **Admin JSON API** — session auth, CSRF, route allowlisting, and the settings endpoint
+  work; the prefixes endpoint is unfinished.
 - **Registration** — the UI links to `/register`, but the page does not exist yet.
 - **Creating, replying to, editing, or deleting threads/posts** — no write UI yet.
 - **Profiles** — `ProfilePage` renders an empty template and does not load a user.
@@ -52,7 +53,8 @@
 - **Admin CRUD** — categories, forums, subforums, users, and ranks are not manageable yet.
 - **Prefix editing** — the admin API route and class names do not match yet.
 - **Likes, reports, moderation tools, search, avatars/uploads.**
-- **Email verification, password reset, remember-me.**
+- **Email verification and password reset.**
+- **Login rate limiting and session idle/absolute timeouts.**
 - **Tests, CI, Composer, migrations, and a documented public API.**
 
 ## Requirements
@@ -183,14 +185,17 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 
 - [x] Replace the autoloader with PSR-4-style mapping and use forward slashes in URLs/paths (Linux support).
 - [x] Fix the page lifecycle so pages are not rendered twice (`PageFactory` + `IndexPage`).
-- [ ] Add CSRF protection to login and admin API requests.
+- [x] Add CSRF protection to login and admin API requests.
 - [ ] Escape user-controlled output and sanitize rich post content.
-- [ ] Harden sessions: regenerate ID on login, cookie flags, proper logout.
-- [ ] Fix installer validation and escape values written to `app/config.php`.
-- [ ] Fix API database connection and validate API route/class names.
+- [x] Harden sessions: regenerate ID on login, cookie flags, proper logout.
+- [ ] Add an idle/absolute session timeout.
+- [x] Fix installer validation and escape values written to `app/config.php`.
+- [x] Fix the API database connection.
+- [x] Validate API route/class names against an explicit allowlist.
 - [ ] Fix pagination bugs (threads, members, subforums, previous pages).
-- [ ] Restore notifications; remove references to missing Toastify assets.
-- [ ] Add login rate limiting and generic authentication errors.
+- [x] Restore notifications; remove references to missing Toastify assets.
+- [x] Use generic login errors and support username or email login; remove the ignored "remember me" option.
+- [ ] Add login rate limiting and failure logging.
 
 ### Next — a usable forum
 
