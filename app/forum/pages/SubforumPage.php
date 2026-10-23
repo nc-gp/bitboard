@@ -44,8 +44,8 @@ class SubforumPage extends PageBase implements PageInterface
         )
             UrlManager::Redirect($this->serverPath . 'subforum/1/page/1');
 
-        $this->subforumPage = $this->forumData->actionParameters[3];
-        $this->subforumID = $this->forumData->actionParameters[1];
+        $this->subforumPage = (int) $this->forumData->actionParameters[3];
+        $this->subforumID = (int) $this->forumData->actionParameters[1];
 
         if ($this->subforumPage <= 0 || $this->subforumID <= 0)
             UrlManager::Redirect($this->serverPath . 'subforum/1/page/1');
@@ -69,7 +69,7 @@ class SubforumPage extends PageBase implements PageInterface
         $totalPages = ceil($this->threadsCount / $this->maximumResults);
 
         if ($this->subforumPage > $totalPages && $this->threadsCount > 0)
-            UrlManager::Redirect($this->serverPath . 'forum/' . $this->subforumID . '/page/' . $totalPages);
+            UrlManager::Redirect($this->serverPath . 'subforum/' . $this->subforumID . '/page/' . $totalPages);
        
         $threads = $this->database->Query('SELECT bit_threads.*, bit_accounts.id AS author_id, bit_accounts.username, bit_accounts.rank_id, bit_ranks.rank_format, 
             COUNT(bit_posts.id) AS post_count, MAX(bit_posts.post_timestamp) AS latest_post_timestamp
@@ -111,21 +111,30 @@ class SubforumPage extends PageBase implements PageInterface
             $threadTemplate = new Template('forum/thread', 'thread');
 
             if ($thread['is_closed'])
+            {
                 $threadPrefix = new PrefixWidget($this->database, 1);
+                $threadPrefix = $threadPrefix->template;
+            }
 
-            $threadTemplate->AddEntry('{closed_prefix}', $threadPrefix->template);
+            $threadTemplate->AddEntry('{closed_prefix}', $threadPrefix);
             $threadPrefix = '';
 
             if ($thread['is_pinned'])
+            {
                 $threadPrefix = new PrefixWidget($this->database, 2);
+                $threadPrefix = $threadPrefix->template;
+            }
 
-            $threadTemplate->AddEntry('{pinned_prefix}', $threadPrefix->template);
+            $threadTemplate->AddEntry('{pinned_prefix}', $threadPrefix);
             $threadPrefix = '';
 
             if ($thread['prefix_id'] > 2)
+            {
                 $threadPrefix = new PrefixWidget($this->database, $thread['prefix_id']);
+                $threadPrefix = $threadPrefix->template;
+            }
 
-            $threadTemplate->AddEntry('{custom_prefix}', $threadPrefix->template);
+            $threadTemplate->AddEntry('{custom_prefix}', $threadPrefix);
             $threadPrefix = '';
 
             $threadTemplate->AddEscapedEntry('{id}', $thread['id']);
@@ -152,7 +161,7 @@ class SubforumPage extends PageBase implements PageInterface
         $this->SetupForumDesc();
         $this->FetchThreads();
 
-        $paginationTemplate = new PaginationWidget($this->subforumPage, $this->threadsCount, $this->maximumResults, 'forum/' . $this->subforumID . '/page/');
+        $paginationTemplate = new PaginationWidget($this->subforumPage, $this->threadsCount, $this->maximumResults, 'subforum/' . $this->subforumID . '/page/');
 
         $this->template = new Template('subforum', 'subforum');
         $this->template->AddEntry('{threads}', $this->threads);

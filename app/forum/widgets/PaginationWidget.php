@@ -12,23 +12,22 @@ class PaginationWidget
 {
     public $Template;
     private int $currentPage;
-    private int $totalPages;
+    private int $totalItems;
     private int $maximumResults;
     private string $baseRedirectPath;
 
     /**
      * Constructor to initialize the PaginationWidget with necessary parameters.
      *
-     * @param string $theme            The theme to use for the widget.
      * @param int    $currentPage      The current page number.
-     * @param int    $totalPages       The total number of pages.
+     * @param int    $totalItems       The total number of items to paginate.
      * @param int    $maximumResults   The maximum results per page.
      * @param string $baseRedirectPath The base path for page redirects.
      */
-    public function __construct(int $currentPage, int $totalPages, int $maximumResults, string $baseRedirectPath)
+    public function __construct(int $currentPage, int $totalItems, int $maximumResults, string $baseRedirectPath)
     {
         $this->currentPage = $currentPage;
-        $this->totalPages = $totalPages;
+        $this->totalItems = $totalItems;
         $this->maximumResults = $maximumResults;
         $this->baseRedirectPath = $baseRedirectPath;
         $this->Template = new Template('pagination', 'pagination');
@@ -40,8 +39,10 @@ class PaginationWidget
      */
     private function Do()
     {
+        $totalPages = (int) ceil($this->totalItems / $this->maximumResults);
+
         // Check if there are pages to display.
-        if (ceil($this->totalPages / $this->maximumResults) <= 0)
+        if ($totalPages <= 0)
             return;
 
         $btnprev = '';
@@ -78,7 +79,7 @@ class PaginationWidget
             $pagesub1Template = new Template('pagination', 'page_m1');
             $pagesub1Template->AddEntry('{page}', $this->currentPage - 1);
             $pagesub1Template->Replace();
-            $pagesub2 = $pagesub1Template->template;
+            $pagesub1 = $pagesub1Template->template;
         }
 
         $currentPageTemplate = new Template('pagination', 'page_current');
@@ -88,17 +89,17 @@ class PaginationWidget
         $pageadd1 = '';
         $pageadd2 = '';
 
-        if ($this->currentPage + 1 < ceil($this->totalPages / $this->maximumResults) + 1)
+        if ($this->currentPage + 1 <= $totalPages)
         {
-            $pageadd1Template = new Template('pagination', 'page_m1');
+            $pageadd1Template = new Template('pagination', 'page_next');
             $pageadd1Template->AddEntry('{page}', $this->currentPage + 1);
             $pageadd1Template->Replace();
             $pageadd1 = $pageadd1Template->template;
         }
 
-        if ($this->currentPage + 2 < ceil($this->totalPages / $this->maximumResults) + 1)
+        if ($this->currentPage + 2 <= $totalPages)
         {
-            $pageadd2Template = new Template('pagination', 'page_m1');
+            $pageadd2Template = new Template('pagination', 'page_next');
             $pageadd2Template->AddEntry('{page}', $this->currentPage + 2);
             $pageadd2Template->Replace();
             $pageadd2 = $pageadd2Template->template;
@@ -106,17 +107,17 @@ class PaginationWidget
 
         $enddots = '';
 
-        if ($this->currentPage < ceil($this->totalPages / $this->maximumResults) - 2)
+        if ($this->currentPage < $totalPages - 2)
         {
             $enddocsTemplate = new Template('pagination', 'end_dots');
-            $enddocsTemplate->AddEntry('{page}', ceil($this->totalPages / $this->maximumResults));
+            $enddocsTemplate->AddEntry('{page}', $totalPages);
             $enddocsTemplate->Replace();
             $enddots = $enddocsTemplate->template;
         }
 
         $btnnext = '';
 
-        if ($this->currentPage < ceil($this->totalPages / $this->maximumResults))
+        if ($this->currentPage < $totalPages)
         {
             $btnnextTemplate = new Template('pagination', 'next_button');
             $btnnextTemplate->AddEntry('{page}', $this->currentPage + 1);

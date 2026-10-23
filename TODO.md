@@ -149,23 +149,21 @@ Items marked **good first issue** are small and self-contained.
 
 ### Pagination and page bugs
 
-- [ ] **Fix thread pagination.** `ThreadPage::$postsCount` is never assigned, so pagination
-  is always hidden (`ThreadPage.php:26-27,141-146`). Count posts for the thread and pass the
-  real total to `PaginationWidget`.
-- [ ] **Fix subforum links.** `SubforumPage.php:63` and `:146` redirect/page to
-  `forum/{id}/page/...`; they must use `subforum/{id}/page/...`.
-- [ ] **Fix prefix rendering in `SubforumPage`.** Lines 102-119 access `->template` on a
-  string when no prefix matches. Mirror the explicit `$threadPrefix = ''` handling used in
-  `ForumPage`.
-- [ ] **Fix the members zero-result loop.** With zero regular members,
-  `MembersPage.php:50-53` redirects to `/members/page/0`, which redirects back to page 1.
-  Show an empty state when the total is zero.
-- [ ] **Fix `PaginationWidget`.**
-  - `$pagesub2` is overwritten by the `page_m1` block (`PaginationWidget.php:80-82`), so the
-    "page - 2" link never renders.
-  - Next-page buttons reuse `page_m1.html`; add a dedicated template/parameter.
-  - Rename `$totalPages` to `$totalItems` (or pass the actual page count) to match its use.
-  - Add tests for first page, middle page, last page, and a single page.
+- [x] **Fix thread pagination.** `ThreadPage` now counts posts for the thread, passes the
+  real total to `PaginationWidget`, and redirects out-of-range pages to the last page.
+- [x] **Fix subforum links.** `SubforumPage` now redirects and builds pagination links with
+  `subforum/{id}/page/...`.
+- [x] **Fix prefix rendering in `SubforumPage`.** Prefix widgets now use the same explicit
+  string/object handling as `ForumPage`, so threads without a matching prefix render safely.
+- [x] **Fix the members zero-result loop.** Zero regular members render a dedicated empty
+  state instead of redirecting to `/members/page/0`; out-of-range pages only redirect when
+  members exist.
+- [x] **Fix `PaginationWidget`.**
+  - The "page - 2" link is no longer overwritten by the "page - 1" block.
+  - Next-page buttons use the dedicated `page_next.html` template.
+  - The `totalPages` constructor/property name is now `totalItems` to match its meaning.
+  - First, middle, last, and single-page cases were verified manually; automated tests remain
+    part of the testing roadmap.
 - [ ] **Return real 404s for missing IDs.** Forum/thread/subforum handlers currently
   redirect invalid IDs to hardcoded IDs such as `forum/1/page/1`. Render `_404Page` with an
   HTTP 404 status instead.

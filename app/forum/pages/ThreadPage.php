@@ -47,8 +47,8 @@ class ThreadPage extends PageBase implements PageInterface
             UrlManager::Redirect($this->serverPath . 'thread/' . $threadID . '/page/1');
         }
 
-        $this->threadPage = $this->forumData->actionParameters[3];
-        $this->threadID = $this->forumData->actionParameters[1];
+        $this->threadPage = (int) $this->forumData->actionParameters[3];
+        $this->threadID = (int) $this->forumData->actionParameters[1];
 
         if ($this->threadPage <= 0 || $this->threadID <= 0)
             UrlManager::Redirect($this->serverPath . 'thread/1/page/1');
@@ -64,6 +64,13 @@ class ThreadPage extends PageBase implements PageInterface
         $isLocked = (int) $thread['forum_locked'] === 1 || (int) ($thread['subforum_locked'] ?? 0) === 1;
         if ($isLocked && !SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED))
             UrlManager::Redirect($this->serverPath);
+
+        $postCount = $this->database->Query('SELECT COUNT(*) AS post_count FROM bit_posts WHERE thread_id = ?', $this->threadID)->FetchArray();
+        $this->postsCount = (int) ($postCount['post_count'] ?? 0);
+
+        $totalPages = max(1, (int) ceil($this->postsCount / $this->maximumResults));
+        if ($this->threadPage > $totalPages)
+            UrlManager::Redirect($this->serverPath . 'thread/' . $this->threadID . '/page/' . $totalPages);
     }
 
     private function fetchThread()

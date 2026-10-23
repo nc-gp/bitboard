@@ -37,7 +37,7 @@ class MembersPage extends PageBase implements PageInterface
         if (($this->forumData->actionParameters[1] != 'page' || !is_numeric($this->forumData->actionParameters[2])))
             UrlManager::Redirect($this->serverPath . 'members/page/1');
 
-        $this->page = $this->forumData->actionParameters[2];
+        $this->page = (int) $this->forumData->actionParameters[2];
     }
 
     private function FetchMembers()
@@ -47,7 +47,14 @@ class MembersPage extends PageBase implements PageInterface
 
         $this->totalMembers = $this->database->Query('SELECT id FROM bit_accounts WHERE bit_accounts.id > 1')->NumRows();
 
-        $totalPages = ceil($this->totalMembers / $this->maximumResults);
+        if ($this->totalMembers <= 0)
+        {
+            $emptyTemplate = new Template('members', 'members_empty');
+            $this->members = $emptyTemplate->template;
+            return;
+        }
+
+        $totalPages = (int) ceil($this->totalMembers / $this->maximumResults);
 
         if ($this->page > $totalPages)
             UrlManager::Redirect($this->serverPath . 'members/page/' . $totalPages);

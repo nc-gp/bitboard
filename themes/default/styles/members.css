@@ -10,6 +10,12 @@
     max-width: 1200px;
 }
 
+.member-empty {
+    width: 100%;
+    padding: 40px 20px;
+    text-align: center;
+}
+
 .member {
     margin: 20px;
     border-radius: var(--border-radius);
