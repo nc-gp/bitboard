@@ -75,9 +75,12 @@ Items marked **good first issue** are small and self-contained.
   declared permission. Settings and prefix updates require both `ADMIN_PANEL_ACCESS` and
   `MANAGING_SETTINGS`; guests receive `401`, authenticated users without the required
   permission receive `403`.
-- [ ] **Remove the installer from the public path after setup.** `app/install/lock` is the
-  only guard. Ensure the installer directory is not writable by the app in production and
-  document the lock/step files as sensitive.
+- [x] **Harden the installer and remove it from the public path after setup.** The installer
+  now rejects posted steps that do not match the current step, verifies a CSRF token, and
+  refuses to run once `app/install/lock` exists. Root `.htaccess`, `app/.htaccess`, and
+  `app/install/.htaccess` deny direct `/app/...` access; the Nginx guide does the same. The
+  README now documents removing write access from `app/install` after setup and treating
+  `lock` / `step` as sensitive control files.
 
 ### Output, input, and API
 

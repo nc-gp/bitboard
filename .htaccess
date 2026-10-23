@@ -3,6 +3,10 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
+  # Never serve application internals directly. index.php and api.php include
+  # these files from disk, but they must not be reachable over HTTP.
+  RewriteRule ^app(?:/|$) - [F,L,NC]
+
   # Rewrite URLs containing 'api' to api.php
   RewriteCond %{REQUEST_URI} api
   RewriteRule ^(.*)$ api.php?data=$1 [QSA,L]

@@ -6,9 +6,17 @@
         <div id="bb-box">
             <form id="bb-form" action="" method="POST" novalidate autocomplete="off">
                 <input type="hidden" name="step" value="6">
+                <input type="hidden" name="csrf_token" value="{csrf}">
 
                 <h1 class="bb-lines">BitBoard</h1>
                 <h2 class="bb-lines">Installation finished.</h2>
+
+                <p class="bb-lines">
+                    After clicking Finish, remove write access from <code>app/install</code> (or the
+                    whole <code>app/</code> directory) and keep it outside public reach. The installer
+                    needs write access until you click Finish and will not run again while
+                    <code>app/install/lock</code> exists.
+                </p>
 
                 <button class="button">
                     <input class="button-content" type="submit" value="Finish">

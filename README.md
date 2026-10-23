@@ -68,7 +68,7 @@
 | PHP | 8.0+ (8.1+ recommended), with the `mysqli` extension |
 | Database | MySQL 5.7+ or MariaDB 10.2+ |
 | Web server | Apache 2.4+ with `mod_rewrite`, or Nginx with an equivalent rewrite rule |
-| Filesystem | Write access to `app/` for `config.php` and the installer state files |
+| Filesystem | Temporary write access to `app/` during installation for `config.php` and the installer state files |
 
 ### Platform note
 
@@ -79,21 +79,41 @@ supported setup.
 
 ## Installation
 
-1. Download or clone the repository into your web root.
+1. Download or clone the repository into your web root. Prefer keeping `app/` outside the
+   document root when your host supports it.
 2. Make sure Apache has `AllowOverride All` (or the equivalent) so `.htaccess` is honored.
-3. Make `app/` writable by the web server. The installer writes `app/config.php` and
-   `app/install/lock` / `app/install/step` there.
+3. Make `app/` writable by the web server **only during installation**. The installer writes
+   `app/config.php` and `app/install/lock` / `app/install/step` there.
 4. Open the site in your browser and follow the six installer steps.
 5. When installation finishes, the installer creates `app/install/lock`.
-6. Tighten permissions again and keep `app/` out of public reach if your server does not
-   honor the bundled `app/.htaccess`.
+6. Remove write access from `app/install` (and preferably `app/config.php`) after setup. The
+   installer needs write access only while installing. On Unix-like hosts, for example:
+
+   ```bash
+   chmod -R a-w app/install
+   chmod a-w app/config.php
+   ```
+
+7. Keep `app/` out of public reach. The bundled root `.htaccess` blocks `/app/...`, and the
+   Nginx example below does the same. If your server honors neither, move `app/` outside the
+   document root or add an equivalent deny rule.
+
+`app/install/lock` and `app/install/step` are sensitive installer control files. Do not
+expose, edit, or delete them except when intentionally reinstalling on a development copy.
 
 The installer also creates a default category, forum, welcome thread, three ranks, two
 prefixes, and the `BitBot` system account.
 
 ### Reinstalling
 
-Delete the following files and reload the site:
+Restore write access to `app/install` and `app/config.php` first. On Unix-like hosts:
+
+```bash
+chmod -R u+w app/install
+chmod u+w app/config.php
+```
+
+Then delete the following files and reload the site:
 
 ```text
 app/install/lock
@@ -101,8 +121,9 @@ app/install/step
 app/config.php
 ```
 
-Only do this on a development installation. Deleting the lock does **not** drop the
-database, so existing tables and the seeded rows may conflict with a fresh install.
+The `step` file exists only while an installation is in progress. Only reinstall on a
+development installation. Deleting the lock does **not** drop the database, so existing
+tables and the seeded rows may conflict with a fresh install.
 
 ### Manual configuration
 
@@ -140,6 +161,7 @@ location ^~ /api/ {
 }
 
 location ^~ /app/ {
+    # Includes app/config.php and the app/install/ state files.
     deny all;
 }
 ```
@@ -159,7 +181,7 @@ app/
     pages/                Page classes rendered by PageFactory
     structs/              Lightweight data objects
     widgets/              Reusable page fragments (header, footer, pagination…)
-  install/                Web installer steps and HTML templates
+  install/                Web installer steps, HTML templates, and access guard
   interfaces/             Page and installer step contracts
 Api/
   Classes/                API bootstrap, response, status codes
@@ -204,6 +226,7 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] Add login rate limiting and failure logging.
 - [x] Enforce locked forum/subforum permissions.
 - [x] Remove `eval()` from the modal helper; confirmations now use callbacks or a custom event.
+- [x] Harden installer access and remove it from the public path after setup.
 
 ### Next — a usable forum
 

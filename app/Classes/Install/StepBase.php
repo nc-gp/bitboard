@@ -3,6 +3,7 @@
 namespace App\Classes\Install;
 
 use App\Classes\Template;
+use App\Classes\SessionManager;
 
 class StepBase
 {
@@ -27,6 +28,7 @@ class StepBase
 
         self::$template->AddEntry('{head}', $headTemplate->template);
         self::$template->AddEntry('{footer}', $footerTemplate->template);
+        self::$template->AddEscapedEntry('{csrf}', SessionManager::CsrfToken());
     }
 
     protected static function Handler()
