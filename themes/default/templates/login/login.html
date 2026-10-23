@@ -14,7 +14,7 @@
             <form action="./login/process" method="post">
                 <input type="hidden" name="csrf_token" value="{csrf_token}">
                 <input type="text" name="username" placeholder="Username / Email" aria-label="Username / Email"
-                    required="">
+                    maxlength="64" required="">
                 <input type="password" name="password" placeholder="Password" aria-label="Password" required="">
                 <button type="submit">Login</button>
             </form>

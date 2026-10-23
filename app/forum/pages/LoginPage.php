@@ -7,12 +7,15 @@ use App\Classes\Template;
 use App\Classes\PageBase;
 use App\Classes\SessionManager;
 use App\Classes\PasswordUtils;
+use App\Classes\LoginThrottle;
 use App\Classes\UrlManager;
 use App\Forum\Controllers\AccountController;
 use App\Interfaces\PageInterface;
 
 class LoginPage extends PageBase implements PageInterface
 {
+    private const THROTTLE_MESSAGE = 'Too many failed login attempts. Please try again later.';
+
     private string $error = '';
 
     public function __construct(Database $db, object $data)
@@ -42,15 +45,33 @@ class LoginPage extends PageBase implements PageInterface
         $login = isset($_POST['username']) && is_string($_POST['username']) ? trim($_POST['username']) : '';
         $password = isset($_POST['password']) && is_string($_POST['password']) ? $_POST['password'] : '';
 
-        if($login === '' || $password === '')
+        $throttle = new LoginThrottle($this->database, $login, (string) ($_SERVER['REMOTE_ADDR'] ?? ''));
+
+        if($throttle->IsIpBlocked())
         {
+            SessionManager::AddInformation('login', self::THROTTLE_MESSAGE, true);
+            UrlManager::Redirect($this->serverPath . 'login');
+        }
+
+        if($login === '' || $password === '' || mb_strlen($login) > 64)
+        {
+            $throttle->RecordFailure();
             SessionManager::AddInformation('login', 'Invalid username/email or password.', true);
             UrlManager::Redirect($this->serverPath . 'login');
         }
 
         $account = AccountController::GetAccountByLogin($this->database, $login);
+        $accountId = empty($account) ? 0 : (int) $account['id'];
+
+        if($throttle->IsAccountBlocked($accountId))
+        {
+            SessionManager::AddInformation('login', self::THROTTLE_MESSAGE, true);
+            UrlManager::Redirect($this->serverPath . 'login');
+        }
+
         if(empty($account) || !PasswordUtils::Verify($password, $account['pass']))
         {
+            $throttle->RecordFailure($accountId);
             SessionManager::AddInformation('login', 'Invalid username/email or password.', true);
             UrlManager::Redirect($this->serverPath . 'login');
         }
@@ -59,6 +80,7 @@ class LoginPage extends PageBase implements PageInterface
         $account['permissions'] = $permissions['rank_flags'];
 
         SessionManager::Login($account);
+        $throttle->ClearFailures($accountId);
         UrlManager::Redirect($this->serverPath);
     }
 

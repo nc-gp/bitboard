@@ -60,8 +60,11 @@ Items marked **good first issue** are small and self-contained.
   email.
 - [x] **Remove the ignored "remember me" option.** The checkbox was removed from the login
   form; persistent login tokens are not implemented.
-- [ ] **Add login rate limiting and failure logging.** Password attempts are still unlimited.
-  Add per-IP and per-account throttling and log failures.
+- [x] **Add login rate limiting and failure logging.** `LoginThrottle` records failed
+  attempts in `bit_login_attempts` and blocks after 5 failures per account/identifier or
+  10 per IP in a 15-minute sliding window. Successful logins clear that account's failures,
+  and rows older than 7 days are pruned as new failures are recorded. New installs create
+  the table in step 3; existing installs create it on the first login attempt.
 - [ ] **Enforce locked forum/subforum permissions.** `is_locked` exists on forums and
   subforums but is never checked. Apply `Permissions::VIEWING_FORUM_LOCKED` in
   `ForumPage`, `SubforumPage`, `ThreadPage`, and the API.

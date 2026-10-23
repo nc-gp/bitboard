@@ -38,6 +38,8 @@
 - User login/logout with bcrypt password hashes, username or email login, and bitmask-based
   ranks/permissions.
 - Session idle/absolute timeouts (30 minutes idle, 12 hours absolute) with re-login notices.
+- Login rate limiting (10 failures per IP or 5 per account in a 15-minute window) with
+  failed-attempt logging.
 - Members list with online/offline state.
 - Admin panel shell with forum settings and prefix management (edit/delete).
 - Theme system with the bundled `default` theme and light/dark/auto switcher.
@@ -56,7 +58,6 @@
 - **Prefix creation** — existing custom prefixes can be edited/deleted, but there is no create UI yet.
 - **Likes, reports, moderation tools, search, avatars/uploads.**
 - **Email verification and password reset.**
-- **Login rate limiting and failure logging.**
 - **Tests, CI, Composer, migrations, and a documented public API.**
 
 ## Requirements
@@ -199,7 +200,7 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [ ] Fix pagination bugs (threads, members, subforums, previous pages).
 - [x] Restore notifications; remove references to missing Toastify assets.
 - [x] Use generic login errors and support username or email login; remove the ignored "remember me" option.
-- [ ] Add login rate limiting and failure logging.
+- [x] Add login rate limiting and failure logging.
 
 ### Next — a usable forum
 
