@@ -24,8 +24,8 @@ class HeadWidget
     public function __construct(string $forumName, string $forumDesc, string $stylesTemplate = '')
     {
         $this->template = new Template('head', 'head');
-        $this->template->AddEntry('{forum_name}', $forumName);
-        $this->template->AddEntry('{page_title}', $forumDesc);
+        $this->template->AddEscapedEntry('{forum_name}', $forumName);
+        $this->template->AddEscapedEntry('{page_title}', $forumDesc);
         $this->template->AddEntry('{styles}', $stylesTemplate);
         $this->template->Replace();
         $this->template = $this->template->template;

@@ -41,6 +41,7 @@
 - Admin panel shell with forum settings and prefix list.
 - Theme system with the bundled `default` theme and light/dark/auto switcher.
 - Offline mode, force-login mode, banned page, and a 404 page.
+- Output escaping for user-controlled text and allowlist sanitization for rich thread/post HTML.
 
 ### Incomplete or not implemented yet
 
@@ -186,7 +187,7 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] Replace the autoloader with PSR-4-style mapping and use forward slashes in URLs/paths (Linux support).
 - [x] Fix the page lifecycle so pages are not rendered twice (`PageFactory` + `IndexPage`).
 - [x] Add CSRF protection to login and admin API requests.
-- [ ] Escape user-controlled output and sanitize rich post content.
+- [x] Escape user-controlled output and sanitize rich post content.
 - [x] Harden sessions: regenerate ID on login, cookie flags, proper logout.
 - [ ] Add an idle/absolute session timeout.
 - [x] Fix installer validation and escape values written to `app/config.php`.

@@ -92,9 +92,9 @@ class SubforumPage extends PageBase implements PageInterface
                 $lastPost = ThreadController::GetLastPost($this->database, $thread['id']);
 
                 $lastPostTemplate = new Template('subforum/thread', 'thread_lastpost');
-                $lastPostTemplate->AddEntry('{user_id}', $lastPost['id']);
+                $lastPostTemplate->AddEscapedEntry('{user_id}', $lastPost['id']);
                 $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($lastPost['avatar']));
-                $lastPostTemplate->AddEntry('{post_date}', RelativeTime::Convert($lastPost['post_timestamp']));
+                $lastPostTemplate->AddEscapedEntry('{post_date}', RelativeTime::Convert($lastPost['post_timestamp']));
                 $lastPostTemplate->AddEntry('{username}', UsernameUtils::Format($lastPost['rank_format'], $lastPost['username']));
                 $lastPostTemplate->Replace();
             }
@@ -119,12 +119,12 @@ class SubforumPage extends PageBase implements PageInterface
             $threadTemplate->AddEntry('{custom_prefix}', $threadPrefix->template);
             $threadPrefix = '';
 
-            $threadTemplate->AddEntry('{id}', $thread['id']);
-            $threadTemplate->AddEntry('{thread_title}', $thread['thread_title']);
-            $threadTemplate->AddEntry('{thread_author_id}', $thread['author_id']);
+            $threadTemplate->AddEscapedEntry('{id}', $thread['id']);
+            $threadTemplate->AddEscapedEntry('{thread_title}', $thread['thread_title']);
+            $threadTemplate->AddEscapedEntry('{thread_author_id}', $thread['author_id']);
             $threadTemplate->AddEntry('{thread_author_username}', UsernameUtils::Format($thread['rank_format'], $thread['username']));
-            $threadTemplate->AddEntry('{thread_date}', RelativeTime::Convert($thread['thread_timestamp']));
-            $threadTemplate->AddEntry('{thread_replies}', $thread['post_count']);
+            $threadTemplate->AddEscapedEntry('{thread_date}', RelativeTime::Convert($thread['thread_timestamp']));
+            $threadTemplate->AddEscapedEntry('{thread_replies}', $thread['post_count']);
             $threadTemplate->AddEntry('{thread_lastpost}', $lastPostTemplate->template);
             $threadTemplate->Replace();
 

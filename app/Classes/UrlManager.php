@@ -45,6 +45,12 @@ class UrlManager
         $protocol = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off' ? 'https://' : 'http://';
         $host = $_SERVER['HTTP_HOST'] ?? 'localhost';
 
+        // The Host header is client-controlled. Keep only characters that are valid
+        // in a hostname, IPv6 literal, or host:port pair so the base URL cannot break
+        // out of HTML attributes or inline JavaScript strings.
+        if (!is_string($host) || !preg_match('/^[A-Za-z0-9._\-:\[\]]+$/', $host))
+            $host = 'localhost';
+
         $script = $_SERVER['SCRIPT_NAME'] ?? $_SERVER['PHP_SELF'] ?? '/index.php';
         $directory = rtrim(str_replace('\\', '/', dirname($script)), '/');
 

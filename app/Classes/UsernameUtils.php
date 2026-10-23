@@ -28,7 +28,9 @@ class UsernameUtils
      */
     public static function Format(string $rankFormat, string $username): string
     {
-        return str_replace("{username}", $username, $rankFormat);
+        $escapedUsername = htmlspecialchars($username, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+        return str_replace("{username}", $escapedUsername, $rankFormat);
     }
 }
 

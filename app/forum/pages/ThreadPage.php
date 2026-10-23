@@ -9,6 +9,7 @@ use App\Classes\AvatarUtils;
 use App\Classes\UsernameUtils;
 use App\Classes\RelativeTime;
 use App\Classes\UrlManager;
+use App\Classes\HtmlSanitizer;
 
 use App\Interfaces\PageInterface;
 
@@ -72,22 +73,22 @@ class ThreadPage extends PageBase implements PageInterface
         $userPostCount = $threadCount['thread_count'] + $postCount['post_count'];
 
         $userStatsTemplate = new Template('thread', 'thread_user_stats');
-        $userStatsTemplate->AddEntry('{user_reputation}', $thread['user_reputation']);
-        $userStatsTemplate->AddEntry('{user_postcount}', $userPostCount);
+        $userStatsTemplate->AddEscapedEntry('{user_reputation}', $thread['user_reputation']);
+        $userStatsTemplate->AddEscapedEntry('{user_postcount}', $userPostCount);
         $userStatsTemplate->Replace();
 
         $threadContentTemplate = new Template('thread', 'thread_content');
-        $threadContentTemplate->AddEntry('{thread_title}', $thread['thread_title']);
-        $threadContentTemplate->AddEntry('{thread_timestamp}', 'Published ' . RelativeTime::Format($thread['thread_timestamp']));
-        $threadContentTemplate->AddEntry('{thread_content}', $thread['thread_content']);
-        $threadContentTemplate->AddEntry('{thread_likes}', $thread['thread_likes'] > 0 ? $thread['thread_likes'] : '');
+        $threadContentTemplate->AddEscapedEntry('{thread_title}', $thread['thread_title']);
+        $threadContentTemplate->AddEscapedEntry('{thread_timestamp}', 'Published ' . RelativeTime::Format($thread['thread_timestamp']));
+        $threadContentTemplate->AddEntry('{thread_content}', HtmlSanitizer::Sanitize($thread['thread_content']));
+        $threadContentTemplate->AddEscapedEntry('{thread_likes}', $thread['thread_likes'] > 0 ? $thread['thread_likes'] : '');
         // TODO: Add like button or new like widgets for posts if user is logged!
 
-        $threadContentTemplate->AddEntry('{user_id}', $thread['user_id']);
+        $threadContentTemplate->AddEscapedEntry('{user_id}', $thread['user_id']);
         $threadContentTemplate->AddEntry('{user_name}', UsernameUtils::Format($thread['rank_format'], $thread['user_name']));
         $threadContentTemplate->AddEntry('{user_avatar}', AvatarUtils::GetPath($thread['user_avatar']));
-        $threadContentTemplate->AddEntry('{user_avatar_alt}', $thread['user_name']);
-        $threadContentTemplate->AddEntry('{user_rank}', $thread['rank_name']);
+        $threadContentTemplate->AddEscapedEntry('{user_avatar_alt}', $thread['user_name']);
+        $threadContentTemplate->AddEscapedEntry('{user_rank}', $thread['rank_name']);
         $threadContentTemplate->AddEntry('{user_stats}', $userStatsTemplate->template);
         $threadContentTemplate->Replace();
 
@@ -110,20 +111,20 @@ class ThreadPage extends PageBase implements PageInterface
             $userPostCount = $threadCount['thread_count'] + $postCount['post_count'];
 
             $userStatsTemplate = new Template('thread', 'thread_user_stats');
-            $userStatsTemplate->AddEntry('{user_reputation}', $author['reputation']);
-            $userStatsTemplate->AddEntry('{user_postcount}', $userPostCount);
+            $userStatsTemplate->AddEscapedEntry('{user_reputation}', $author['reputation']);
+            $userStatsTemplate->AddEscapedEntry('{user_postcount}', $userPostCount);
             $userStatsTemplate->Replace();
 
             $postTemplate = new Template('thread', 'post');
-            $postTemplate->AddEntry('{user_id}', $author['id']);
+            $postTemplate->AddEscapedEntry('{user_id}', $author['id']);
             $postTemplate->AddEntry('{user_name}', UsernameUtils::Format($author['rank_format'], $author['username']));
             $postTemplate->AddEntry('{user_avatar}', AvatarUtils::GetPath($author['avatar']));
-            $postTemplate->AddEntry('{user_avatar_alt}', $author['username']);
-            $postTemplate->AddEntry('{user_rank}', $author['rank_name']);
+            $postTemplate->AddEscapedEntry('{user_avatar_alt}', $author['username']);
+            $postTemplate->AddEscapedEntry('{user_rank}', $author['rank_name']);
             $postTemplate->AddEntry('{user_stats}', $userStatsTemplate->template);
-            $postTemplate->AddEntry('{post_timestamp}', 'Published ' . RelativeTime::Format($post['post_timestamp']));
-            $postTemplate->AddEntry('{post_content}', $post['post_content']);
-            $postTemplate->AddEntry('{post_likes}', $post['post_likes'] > 0 ? $post['post_likes'] : '');
+            $postTemplate->AddEscapedEntry('{post_timestamp}', 'Published ' . RelativeTime::Format($post['post_timestamp']));
+            $postTemplate->AddEntry('{post_content}', HtmlSanitizer::Sanitize($post['post_content']));
+            $postTemplate->AddEscapedEntry('{post_likes}', $post['post_likes'] > 0 ? $post['post_likes'] : '');
             $postTemplate->Replace();
 
             $this->posts .= $postTemplate->template;

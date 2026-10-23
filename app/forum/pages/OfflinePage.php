@@ -33,7 +33,7 @@ class OfflinePage extends PageBase implements PageInterface
     public function Do()
     {
         $this->template = new Template('offline', 'main');
-        $this->template->AddEntry('{reason}', $this->message);
+        $this->template->AddEscapedEntry('{reason}', $this->message);
         
         parent::RenderPage('offline');
     }

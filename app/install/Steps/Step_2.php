@@ -34,7 +34,7 @@ class Step_2 extends StepBase implements StepInterface
 		if(isset($_SESSION['bb-info-mysql']))
 		{
 			$err = new Template('./app/install/templates/other/', 'error', true);
-			$err->AddEntry('{error}', $_SESSION['bb-info-mysql']['msg']);
+			$err->AddJsEntry('{error}', $_SESSION['bb-info-mysql']['msg']);
 			$err->Replace();
 
 			self::$error = $err->template;

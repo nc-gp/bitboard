@@ -10,8 +10,8 @@ class Template
     public $template;
     private $fullPath;
     private string $name;
-    private array $variables;
-    private array $replaces;
+    private array $variables = [];
+    private array $replaces = [];
 
     /**
      * Constructor to initialize the Template object with a template file path.
@@ -71,6 +71,46 @@ class Template
     }
 
     /**
+     * Add a single entry whose value is escaped for HTML text or attribute context.
+     *
+     * @param string $variable The name of the entry (placeholder).
+     * @param mixed  $replace  The value to escape and replace the entry with.
+     */
+    public function AddEscapedEntry(string $variable, mixed $replace): void
+    {
+        $this->AddEntry($variable, self::Escape($replace));
+    }
+
+    /**
+     * Add a single entry whose value is encoded for a JavaScript string context.
+     *
+     * @param string $variable The name of the entry (placeholder).
+     * @param mixed  $replace  The value to encode and replace the entry with.
+     */
+    public function AddJsEntry(string $variable, mixed $replace): void
+    {
+        $this->AddEntry($variable, self::EncodeJs($replace));
+    }
+
+    /**
+     * Escape a value for HTML text or attribute context.
+     */
+    public static function Escape(mixed $value): string
+    {
+        return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    }
+
+    /**
+     * Encode a value for a JavaScript string context.
+     */
+    public static function EncodeJs(mixed $value): string
+    {
+        $encoded = json_encode($value, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT);
+
+        return $encoded === false ? 'null' : $encoded;
+    }
+
+    /**
      * Add multiple entries and their corresponding replacement values.
      *
      * @param array $variables   An array of entry names (placeholders).
@@ -82,7 +122,7 @@ class Template
         $variablesSize = count($variables);
         $replacesSize = count($replaces);
 
-        if ($variables !== $replacesSize)
+        if ($variablesSize !== $replacesSize)
             throw new Error("The entries size needs to be the same as replaces.");
 
         for ($i = 0; $i < $variablesSize; $i++) {

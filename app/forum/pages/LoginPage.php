@@ -68,7 +68,7 @@ class LoginPage extends PageBase implements PageInterface
             return;
         
         $errorTemplate = new Template('login', 'error');
-        $errorTemplate->AddEntry('{error}', $_SESSION['bb-info-login']['msg']);
+        $errorTemplate->AddJsEntry('{error}', $_SESSION['bb-info-login']['msg']);
         $errorTemplate->Replace();
 
         $this->error = $errorTemplate->template;
@@ -81,7 +81,7 @@ class LoginPage extends PageBase implements PageInterface
         $this->CheckError();
 
         $this->template = new Template('login', 'login');
-        $this->template->AddEntry('{forum_name}', $this->forumName);
+        $this->template->AddEscapedEntry('{forum_name}', $this->forumName);
         $this->template->AddEntry('{register_url}', $this->serverPath . 'register');
         $this->template->AddEntry('{error}', $this->error);
         

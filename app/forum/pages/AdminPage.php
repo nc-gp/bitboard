@@ -28,10 +28,12 @@ class AdminPage extends PageBase implements PageInterface
 
     private function CheckError()
     {
-        if(!isset($_SESSION['bb-info-settings']))
+        if(!isset($_SESSION['bb-info-settings']) || !is_array($_SESSION['bb-info-settings']))
             return;
 
-        $errorTemplate = new NotifyWidget($_SESSION['bb-info-settings']['msg'], $_SESSION['bb-info-settings']['rgb']);
+        $message = $_SESSION['bb-info-settings']['msg'] ?? '';
+        $rgb = $_SESSION['bb-info-settings']['rgb'] ?? '255, 53, 53';
+        $errorTemplate = new NotifyWidget($message, $rgb);
         $this->error = $errorTemplate->template;
 
         SessionManager::RemoveInformation('settings');
@@ -49,10 +51,10 @@ class AdminPage extends PageBase implements PageInterface
             case 'settings':
             {
                 $this->content = new Template('admin/main', 'settings');
-                $this->content->AddEntry('{forum_name}', $this->forumData->forum_name);
-                $this->content->AddEntry('{forum_desc}', $this->forumData->forum_description);
+                $this->content->AddEscapedEntry('{forum_name}', $this->forumData->forum_name);
+                $this->content->AddEscapedEntry('{forum_desc}', $this->forumData->forum_description);
                 $this->content->AddEntry('{forum_online}', $this->forumData->forum_online ? 'checked' : '');
-                $this->content->AddEntry('{forum_online_msg}', $this->forumData->forum_online_msg);
+                $this->content->AddEscapedEntry('{forum_online_msg}', $this->forumData->forum_online_msg);
                 $this->content->AddEntry('{forum_force_login}', $this->forumData->forum_force_login ? 'checked' : '');
                 $this->content->Replace();
                 break;
@@ -70,9 +72,9 @@ class AdminPage extends PageBase implements PageInterface
                     foreach ($data as $prefix_data) 
                     {
                         $prefix = new Template('admin/main/prefixes', 'prefix');
-                        $prefix->AddEntry('{prefix_name}', $prefix_data['prefix_name']);
-                        $prefix->AddEntry('{prefix_class}', $prefix_data['prefix_class']);
-                        $prefix->AddEntry('{prefix_id}', $prefix_data['id']);
+                        $prefix->AddEscapedEntry('{prefix_name}', $prefix_data['prefix_name']);
+                        $prefix->AddEscapedEntry('{prefix_class}', $prefix_data['prefix_class']);
+                        $prefix->AddEscapedEntry('{prefix_id}', $prefix_data['id']);
                         $prefix->Replace();
                         $prefixes .= $prefix->template;
                     }
@@ -86,8 +88,8 @@ class AdminPage extends PageBase implements PageInterface
             default:
             {
                 $this->content = new Template('admin/main', 'home');
-                $this->content->AddEntry('{username}', $_SESSION['bitboard_user']->username);
-                $this->content->AddEntry('{rankname}', RankController::GetRankNameByID($this->database, $_SESSION['bitboard_user']->rank_id));
+                $this->content->AddEscapedEntry('{username}', $_SESSION['bitboard_user']->username);
+                $this->content->AddEscapedEntry('{rankname}', RankController::GetRankNameByID($this->database, $_SESSION['bitboard_user']->rank_id));
                 $this->content->Replace();
                 break;
             }

@@ -23,7 +23,7 @@ class Step_5 extends StepBase implements StepInterface
 		if(isset($_SESSION['bb-info-forum']))
 		{
 			$err = new Template('./app/install/templates/other/', 'error', true);
-			$err->AddEntry('{error}', $_SESSION['bb-info-forum']['msg']);
+			$err->AddJsEntry('{error}', $_SESSION['bb-info-forum']['msg']);
 			$err->Replace();
 
 			self::$error = $err->template;

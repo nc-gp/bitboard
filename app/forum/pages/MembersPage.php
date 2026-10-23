@@ -79,15 +79,15 @@ class MembersPage extends PageBase implements PageInterface
                 $onlineTemplate = new Template('members', 'member_offline');
 
             $memberTemplate = new Template('members', 'member');
-            $memberTemplate->AddEntry('{id}', $member['id']);
+            $memberTemplate->AddEscapedEntry('{id}', $member['id']);
             $memberTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($member['avatar']));
             $memberTemplate->AddEntry('{username}', UsernameUtils::Format($member['rank_format'], $member['username']));
-            $memberTemplate->AddEntry('{rank}', $member['rank_name']);
-            $memberTemplate->AddEntry('{reputation}', $member['reputation']);
-            $memberTemplate->AddEntry('{regdate}', RelativeTime::Format($member['reg_date'], false));
-            $memberTemplate->AddEntry('{lastseen}', RelativeTime::Convert($member['last_active']));
-            $memberTemplate->AddEntry('{posts}', $member['post_count']);
-            $memberTemplate->AddEntry('{threads}', $member['thread_count']);
+            $memberTemplate->AddEscapedEntry('{rank}', $member['rank_name']);
+            $memberTemplate->AddEscapedEntry('{reputation}', $member['reputation']);
+            $memberTemplate->AddEscapedEntry('{regdate}', RelativeTime::Format($member['reg_date'], false));
+            $memberTemplate->AddEscapedEntry('{lastseen}', RelativeTime::Convert($member['last_active']));
+            $memberTemplate->AddEscapedEntry('{posts}', $member['post_count']);
+            $memberTemplate->AddEscapedEntry('{threads}', $member['thread_count']);
             $memberTemplate->AddEntry('{online}', $onlineTemplate->template);
             $memberTemplate->AddEntry('{contact}', $memberContact);
             $memberTemplate->Replace();

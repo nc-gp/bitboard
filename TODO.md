@@ -73,13 +73,17 @@ Items marked **good first issue** are small and self-contained.
 
 ### Output, input, and API
 
-- [ ] **Introduce an escaping strategy for templates.** The template engine performs raw
-  `str_replace`, so every value is inserted as HTML. At minimum:
-  - Escape usernames, thread titles, forum/category names, and descriptions with
-    `htmlspecialchars(..., ENT_QUOTES, 'UTF-8')` at the rendering boundary.
-  - Keep `rank_format` as an explicit, admin-only HTML field.
-  - Sanitize rich post content with an allowlist (for example HTMLPurifier) or render
-    Markdown after escaping.
+- [x] **Introduce an escaping strategy for templates.** `Template` now has explicit
+  `AddEscapedEntry()`/`AddJsEntry()` helpers. Plain text and attribute values use
+  `htmlspecialchars(..., ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8')`; HTML fragments still use
+  `AddEntry()` intentionally. `UsernameUtils::Format()` escapes the username before inserting
+  it into `rank_format`, which remains an explicit admin-only HTML field. Rich thread/post
+  content is sanitized with the new `HtmlSanitizer` allowlist (scripts, event handlers, unsafe
+  URL schemes, and unsupported tags/attributes are removed; basic formatting, links, images,
+  and tables are kept). JavaScript contexts (login error, notifications, installer errors) use
+  JSON encoding instead of raw string interpolation. `UrlManager::GetPath()` also restricts the
+  client-controlled `Host` header to safe hostname/IPv6/host:port characters before it is used
+  in `{server_url}`.
 - [x] **Fix the API database connection.** `ApiMain` now constructs the connection without
   passing the database name as the charset and calls `SelectDatabase($config['name'])`.
 - [x] **Validate API routes.** `ApiMain::HandleURL()` now uses an explicit method/route/class
@@ -166,9 +170,8 @@ Items marked **good first issue** are small and self-contained.
 
 ### Templates, pages, and assets
 
-- [ ] **Fix `Template` initialization and `AddEntries()`.** `$variables`/`$replaces` are
-  uninitialized until the first `AddEntry()`; `AddEntries()` compares an array to an int
-  (`Template.php:85`), so it always throws. Initialize to `[]` and compare `count()`.
+- [x] **Fix `Template` initialization and `AddEntries()`.** `$variables`/`$replaces` now
+  initialize to `[]`; `AddEntries()` compares the two `count()` values.
 - [ ] **Simplify `Template::Load()`.** Use `file_get_contents()` with an explicit error
   instead of `fopen`/`flock`/`filesize`; handle empty files and missing templates.
 - [ ] **Move `{server_url}` replacement before page content injection.** Currently global
@@ -327,7 +330,7 @@ Items marked **good first issue** are small and self-contained.
 - [x] Restore the missing Toastify assets instead of switching admin notifications to `spell_alert`.
 - [ ] Remove the "CSS ELEMENTS" link from the production navigation.
 - [ ] Fix backslashes in `AvatarUtils`, `footer/end.html`, and `admin.html`.
-- [ ] Fix `Template::AddEntries()` count comparison and initialize arrays.
+- [x] Fix `Template::AddEntries()` count comparison and initialize arrays.
 - [x] Fix `Step_5` `strlen($value <= 0)` validation.
 - [ ] Fix `RankController::Create()` default flags (`0000000000` is octal zero; use `0`).
 - [ ] Remove the leftover `{top_stats}` placeholder.

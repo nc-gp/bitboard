@@ -26,8 +26,8 @@ class PrefixWidget
     {
         $prefix = PrefixController::GetPrefixByID($db, $prefixID);
         $this->template = new Template('prefixes', 'main');
-        $this->template->AddEntry('{prefix_class}', $prefix['prefix_class']);
-        $this->template->AddEntry('{prefix_name}', $prefix['prefix_name']);
+        $this->template->AddEscapedEntry('{prefix_class}', $prefix['prefix_class']);
+        $this->template->AddEscapedEntry('{prefix_name}', $prefix['prefix_name']);
         $this->template->Replace();
 
         $this->template = $this->template->template;

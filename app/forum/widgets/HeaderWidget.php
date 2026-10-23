@@ -53,7 +53,7 @@ class HeaderWidget
 
         $userTemplate = new Template('header/nav', 'user');
         $userTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($_SESSION['bitboard_user']->avatar));
-        $userTemplate->AddEntry('{username}', $_SESSION['bitboard_user']->username);
+        $userTemplate->AddEscapedEntry('{username}', $_SESSION['bitboard_user']->username);
         $userTemplate->Replace();
 
         $userMenuTemplate = new Template('header/nav', 'user_menu');

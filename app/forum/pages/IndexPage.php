@@ -120,8 +120,8 @@ class IndexPage extends PageBase implements PageInterface
                 foreach($forum->subforums as $subforum)
                 {
                     $subforumTemplate = new Template('index/forum', 'subforum');
-                    $subforumTemplate->AddEntry('{subforum_title}', $subforum->subforum_name);
-                    $subforumTemplate->AddEntry('{subforum_id}', $subforum->id);
+                    $subforumTemplate->AddEscapedEntry('{subforum_title}', $subforum->subforum_name);
+                    $subforumTemplate->AddEscapedEntry('{subforum_id}', $subforum->id);
                     $subforumTemplate->Replace();
 
                     $subforums .= $subforumTemplate->template;
@@ -133,21 +133,21 @@ class IndexPage extends PageBase implements PageInterface
                     $lastPost = ForumController::GetLastPost($this->database, $forum->id);
 
                     $lastPostTemplate = new Template('index/forum', 'forum_lastpost');
-                    $lastPostTemplate->AddEntry('{user_id}', $lastPost['id']);
+                    $lastPostTemplate->AddEscapedEntry('{user_id}', $lastPost['id']);
                     $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($lastPost['avatar']));
-                    $lastPostTemplate->AddEntry('{thread_id}', $lastPost['thread_id']);
-                    $lastPostTemplate->AddEntry('{thread_title}', $lastPost['thread_title']);
-                    $lastPostTemplate->AddEntry('{post_date}', RelativeTime::Convert($lastPost['post_timestamp']));
+                    $lastPostTemplate->AddEscapedEntry('{thread_id}', $lastPost['thread_id']);
+                    $lastPostTemplate->AddEscapedEntry('{thread_title}', $lastPost['thread_title']);
+                    $lastPostTemplate->AddEscapedEntry('{post_date}', RelativeTime::Convert($lastPost['post_timestamp']));
                     $lastPostTemplate->AddEntry('{username}', UsernameUtils::Format($lastPost['rank_format'], $lastPost['username']));
                     $lastPostTemplate->Replace();
                 }
 
-                $forumTemplate->AddEntry('{forum_id}', $forum->id);
-                $forumTemplate->AddEntry('{forum_icon}', $forum->forum_icon);
-                $forumTemplate->AddEntry('{forum_title}', $forum->forum_name);
-                $forumTemplate->AddEntry('{forum_description}', $forum->forum_desc);
-                $forumTemplate->AddEntry('{forum_posts}', $forum->post_count);
-                $forumTemplate->AddEntry('{forum_threads}', $forum->thread_count);
+                $forumTemplate->AddEscapedEntry('{forum_id}', $forum->id);
+                $forumTemplate->AddEscapedEntry('{forum_icon}', $forum->forum_icon);
+                $forumTemplate->AddEscapedEntry('{forum_title}', $forum->forum_name);
+                $forumTemplate->AddEscapedEntry('{forum_description}', $forum->forum_desc);
+                $forumTemplate->AddEscapedEntry('{forum_posts}', $forum->post_count);
+                $forumTemplate->AddEscapedEntry('{forum_threads}', $forum->thread_count);
                 $forumTemplate->AddEntry('{subforums}', $subforums);
                 $forumTemplate->AddEntry('{forum_lastpost}', $lastPostTemplate->template);
                 $forumTemplate->Replace();
@@ -155,9 +155,9 @@ class IndexPage extends PageBase implements PageInterface
                 $forums .= $forumTemplate->template;
             }
 
-            $categoryTemplate->AddEntry('{category_icon}', $category->category_icon);
-            $categoryTemplate->AddEntry('{category_title}', $category->category_name);
-            $categoryTemplate->AddEntry('{category_description}', $category->category_desc);
+            $categoryTemplate->AddEscapedEntry('{category_icon}', $category->category_icon);
+            $categoryTemplate->AddEscapedEntry('{category_title}', $category->category_name);
+            $categoryTemplate->AddEscapedEntry('{category_description}', $category->category_desc);
             $categoryTemplate->AddEntry('{forums}', $forums);
             $categoryTemplate->Replace();
 
@@ -172,16 +172,16 @@ class IndexPage extends PageBase implements PageInterface
         $this->FetchStats();
 
         $lastRegistered = new Template('index/stats', 'last_registered');
-        $lastRegistered->AddEntry('{id}', $this->lastAccount['id']);
+        $lastRegistered->AddEscapedEntry('{id}', $this->lastAccount['id']);
         $lastRegistered->AddEntry('{avatar}', $this->lastAccount['avatar']);
         $lastRegistered->AddEntry('{username}', $this->lastAccount['formatted_username']);
-        $lastRegistered->AddEntry('{regdate}', RelativeTime::Convert($this->lastAccount['reg_date']));
+        $lastRegistered->AddEscapedEntry('{regdate}', RelativeTime::Convert($this->lastAccount['reg_date']));
         $lastRegistered->Replace();
 
         $statsTemplate = new Template('index', 'stats');
-        $statsTemplate->AddEntry('{totalPosts}', $this->totalPosts);
-        $statsTemplate->AddEntry('{totalThreads}', $this->totalThreads);
-        $statsTemplate->AddEntry('{totalUsers}', $this->totalUsers);
+        $statsTemplate->AddEscapedEntry('{totalPosts}', $this->totalPosts);
+        $statsTemplate->AddEscapedEntry('{totalThreads}', $this->totalThreads);
+        $statsTemplate->AddEscapedEntry('{totalUsers}', $this->totalUsers);
         $statsTemplate->AddEntry('{lastRegistered}', $lastRegistered->template);
         $statsTemplate->Replace();
 
