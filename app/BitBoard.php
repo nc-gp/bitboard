@@ -66,7 +66,14 @@ class BitBoard
 
 		if(SessionManager::IsLogged())
 		{
-			AccountController::UpdateLastActive($this->database, $_SESSION['bitboard_user']->id);
+			// Last-active only needs minute-level accuracy. Avoid a write on every request.
+			$now = time();
+			if(!isset($_SESSION['bb_last_active_update']) || ($now - $_SESSION['bb_last_active_update']) >= 60)
+			{
+				AccountController::UpdateLastActive($this->database, $_SESSION['bitboard_user']->id);
+				$_SESSION['bb_last_active_update'] = $now;
+			}
+
 			$_SESSION['bitboard_user']->Update($this->database);
 			
 			// Checking is user banned. (Reality this is checking if user has permission to view the forum)

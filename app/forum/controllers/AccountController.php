@@ -7,16 +7,16 @@ use App\Classes\Database;
 class AccountController
 {
 	/**
-     * GetAccountByName retrieves account information based on the provided username.
+     * GetAccountByLogin retrieves account information by username or email.
      *
      * @param Database 	db The database instance.
-     * @param string 	userName The username to search for.
+     * @param string 	login The username or email address to search for.
      *
      * @return array 	An associative array containing account information.
      */
-	static public function GetAccountByName(Database $db, string $userName): array
+	static public function GetAccountByLogin(Database $db, string $login): array
 	{
-		return $db->Query('SELECT * FROM bit_accounts WHERE username = ? LIMIT 1', $userName)->FetchArray();
+		return $db->Query('SELECT * FROM bit_accounts WHERE username = ? OR email = ? LIMIT 1', $login, $login)->FetchArray();
 	}
 
 	/**
@@ -29,7 +29,20 @@ class AccountController
      */
     static public function UpdateLastActive(Database $db, int $userId): void
     {
-        $db->Query('UPDATE bit_accounts SET last_active = ? WHERE id = ?', date("Y-m-d H:i:s"), $userId);
+        try
+        {
+            $db->Query('UPDATE bit_accounts SET last_active = ? WHERE id = ?', date("Y-m-d H:i:s"), $userId);
+        }
+        catch (\mysqli_sql_exception $e)
+        {
+            // 1205 = lock wait timeout, 1213 = deadlock. Last-active is
+            // non-critical, so do not take the whole page down for these.
+            $code = (int) $e->getCode();
+            if ($code !== 1205 && $code !== 1213)
+                throw $e;
+
+            error_log('BitBoard: unable to update last_active for account ' . $userId . ': ' . $e->getMessage());
+        }
     }
 
 	/**

@@ -39,21 +39,24 @@ class LoginPage extends PageBase implements PageInterface
             UrlManager::Redirect($this->serverPath . 'login');
         }
 
-        $account = AccountController::GetAccountByName($this->database, $_POST['username']);
-        if(empty($account))
+        $login = isset($_POST['username']) && is_string($_POST['username']) ? trim($_POST['username']) : '';
+        $password = isset($_POST['password']) && is_string($_POST['password']) ? $_POST['password'] : '';
+
+        if($login === '' || $password === '')
         {
-            SessionManager::AddInformation('login', 'Account with that username doesnt exists.', true);
+            SessionManager::AddInformation('login', 'Invalid username/email or password.', true);
+            UrlManager::Redirect($this->serverPath . 'login');
+        }
+
+        $account = AccountController::GetAccountByLogin($this->database, $login);
+        if(empty($account) || !PasswordUtils::Verify($password, $account['pass']))
+        {
+            SessionManager::AddInformation('login', 'Invalid username/email or password.', true);
             UrlManager::Redirect($this->serverPath . 'login');
         }
 
         $permissions = $this->database->Query('SELECT rank_flags FROM bit_ranks WHERE id = ?', $account['rank_id'])->FetchArray();
         $account['permissions'] = $permissions['rank_flags'];
-
-        if(!PasswordUtils::Verify($_POST['password'], $account['pass']))
-        {
-            SessionManager::AddInformation('login', 'Invalid password', true);
-            UrlManager::Redirect($this->serverPath . 'login');
-        }
 
         SessionManager::Login($account);
         UrlManager::Redirect($this->serverPath);

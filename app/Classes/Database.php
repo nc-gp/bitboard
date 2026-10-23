@@ -31,6 +31,11 @@ class Database
         if ($this->connection->connect_error)
             throw new Exception('Failed to connect: ' . $this->connection->connect_error);
 
+        // The application does not use explicit transactions. Keep autocommit on so
+        // short-lived requests never leave row locks behind for the next request.
+        if (!$this->connection->autocommit(true))
+            throw new Exception('Failed to enable autocommit: ' . $this->connection->error);
+
         $this->connection->set_charset($charset);
     }
 
