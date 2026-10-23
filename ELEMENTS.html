@@ -191,7 +191,8 @@
     <!-- Modal-->
     <h2>Modal</h2>
     <button bb-action="modal" title="BB Modal 🔥" message="Are you sure you want to proceed? 💀"
-        onconfirm="web('https://www.youtube.com/embed/dQw4w9WgXcQ?si=lk7noVVUe8uILr3D&autoplay=1')">Modal</button>
+        data-confirm-action="open-video"
+        data-confirm-value="https://www.youtube.com/embed/dQw4w9WgXcQ?si=lk7noVVUe8uILr3D&amp;autoplay=1">Modal</button>
     <!-- ./ Modal -->
 
     <!-- Form elements-->
@@ -430,3 +431,10 @@
     </div>
 </embedder>
 <script src="assets/javascripts/main.js"></script>
+<script>
+document.addEventListener('bb:modal-confirm', event => {
+    if (event.detail.action === 'open-video') {
+        web(event.detail.value);
+    }
+});
+</script>

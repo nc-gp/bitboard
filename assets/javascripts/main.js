@@ -4,8 +4,9 @@ const embed = document.querySelector('#embed')
 
 action_elements.forEach(element => {
     element.addEventListener('click', event => {
-        let action = event.target.getAttribute('bb-action')
-        let target = event.target.getAttribute('target')
+        let trigger = event.currentTarget
+        let action = trigger.getAttribute('bb-action')
+        let target = trigger.getAttribute('target')
         if (target) {
             embedder.setAttribute('visibility', true)
         }
@@ -25,10 +26,18 @@ action_elements.forEach(element => {
                 window.open(target)
                 break;
             case 'modal':
-                let title = event.target.getAttribute('title')
-                let message = event.target.getAttribute('message')
-                let onconfirm = event.target.getAttribute('onconfirm')
-                modal(title, message, onconfirm)
+                let title = trigger.getAttribute('title') ?? ''
+                let message = trigger.getAttribute('message') ?? ''
+                modal(title, message, () => {
+                    trigger.dispatchEvent(new CustomEvent('bb:modal-confirm', {
+                        bubbles: true,
+                        detail: {
+                            trigger: trigger,
+                            action: trigger.getAttribute('data-confirm-action'),
+                            value: trigger.getAttribute('data-confirm-value')
+                        }
+                    }))
+                })
                 break;
         }
     })
@@ -122,7 +131,19 @@ const req = (method, url, data = null, callback = null) => {
     xhr.send(data);
 };
 
-const modal = (title, message, onconfirm) => {
+/**
+ * Show a confirmation modal.
+ *
+ * Declarative modal buttons dispatch `bb:modal-confirm` on the trigger after
+ * confirmation. The event detail contains the trigger, `action`, and `value`
+ * from `data-confirm-action` / `data-confirm-value`. Attribute values are never
+ * executed as code.
+ *
+ * @param {String} title Modal title.
+ * @param {String} message Modal message.
+ * @param {Function|null} onConfirm Optional callback invoked on confirmation.
+ */
+const modal = (title, message, onConfirm = null) => {
     document.body.style.overflow = 'hidden';
     let modal = document.createElement('div');
     modal.classList.add('modal');
@@ -131,24 +152,29 @@ const modal = (title, message, onconfirm) => {
     modalContent.classList.add('modal-content');
 
     let modalTitle = document.createElement('h2');
-    modalTitle.textContent = title;
+    modalTitle.textContent = title ?? '';
 
     let modalMessage = document.createElement('p');
-    modalMessage.textContent = message;
+    modalMessage.textContent = message ?? '';
 
     let cancelButton = document.createElement('button');
-    cancelButton.innerHTML = 'Close';
+    cancelButton.textContent = 'Close';
     cancelButton.addEventListener('click', function () {
         document.body.style.overflow = '';
         document.body.removeChild(modal);
     });
 
     let okButton = document.createElement('button');
-    okButton.innerHTML = 'Continue';
+    okButton.textContent = 'Continue';
     okButton.addEventListener('click', function () {
-        eval(onconfirm);
-        document.body.style.overflow = '';
-        document.body.removeChild(modal);
+        try {
+            if (typeof onConfirm === 'function') {
+                onConfirm();
+            }
+        } finally {
+            document.body.style.overflow = '';
+            document.body.removeChild(modal);
+        }
     });
 
     modalContent.appendChild(modalTitle);

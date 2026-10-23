@@ -203,6 +203,7 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] Use generic login errors and support username or email login; remove the ignored "remember me" option.
 - [x] Add login rate limiting and failure logging.
 - [x] Enforce locked forum/subforum permissions.
+- [x] Remove `eval()` from the modal helper; confirmations now use callbacks or a custom event.
 
 ### Next — a usable forum
 

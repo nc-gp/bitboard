@@ -108,8 +108,10 @@ Items marked **good first issue** are small and self-contained.
 - [x] **Restrict CORS and response details.** `api.php` no longer sends wildcard CORS
   headers. Invalid JSON returns a generic message, and endpoint/database exceptions are
   logged and returned as a generic 500 instead of leaking details.
-- [ ] **Remove `eval()` from the modal helper.** `assets/javascripts/main.js:132` executes the
-  `onconfirm` attribute. Accept a callback or dispatch a custom event instead.
+- [x] **Remove `eval()` from the modal helper.** `modal()` now accepts a callback function, and
+  declarative `bb-action="modal"` buttons dispatch a `bb:modal-confirm` event with the trigger,
+  `data-confirm-action`, and `data-confirm-value`. Attribute values are passed as data only and
+  are never executed as code.
 - [x] **Escape console output.** `Console::Log()`/`Console::Error()` now encode values with
   `json_encode()` and `JSON_HEX_*` flags, so quotes and `</script>` cannot break out of the
   generated script tag. Removed the leftover `ThreadPage` debug log.
