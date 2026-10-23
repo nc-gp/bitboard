@@ -10,17 +10,31 @@ use App\Forum\Structs\AccountStruct;
 class SessionManager
 {
     /**
+     * Maximum time between two requests before the session is logged out.
+     */
+    public const IDLE_TIMEOUT = 1800; // 30 minutes
+
+    /**
+     * Maximum lifetime of a session, regardless of activity.
+     */
+    public const ABSOLUTE_TIMEOUT = 43200; // 12 hours
+
+    /**
      * Start the session with hardened cookie settings.
      */
     static public function Start(): void
     {
         if (session_status() === PHP_SESSION_ACTIVE)
+        {
+            self::EnforceTimeouts();
             return;
+        }
 
         $secure = !empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off';
 
         ini_set('session.use_strict_mode', '1');
         ini_set('session.use_only_cookies', '1');
+        ini_set('session.gc_maxlifetime', (string) max(self::IDLE_TIMEOUT, self::ABSOLUTE_TIMEOUT));
 
         session_set_cookie_params([
             'lifetime' => 0,
@@ -32,6 +46,63 @@ class SessionManager
         ]);
 
         session_start();
+        self::EnforceTimeouts();
+    }
+
+    /**
+     * Log out a session that has exceeded its idle or absolute lifetime.
+     */
+    private static function EnforceTimeouts(): void
+    {
+        if (!isset($_SESSION['bitboard_logged']))
+            return;
+
+        $now = time();
+        $loginTime = self::ReadTimestamp('bb_login_time', $now);
+        $lastActivity = self::ReadTimestamp('bb_last_activity', $now);
+
+        if (($now - $loginTime) >= self::ABSOLUTE_TIMEOUT || ($now - $lastActivity) >= self::IDLE_TIMEOUT)
+        {
+            self::Expire();
+            return;
+        }
+
+        $_SESSION['bb_login_time'] = $loginTime;
+        $_SESSION['bb_last_activity'] = $now;
+    }
+
+    /**
+     * Read a positive UNIX timestamp, falling back to the current time.
+     */
+    private static function ReadTimestamp(string $key, int $now): int
+    {
+        $value = $_SESSION[$key] ?? null;
+
+        if (is_int($value))
+            $timestamp = $value;
+        elseif (is_string($value) && ctype_digit($value))
+            $timestamp = (int) $value;
+        else
+            return $now;
+
+        if ($timestamp <= 0 || $timestamp > $now)
+            return $now;
+
+        return $timestamp;
+    }
+
+    /**
+     * Clear the authenticated session and leave a login notice.
+     */
+    private static function Expire(): void
+    {
+        $_SESSION = [];
+
+        // Rotate the identifier so an expired session cannot be reused.
+        if (session_status() === PHP_SESSION_ACTIVE && !headers_sent())
+            session_regenerate_id(true);
+
+        $_SESSION['bb-info-login']['msg'] = 'Your session expired. Please log in again.';
     }
 
     /**
@@ -103,6 +174,10 @@ class SessionManager
 
         self::Set($userData);
         self::RotateCsrfToken();
+
+        $now = time();
+        $_SESSION['bb_login_time'] = $now;
+        $_SESSION['bb_last_activity'] = $now;
     }
 
     /**
@@ -117,6 +192,13 @@ class SessionManager
 
         $_SESSION['bitboard_logged'] = true;
         $_SESSION['bitboard_user'] = new AccountStruct($userData);
+
+        // This method is also used to refresh account data, so never reset the timers.
+        if (!isset($_SESSION['bb_login_time']))
+            $_SESSION['bb_login_time'] = time();
+
+        if (!isset($_SESSION['bb_last_activity']))
+            $_SESSION['bb_last_activity'] = time();
     }
 
     /**

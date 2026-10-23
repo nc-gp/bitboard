@@ -47,12 +47,13 @@ Items marked **good first issue** are small and self-contained.
 - [x] **Add CSRF protection** to the login form, admin settings, and every `Api/POST/*`
   endpoint. A per-session token is rendered in the page meta tag and forms, sent as
   `X-CSRF-Token` for API calls, rotated after login, and verified server-side.
-- [ ] **Harden sessions.**
+- [x] **Harden sessions.**
   - [x] Regenerate the session ID after login (`session_regenerate_id(true)`).
   - [x] Set `HttpOnly`, `SameSite=Lax/Strict`, and `Secure` (when HTTPS) cookie flags before
     `session_start()`.
   - [x] Destroy the session and cookie on logout.
-  - [ ] Add an idle/absolute timeout.
+  - [x] Add a 30-minute idle timeout and a 12-hour absolute timeout. Expired sessions are
+    cleared, their IDs regenerated, and the login page shows a notice.
 - [x] **Use generic login errors and support username/email login.** `LoginPage` now trims
   the identifier, verifies the password before loading permissions, and returns the same
   error for unknown users and wrong passwords. `GetAccountByLogin()` matches username or

@@ -37,6 +37,7 @@
 - Thread and post viewing with relative timestamps.
 - User login/logout with bcrypt password hashes, username or email login, and bitmask-based
   ranks/permissions.
+- Session idle/absolute timeouts (30 minutes idle, 12 hours absolute) with re-login notices.
 - Members list with online/offline state.
 - Admin panel shell with forum settings and prefix management (edit/delete).
 - Theme system with the bundled `default` theme and light/dark/auto switcher.
@@ -55,7 +56,7 @@
 - **Prefix creation** — existing custom prefixes can be edited/deleted, but there is no create UI yet.
 - **Likes, reports, moderation tools, search, avatars/uploads.**
 - **Email verification and password reset.**
-- **Login rate limiting and session idle/absolute timeouts.**
+- **Login rate limiting and failure logging.**
 - **Tests, CI, Composer, migrations, and a documented public API.**
 
 ## Requirements
@@ -190,7 +191,7 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] Add CSRF protection to login and admin API requests.
 - [x] Escape user-controlled output and sanitize rich post content.
 - [x] Harden sessions: regenerate ID on login, cookie flags, proper logout.
-- [ ] Add an idle/absolute session timeout.
+- [x] Add an idle/absolute session timeout (30 minutes idle, 12 hours absolute).
 - [x] Fix installer validation and escape values written to `app/config.php`.
 - [x] Fix the API database connection.
 - [x] Validate API route/class names against an explicit allowlist.
