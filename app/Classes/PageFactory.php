@@ -19,14 +19,18 @@ class PageFactory
         // implement cache here
 
         if (class_exists($className)) {
-            $page = new $className($database, $data);
-            $page->Do();
-            return $page;
-        } else {
-            $page = new \App\Forum\Pages\_404Page($database, $data);
-            $page->Do();
-            return $page;
+            try {
+                $page = new $className($database, $data);
+                $page->Do();
+                return $page;
+            } catch (PageNotFoundException $e) {
+                // Fall through to the shared 404 page.
+            }
         }
+
+        $page = new \App\Forum\Pages\_404Page($database, $data);
+        $page->Do();
+        return $page;
     }
 }
 

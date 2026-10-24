@@ -4,6 +4,7 @@ namespace App\Forum\Pages;
 
 use App\Classes\Database;
 use App\Classes\PageBase;
+use App\Classes\PageNotFoundException;
 use App\Classes\Template;
 use App\Classes\Avatar;
 use App\Classes\AvatarUtils;
@@ -46,17 +47,17 @@ class ForumPage extends PageBase implements PageInterface
             !is_numeric($this->forumData->actionParameters[1]) || // Check if the second segment is a numeric forum ID
             !is_numeric($this->forumData->actionParameters[3]) // Check if the fourth segment is a numeric page number
         )
-            UrlManager::Redirect($this->serverPath . 'forum/1/page/1');
+            throw new PageNotFoundException();
 
         $this->forumPage = $this->forumData->actionParameters[3];
         $this->forumID = $this->forumData->actionParameters[1];
 
         if ($this->forumPage <= 0 || $this->forumID <= 0)
-            UrlManager::Redirect($this->serverPath . 'forum/1/page/1');
+            throw new PageNotFoundException();
 
         $forum = $this->database->Query('SELECT id, is_locked FROM bit_forums WHERE id = ?', $this->forumID)->FetchArray();
         if (empty($forum))
-            UrlManager::Redirect($this->serverPath . 'forum/1/page/1');
+            throw new PageNotFoundException();
 
         if ((int) $forum['is_locked'] === 1 && !SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED))
             UrlManager::Redirect($this->serverPath);

@@ -164,9 +164,9 @@ Items marked **good first issue** are small and self-contained.
   - The `totalPages` constructor/property name is now `totalItems` to match its meaning.
   - First, middle, last, and single-page cases were verified manually; automated tests remain
     part of the testing roadmap.
-- [ ] **Return real 404s for missing IDs.** Forum/thread/subforum handlers currently
-  redirect invalid IDs to hardcoded IDs such as `forum/1/page/1`. Render `_404Page` with an
-  HTTP 404 status instead.
+- [x] **Return real 404s for missing IDs.** Forum/thread/subforum handlers now throw a
+  `PageNotFoundException`; `PageFactory` renders `_404Page`, which sends an HTTP 404 status.
+  Unknown routes and malformed forum/thread/subforum URLs use the same path.
 - [x] **Fix `/index` duplicating output** (also listed under P0); a routing test is still pending.
 - [ ] **Remove leftover template placeholders.** `themes/default/templates/index/index.html`
   contains `{top_stats}`, which `IndexPage` never replaces.

@@ -4,6 +4,7 @@ namespace App\Forum\Pages;
 
 use App\Classes\PageBase;
 use App\Classes\Database;
+use App\Classes\PageNotFoundException;
 use App\Classes\UrlManager;
 use App\Classes\Template;
 use App\Classes\Permissions;
@@ -42,20 +43,20 @@ class SubforumPage extends PageBase implements PageInterface
             !is_numeric($this->forumData->actionParameters[1]) || // Check if the second segment is a numeric forum ID
             !is_numeric($this->forumData->actionParameters[3]) // Check if the fourth segment is a numeric page number
         )
-            UrlManager::Redirect($this->serverPath . 'subforum/1/page/1');
+            throw new PageNotFoundException();
 
         $this->subforumPage = (int) $this->forumData->actionParameters[3];
         $this->subforumID = (int) $this->forumData->actionParameters[1];
 
         if ($this->subforumPage <= 0 || $this->subforumID <= 0)
-            UrlManager::Redirect($this->serverPath . 'subforum/1/page/1');
+            throw new PageNotFoundException();
 
         $subforum = $this->database->Query('SELECT sf.id, sf.forum_id, sf.is_locked, f.is_locked AS forum_locked
             FROM bit_subforums AS sf
             JOIN bit_forums AS f ON f.id = sf.forum_id
             WHERE sf.id = ?', $this->subforumID)->FetchArray();
         if (empty($subforum))
-            UrlManager::Redirect($this->serverPath . 'subforum/1/page/1');
+            throw new PageNotFoundException();
 
         $isLocked = (int) $subforum['is_locked'] === 1 || (int) $subforum['forum_locked'] === 1;
         if ($isLocked && !SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED))

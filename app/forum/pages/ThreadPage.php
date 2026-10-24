@@ -4,6 +4,7 @@ namespace App\Forum\Pages;
 
 use App\Classes\Database;
 use App\Classes\PageBase;
+use App\Classes\PageNotFoundException;
 use App\Classes\Template;
 use App\Classes\AvatarUtils;
 use App\Classes\UsernameUtils;
@@ -41,17 +42,14 @@ class ThreadPage extends PageBase implements PageInterface
             ($this->forumData->actionParameters[2] !== 'page') || // Check if the segment after 'forum' is 'page'
             !is_numeric($this->forumData->actionParameters[1]) || // Check if the second segment is a numeric thread ID
             !is_numeric($this->forumData->actionParameters[3]) // Check if the fourth segment is a numeric page number
-        ) {
-            $threadID = is_numeric($this->forumData->actionParameters[1]) ? $this->forumData->actionParameters[1] : 1;
-
-            UrlManager::Redirect($this->serverPath . 'thread/' . $threadID . '/page/1');
-        }
+        )
+            throw new PageNotFoundException();
 
         $this->threadPage = (int) $this->forumData->actionParameters[3];
         $this->threadID = (int) $this->forumData->actionParameters[1];
 
         if ($this->threadPage <= 0 || $this->threadID <= 0)
-            UrlManager::Redirect($this->serverPath . 'thread/1/page/1');
+            throw new PageNotFoundException();
 
         $thread = $this->database->Query('SELECT t.id, f.is_locked AS forum_locked, sf.is_locked AS subforum_locked
             FROM bit_threads AS t
@@ -59,7 +57,7 @@ class ThreadPage extends PageBase implements PageInterface
             LEFT JOIN bit_subforums AS sf ON sf.id = t.subforum_id
             WHERE t.id = ?', $this->threadID)->FetchArray();
         if (empty($thread))
-            UrlManager::Redirect($this->serverPath . 'thread/1/page/1');
+            throw new PageNotFoundException();
 
         $isLocked = (int) $thread['forum_locked'] === 1 || (int) ($thread['subforum_locked'] ?? 0) === 1;
         if ($isLocked && !SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED))

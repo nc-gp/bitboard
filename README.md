@@ -44,7 +44,7 @@
 - Members list with online/offline state.
 - Admin panel shell with forum settings and prefix management (edit/delete).
 - Theme system with the bundled `default` theme and light/dark/auto switcher.
-- Offline mode, force-login mode, banned page, and a 404 page.
+- Offline mode, force-login mode, banned page, and a 404 page with a real 404 status.
 - Output escaping for user-controlled text and allowlist sanitization for rich thread/post HTML.
 
 ### Incomplete or not implemented yet
