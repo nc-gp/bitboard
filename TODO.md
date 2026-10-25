@@ -193,11 +193,10 @@ Items marked **good first issue** are small and self-contained.
   and injected user content is no longer affected by a global server-URL replacement pass.
 - [x] **Append the global JS inside `<body>`.** Every page layout now has a `{scripts}`
   placeholder before `</body>`, and `PageBase` renders `footer/end.html` through it.
-- [x] **Restore notifications.** Restored `assets/javascripts/toastify.js` and
-  `assets/stylesheets/toastify.css`; the local `toast()` wrapper uses the existing Toastify
-  CDN and provides a small local fallback. Admin settings save was verified end-to-end.
-- [ ] **Remove the old toast include from the login page** if it is not used
-  (`themes/default/templates/login/login.html:29`).
+- [x] **Replace Toastify with local notifications.** Removed the Toastify CDN/assets; the
+  `toast()` wrapper now uses the local SpellAlert library, with success/warning/error styles.
+- [x] **Remove the old toast include from the login page.** Login errors now use the shared
+  SpellAlert `toast()` wrapper.
 - [ ] **Align requirement with the client validator.** `install/form.js` requires an
   uppercase letter, but `PasswordUtils` only checks length, a digit, and a letter. Decide on
   one policy and enforce it server-side.
@@ -340,7 +339,7 @@ Items marked **good first issue** are small and self-contained.
 
 ## Good first issues
 
-- [x] Restore the missing Toastify assets instead of switching admin notifications to `spell_alert`.
+- [x] Replace Toastify with the local `spell_alert` notification library.
 - [ ] Remove the "CSS ELEMENTS" link from the production navigation.
 - [ ] Fix backslashes in `AvatarUtils`, `footer/end.html`, and `admin.html`.
 - [x] Fix `Template::AddEntries()` count comparison and initialize arrays.

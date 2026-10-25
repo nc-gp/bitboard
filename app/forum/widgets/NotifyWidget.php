@@ -20,22 +20,16 @@ class NotifyWidget
      * @param string notifyMessage The message to be displayed in the notification.
      * @param string rgb           The RGB color code for the notification background (default: '255, 53, 53').
      * @param int    duration      The duration (in milliseconds) the notification should be displayed (default: 5000).
-     * @param string gravity       The gravity of the notification (default: 'bottom').
-     * @param string position      The position of the notification (default: 'right').
      */
-    public function __construct($notifyMessage, $rgb = '255, 53, 53', $duration = 5000, $gravity = 'bottom', $position = 'right')
+    public function __construct($notifyMessage, $rgb = '255, 53, 53', $duration = 5000)
     {
         $duration = is_numeric($duration) && (int) $duration > 0 ? (int) $duration : 5000;
         $rgb = is_string($rgb) && preg_match('/^\d{1,3},\s*\d{1,3},\s*\d{1,3}$/', $rgb) ? $rgb : '255, 53, 53';
-        $gravity = in_array($gravity, ['top', 'bottom'], true) ? $gravity : 'bottom';
-        $position = in_array($position, ['left', 'center', 'right'], true) ? $position : 'right';
 
         $this->template = new Template('notify', 'main');
         $this->template->AddJsEntry('{notify_msg}', $notifyMessage);
         $this->template->AddEntry('{duration}', $duration);
         $this->template->AddEntry('{rgb}', $rgb);
-        $this->template->AddJsEntry('{gravity}', $gravity);
-        $this->template->AddJsEntry('{position}', $position);
         $this->template->Replace();
 
         $this->template = $this->template->template;

@@ -221,7 +221,7 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] Validate API route/class names against an explicit allowlist.
 - [x] Add granular API permissions and finish settings/prefix validation.
 - [x] Fix pagination bugs (threads, members, subforums, previous pages).
-- [x] Restore notifications; remove references to missing Toastify assets.
+- [x] Replace Toastify with local SpellAlert notifications.
 - [x] Use generic login errors and support username or email login; remove the ignored "remember me" option.
 - [x] Add login rate limiting and failure logging.
 - [x] Enforce locked forum/subforum permissions.

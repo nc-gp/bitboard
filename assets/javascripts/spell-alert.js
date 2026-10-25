@@ -10,6 +10,7 @@ if (typeof spell_element === 'undefined') {
 
         this.m_spell_types = {
             SPELL_INFORMATIONAL: 'info',
+            SPELL_SUCCESS: 'success',
             SPELL_WARNING: 'warn',
             SPELL_ERROR: 'error'
         };
@@ -71,7 +72,7 @@ if (typeof spell_element === 'undefined') {
     }
 
     function create_spell(m_spell, container) {
-        const e_spell = spell_element.f('div', {class: 'sa-notify'}, [
+        const e_spell = spell_element.f('div', {class: `sa-notify sa-notify-${m_spell.type}`}, [
             spell_element.f('h2', {}, [m_spell.title]),
             spell_element.f('p', {}, [m_spell.description]),
             spell_element.f('div', {class: 'sa-notify-progress-bar', style: `animation-duration: ${m_spell.time - m_spell.fadeOutTime}ms`})

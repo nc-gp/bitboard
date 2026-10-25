@@ -22,6 +22,18 @@
     cursor: pointer;
 }
 
+.sa-notify-error {
+    background-color: #c92a2a;
+}
+
+.sa-notify-warn {
+    background-color: #b08900;
+}
+
+.sa-notify-success {
+    background-color: #2f9e44;
+}
+
 .sa-notify:not(:last-child) {
     margin-bottom: 10px;
 }
