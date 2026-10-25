@@ -5,7 +5,6 @@ namespace App\Forum\Pages;
 use App\Classes\Database;
 use App\Classes\PageBase;
 use App\Classes\Template;
-use App\Classes\Avatar;
 use App\Classes\AvatarUtils;
 use App\Classes\RelativeTime;
 use App\Classes\SessionManager;
@@ -17,9 +16,20 @@ use App\Forum\Widgets\PaginationWidget;
 
 class MembersPage extends PageBase implements PageInterface
 {
+    private const SORT_OPTIONS = [
+        'newest' => 'Newest members',
+        'oldest' => 'Oldest members',
+        'username' => 'Username',
+        'reputation' => 'Reputation',
+        'posts' => 'Most posts',
+        'threads' => 'Most threads',
+    ];
+
     private int $page = 1;
     private int $maximumResults = 6;
-    private int $totalMembers;
+    private int $totalMembers = 0;
+    private string $search = '';
+    private string $sort = 'newest';
 
     private string $members = '';
 
@@ -30,22 +40,65 @@ class MembersPage extends PageBase implements PageInterface
         $this->forumDesc = 'Members list';
     }
 
-    private function UrlHandler()
+    private function UrlHandler(): void
     {
-        $url = explode('/', $_GET['action']);
+        $search = isset($_GET['q']) && is_string($_GET['q']) ? trim($_GET['q']) : '';
+        $sort = isset($_GET['sort']) && is_string($_GET['sort']) ? $_GET['sort'] : 'newest';
 
-        if (($this->forumData->actionParameters[1] != 'page' || !is_numeric($this->forumData->actionParameters[2])))
-            UrlManager::Redirect($this->serverPath . 'members/page/1');
+        $this->search = mb_substr($search, 0, 64);
+        $this->sort = array_key_exists($sort, self::SORT_OPTIONS) ? $sort : 'newest';
+
+        if (
+            count($this->forumData->actionParameters) < 3 ||
+            ($this->forumData->actionParameters[1] ?? '') !== 'page' ||
+            !is_numeric($this->forumData->actionParameters[2] ?? '')
+        )
+            UrlManager::Redirect($this->BuildUrl(1));
 
         $this->page = (int) $this->forumData->actionParameters[2];
+
+        if ($this->page <= 0)
+            UrlManager::Redirect($this->BuildUrl(1));
     }
 
-    private function FetchMembers()
+    private function FilterParameters(): array
     {
-        if ($this->page <= 0)
-            UrlManager::Redirect($this->serverPath . 'members/page/1');
+        $parameters = [];
 
-        $this->totalMembers = $this->database->Query('SELECT id FROM bit_accounts WHERE bit_accounts.id > 1')->NumRows();
+        if ($this->search !== '')
+            $parameters['q'] = $this->search;
+
+        if ($this->sort !== 'newest')
+            $parameters['sort'] = $this->sort;
+
+        return $parameters;
+    }
+
+    private function BuildUrl(int $page): string
+    {
+        $url = $this->serverPath . 'members/page/' . $page;
+        $parameters = $this->FilterParameters();
+
+        return count($parameters) > 0 ? $url . '?' . http_build_query($parameters) : $url;
+    }
+
+    private function FetchMembers(): void
+    {
+        $where = 'b.id > 1';
+        $parameters = [];
+
+        if ($this->search !== '')
+        {
+            $where .= ' AND b.username LIKE ?';
+            $parameters[] = '%' . $this->search . '%';
+        }
+
+        $countSql = 'SELECT COUNT(*) AS member_count FROM bit_accounts AS b WHERE ' . $where;
+        $count = count($parameters) > 0
+            ? $this->database->Query($countSql, $parameters)->FetchArray()
+            : $this->database->Query($countSql)->FetchArray();
+
+        $this->totalMembers = (int) ($count['member_count'] ?? 0);
 
         if ($this->totalMembers <= 0)
         {
@@ -57,17 +110,31 @@ class MembersPage extends PageBase implements PageInterface
         $totalPages = (int) ceil($this->totalMembers / $this->maximumResults);
 
         if ($this->page > $totalPages)
-            UrlManager::Redirect($this->serverPath . 'members/page/' . $totalPages);
+            UrlManager::Redirect($this->BuildUrl($totalPages));
+
+        $orderBy = match ($this->sort)
+        {
+            'oldest' => 'b.reg_date ASC, b.id ASC',
+            'username' => 'b.username ASC, b.id ASC',
+            'reputation' => 'b.reputation DESC, b.id ASC',
+            'posts' => 'post_count DESC, b.id ASC',
+            'threads' => 'thread_count DESC, b.id ASC',
+            default => 'b.reg_date DESC, b.id DESC',
+        };
+
+        $queryParameters = $parameters;
+        $queryParameters[] = ($this->page - 1) * $this->maximumResults;
+        $queryParameters[] = $this->maximumResults;
 
         $members = $this->database->Query('SELECT b.id, b.username, b.avatar, b.reg_date, b.reputation, b.last_active, b.rank_id, r.rank_format, r.rank_name,
             (SELECT COUNT(*) FROM bit_threads WHERE user_id = b.id) AS thread_count,
             (SELECT COUNT(*) FROM bit_posts WHERE user_id = b.id) AS post_count
             FROM bit_accounts AS b
             JOIN bit_ranks AS r ON b.rank_id = r.id
-            WHERE b.id > 1
-            ORDER BY b.id ASC
-            LIMIT ?, ?', 
-            [(($this->page - 1) * $this->maximumResults), $this->maximumResults]
+            WHERE ' . $where . '
+            ORDER BY ' . $orderBy . '
+            LIMIT ?, ?',
+            $queryParameters
         )->FetchAll();
 
         $memberContact = '';
@@ -103,13 +170,29 @@ class MembersPage extends PageBase implements PageInterface
         }
     }
 
-    public function Do()
+    public function Do(): void
     {
         $this->FetchMembers();
 
-        $paginationTemplate = new PaginationWidget($this->page, $this->totalMembers, $this->maximumResults, 'members/page/');
+        $sortOptions = '';
+        foreach (self::SORT_OPTIONS as $value => $label)
+        {
+            $sortOptions .= '<option value="' . Template::Escape($value) . '"'
+                . ($this->sort === $value ? ' selected' : '') . '>'
+                . Template::Escape($label) . '</option>';
+        }
+
+        $paginationTemplate = new PaginationWidget(
+            $this->page,
+            $this->totalMembers,
+            $this->maximumResults,
+            'members/page/',
+            $this->FilterParameters()
+        );
 
         $this->template = new Template('members', 'members');
+        $this->template->AddEscapedEntry('{search}', $this->search);
+        $this->template->AddEntry('{sort_options}', $sortOptions);
         $this->template->AddEntry('{pagination}', $this->totalMembers > $this->maximumResults ? $paginationTemplate->Template->template : '');
         $this->template->AddEntry('{members}', $this->members);
 

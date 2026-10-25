@@ -6,6 +6,18 @@
 		{header}
 
 		<div id="content">
+			<div id="members_toolbar">
+				<form action="{server_url}members/page/1" method="get">
+					<input type="search" name="q" value="{search}" placeholder="Search by username"
+						aria-label="Search by username" maxlength="64">
+					<select name="sort" aria-label="Sort members">
+						{sort_options}
+					</select>
+					<button type="submit">Apply</button>
+					<a href="{server_url}members/page/1" class="members-reset">Reset</a>
+				</form>
+			</div>
+
 			{pagination}
 			<div id="mem-container">
 				{members}

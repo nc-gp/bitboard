@@ -15,6 +15,7 @@ class PaginationWidget
     private int $totalItems;
     private int $maximumResults;
     private string $baseRedirectPath;
+    private string $queryString = '';
 
     /**
      * Constructor to initialize the PaginationWidget with necessary parameters.
@@ -23,13 +24,15 @@ class PaginationWidget
      * @param int    $totalItems       The total number of items to paginate.
      * @param int    $maximumResults   The maximum results per page.
      * @param string $baseRedirectPath The base path for page redirects.
+     * @param array  $queryParameters  Optional query parameters to preserve.
      */
-    public function __construct(int $currentPage, int $totalItems, int $maximumResults, string $baseRedirectPath)
+    public function __construct(int $currentPage, int $totalItems, int $maximumResults, string $baseRedirectPath, array $queryParameters = [])
     {
         $this->currentPage = $currentPage;
         $this->totalItems = $totalItems;
         $this->maximumResults = $maximumResults;
         $this->baseRedirectPath = $baseRedirectPath;
+        $this->queryString = count($queryParameters) > 0 ? '?' . http_build_query($queryParameters) : '';
         $this->Template = new Template('pagination', 'pagination');
         $this->Do();
     }
@@ -41,6 +44,7 @@ class PaginationWidget
     {
         $template = new Template('pagination', $name);
         $template->AddEntry('{pagination_url}', UrlManager::GetPath() . $this->baseRedirectPath);
+        $template->AddEntry('{pagination_query}', $this->queryString);
 
         return $template;
     }

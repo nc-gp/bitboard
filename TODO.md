@@ -265,7 +265,8 @@ Items marked **good first issue** are small and self-contained.
   pagination.
 - [x] Public profile page with avatar, rank, reputation, join date, recent posts/threads,
   and online state.
-- [ ] Member directory filters/sorting.
+- [x] Member directory filters/sorting. Search by username; sort by newest, oldest,
+  username, reputation, posts, or threads; pagination preserves the filters.
 - [ ] Online users list and "who is viewing" (optional).
 - [ ] SEO-friendly thread slugs and canonical URLs.
 - [ ] OpenGraph/Twitter metadata, sitemap, RSS/Atom feeds.

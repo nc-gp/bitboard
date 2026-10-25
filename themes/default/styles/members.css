@@ -10,6 +10,45 @@
     max-width: 1200px;
 }
 
+#members_toolbar {
+    max-width: 1200px;
+    margin: 20px auto 0;
+    padding: 0 20px;
+}
+
+#members_toolbar form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+}
+
+#members_toolbar input {
+    flex: 1;
+    min-width: 220px;
+    margin: 0;
+}
+
+#members_toolbar select {
+    width: auto;
+    margin: 0;
+}
+
+#members_toolbar button {
+    width: auto;
+    margin: 0;
+}
+
+.members-reset {
+    color: var(--primary-hover);
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.members-reset:hover {
+    text-decoration: underline;
+}
+
 .member-empty {
     width: 100%;
     padding: 40px 20px;
