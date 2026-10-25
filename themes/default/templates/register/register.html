@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+{head}
+
+<body>
+    <div class="bit-container">
+        <section id="login">
+            <header>
+                <h1>Join {forum_name}</h1>
+                <p>
+                    <a href="{server_url}login">Already a member? Login</a>
+                </p>
+            </header>
+            <form action="{server_url}register" method="post">
+                <input type="hidden" name="csrf_token" value="{csrf_token}">
+                <input type="text" name="username" placeholder="Username" aria-label="Username"
+                    maxlength="32" required="">
+                <input type="email" name="email" placeholder="Email" aria-label="Email"
+                    maxlength="64" required="">
+                <input type="password" name="password" placeholder="Password" aria-label="Password"
+                    minlength="8" autocomplete="new-password" required="">
+                <input type="password" name="password_confirm" placeholder="Confirm password"
+                    aria-label="Confirm password" minlength="8" autocomplete="new-password" required="">
+                <p class="settings-hint">Use at least 8 characters with a number, uppercase and lowercase letter.</p>
+                <button type="submit">Register</button>
+            </form>
+        </section>
+    </div>
+
+    {scripts}
+    {error}
+</body>
+
+</html>

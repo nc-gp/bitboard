@@ -199,11 +199,10 @@ Items marked **good first issue** are small and self-contained.
   SpellAlert `toast()` wrapper.
 - [x] **Align requirement with the client validator.** Client and server now both require
   at least 8 characters, one digit, one lowercase letter, and one uppercase letter.
-- [ ] **Remove development pages from navigation.** `header/nav/menu.html:8` links to
-  `/ELEMENTS.html` in production. Move it behind a debug flag or delete it.
-- [ ] **Fix dead links.** `header/nav/user_menu.html:6` points to `/settings` (no page), and
-  `login.html:11` + `login_register.html:6` point to `/register` (no page). Add the pages or
-  hide the links until they exist.
+- [x] **Keep the theme element demo link.** The default theme intentionally links to
+  `/ELEMENTS.html`; custom themes can remove or replace it.
+- [x] **Fix dead links.** Added `/register` and `/settings` pages with CSRF protection,
+  validation, password policy, auto-login after registration, and email/password updates.
 - [ ] **Finish the footer.** `footer/footer.html` contains four `{#}` "Test" links; remove
   them or make them configurable.
 - [ ] **Make the credits optional.** `FooterWidget.php:22` has a TODO to add the
@@ -221,12 +220,12 @@ Items marked **good first issue** are small and self-contained.
 
 ### Accounts and authentication
 
-- [ ] Registration page with unique username/email validation, password policy, terms, and
-  rate limiting. The UI already links to it.
+- [x] Registration page with unique username/email validation and password policy.
+- [ ] Registration terms acceptance and rate limiting.
 - [ ] Email verification with resend and expiration.
 - [ ] Password reset via signed, expiring tokens.
-- [ ] Account settings: email, password, avatar, bio, signature, timezone, notification
-  preferences.
+- [x] Account settings for email and password.
+- [ ] Account settings for avatar, bio, signature, timezone, and notification preferences.
 - [ ] Optional two-factor authentication (TOTP) after the core is stable.
 - [ ] Ban/suspension records with reasons and expiry instead of only the "Banned" rank.
 

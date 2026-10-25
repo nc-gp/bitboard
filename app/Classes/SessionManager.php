@@ -246,14 +246,18 @@ class SessionManager
     /**
      * Add information of a specific type to the session.
      *
-     * @param string $informationType    The type of information to add.
-     * @param mixed  $informationMessage The information message to store in the session.
-     * @param bool   $instantSave        Saves and closes the seession instantly. (default: false)
+     * @param string      $informationType    The type of information to add.
+     * @param mixed       $informationMessage The information message to store in the session.
+     * @param bool        $instantSave        Saves and closes the seession instantly. (default: false)
+     * @param string|null $rgb                Optional notification color.
      */
-    static public function AddInformation(string $informationType, mixed $informationMessage, bool $instantSave = false): void
+    static public function AddInformation(string $informationType, mixed $informationMessage, bool $instantSave = false, ?string $rgb = null): void
     {
         $info = 'bb-info-' . $informationType;
         $_SESSION[$info]['msg'] = $informationMessage;
+
+        if ($rgb !== null)
+            $_SESSION[$info]['rgb'] = $rgb;
 
         if($instantSave)
             session_write_close();

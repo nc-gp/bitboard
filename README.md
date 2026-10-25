@@ -51,10 +51,10 @@
 
 - **Admin JSON API** — session auth, CSRF, route allowlisting, granular permission checks,
   and the settings and prefix edit/delete endpoints work. There is no prefix creation UI yet.
-- **Registration** — the UI links to `/register`, but the page does not exist yet.
+- **Registration** — basic registration works; terms acceptance, rate limiting, and email verification are still pending.
 - **Creating, replying to, editing, or deleting threads/posts** — no write UI yet.
 - **Profiles** — `ProfilePage` renders an empty template and does not load a user.
-- **Account settings** — the user menu links to `/settings`, which is not implemented.
+- **Account settings** — email/password settings work; avatar, bio, signature, timezone, and notification preferences are still pending.
 - **Admin CRUD** — categories, forums, subforums, users, and ranks are not manageable yet.
 - **Prefix creation** — existing custom prefixes can be edited/deleted, but there is no create UI yet.
 - **Likes, reports, moderation tools, search, avatars/uploads.**
@@ -230,7 +230,8 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 
 ### Next — a usable forum
 
-- [ ] Registration, account settings, and real user profiles.
+- [x] Basic registration and email/password account settings.
+- [ ] Real user profiles and profile customization.
 - [ ] Create/reply/edit/delete threads and posts.
 - [ ] Likes for threads and posts (there is already a TODO in `ThreadPage`).
 - [ ] Admin CRUD for categories, forums, subforums, prefixes, users, and ranks.

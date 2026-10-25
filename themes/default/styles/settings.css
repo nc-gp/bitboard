@@ -1,0 +1,38 @@
+#content {
+    display: block;
+    max-width: 720px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+#settings {
+    padding: 30px;
+    border-radius: var(--border-radius);
+    background: var(--opposite);
+    box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
+}
+
+#settings header {
+    margin-bottom: 25px;
+}
+
+#settings form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#settings input {
+    width: 100%;
+}
+
+#settings button {
+    align-self: flex-start;
+    margin-top: 10px;
+}
+
+.settings-hint {
+    margin: 10px 0;
+    color: gray;
+    font-size: 0.9rem;
+}

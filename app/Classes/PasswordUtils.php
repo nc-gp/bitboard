@@ -63,6 +63,20 @@ class PasswordUtils
     }
 
     /**
+     * Check whether a password satisfies the complete account policy.
+     *
+     * @param string $password The password string to check.
+     * @return bool True if the password is valid; false otherwise.
+     */
+    public static function IsValid(string $password): bool
+    {
+        return self::CheckLength($password)
+            && self::CheckNumber($password)
+            && self::CheckLowercase($password)
+            && self::CheckUppercase($password);
+    }
+
+    /**
      * Get the bcrypt hash of a password.
      *
      * @param string $password The password string to hash.

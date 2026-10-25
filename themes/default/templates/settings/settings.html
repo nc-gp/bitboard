@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+{head}
+<body>
+	<div class="bit-container">
+		{header}
+
+		<div id="content">
+			<section id="settings">
+				<header>
+					<h1>Account settings</h1>
+					<p>Signed in as {username}</p>
+				</header>
+
+				<form action="{server_url}settings" method="post">
+					<input type="hidden" name="csrf_token" value="{csrf_token}">
+
+					<label for="settings-email">Email</label>
+					<input id="settings-email" type="email" name="email" value="{email}"
+						maxlength="64" required="">
+
+					<label for="settings-password">New password</label>
+					<input id="settings-password" type="password" name="password"
+						minlength="8" autocomplete="new-password">
+
+					<label for="settings-password-confirm">Confirm new password</label>
+					<input id="settings-password-confirm" type="password" name="password_confirm"
+						minlength="8" autocomplete="new-password">
+
+					<p class="settings-hint">Leave both password fields empty to keep your current password.
+						New passwords need at least 8 characters with a number, uppercase and lowercase letter.</p>
+
+					<button type="submit">Save changes</button>
+				</form>
+			</section>
+		</div>
+
+		{footer}
+	</div>
+
+	{scripts}
+	{error}
+</body>
+</html>
