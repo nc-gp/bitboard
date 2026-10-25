@@ -278,8 +278,8 @@ instead of opening a public issue with exploit details.
   <img src="https://contrib.rocks/image?repo=bit-paper/bitboard" alt="Contributors" />
 </a>
 
-Built with PHP, MySQLi, and a small vanilla JavaScript layer. Third-party front-end
-resources include Tabler Icons and Microtip.
+Built with PHP, MySQLi, and a small vanilla JavaScript layer. Tabler Icons 3.49.0 is pinned;
+tooltips use the project’s local CSS.
 
 This README counts roughly **8,052 lines across 175 counted source files**. The count comes
 from `python cntlines.py -v`; re-run it after large changes. (The script still needs a small

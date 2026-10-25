@@ -1,0 +1,78 @@
+/*
+ * Lightweight local tooltips.
+ * Usage: aria-label="Text" role="tooltip" data-tooltip-position="top".
+ */
+
+[aria-label][role~="tooltip"] {
+    position: relative;
+}
+
+[aria-label][role~="tooltip"]::after {
+    content: attr(aria-label);
+    position: absolute;
+    z-index: 1000;
+    padding: 0.45em 0.75em;
+    border-radius: 4px;
+    background: rgba(17, 17, 17, 0.95);
+    color: #fff;
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+}
+
+[aria-label][role~="tooltip"]:hover::after,
+[aria-label][role~="tooltip"]:focus::after,
+[aria-label][role~="tooltip"]:focus-visible::after {
+    opacity: 1;
+}
+
+[aria-label][role~="tooltip"][data-tooltip-position="top"]::after {
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+[aria-label][role~="tooltip"][data-tooltip-position="top-left"]::after {
+    bottom: calc(100% + 8px);
+    left: 0;
+}
+
+[aria-label][role~="tooltip"][data-tooltip-position="top-right"]::after {
+    right: 0;
+    bottom: calc(100% + 8px);
+}
+
+[aria-label][role~="tooltip"][data-tooltip-position="bottom"]::after {
+    top: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+[aria-label][role~="tooltip"][data-tooltip-position="bottom-left"]::after {
+    top: calc(100% + 8px);
+    left: 0;
+}
+
+[aria-label][role~="tooltip"][data-tooltip-position="bottom-right"]::after {
+    top: calc(100% + 8px);
+    right: 0;
+}
+
+[aria-label][role~="tooltip"][data-tooltip-position="left"]::after {
+    top: 50%;
+    right: calc(100% + 8px);
+    transform: translateY(-50%);
+}
+
+[aria-label][role~="tooltip"][data-tooltip-position="right"]::after {
+    top: 50%;
+    left: calc(100% + 8px);
+    transform: translateY(-50%);
+}
+
+@media (prefers-reduced-motion: reduce) {
+    [aria-label][role~="tooltip"]::after {
+        transition: none;
+    }
+}
