@@ -14,13 +14,15 @@ class FooterWidget
     /**
      * Constructor to initialize a FooterWidget with a theme.
      *
-     * @param string $theme The theme to use for rendering the footer.
+     * @param bool $showCredits Whether to show the BitBoard credit line.
      */
-    public function __construct()
+    public function __construct(bool $showCredits = true)
     {
         $this->template = new Template('footer', 'footer');
-        // TODO: Add this to forum settings if someone wants to keep the credits to BitBoard, but they don't need to.
-        $this->template->template .= '<div id="bb-foot">Powered by BitBoard</div>';
+
+        if ($showCredits)
+            $this->template->template .= '<div id="bb-foot">Powered by BitBoard</div>';
+
         $this->template = $this->template->template;
     }
 }

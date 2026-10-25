@@ -21,6 +21,7 @@ class Settings
 
         $forumOnline = $this->ReadBoolean($data, 'online', 'Online flag');
         $forumForceLogin = $this->ReadBoolean($data, 'forum_force_login', 'Force-login flag');
+        $forumCredits = $this->ReadBoolean($data, 'forum_credits', 'Credits flag');
 
         if(!empty($this->errors))
         {
@@ -30,12 +31,13 @@ class Settings
         }
 
         $db->Query(
-            'UPDATE bit_settings SET forum_name = ?, forum_description = ?, forum_online_msg = ?, forum_online = ?, forum_force_login = ? WHERE id = 0',
+            'UPDATE bit_settings SET forum_name = ?, forum_description = ?, forum_online_msg = ?, forum_online = ?, forum_force_login = ?, forum_credits = ? WHERE id = 0',
             $forumName,
             $forumDesc,
             $forumOnlineMsg,
             $forumOnline,
-            $forumForceLogin
+            $forumForceLogin,
+            $forumCredits
         );
     }
 

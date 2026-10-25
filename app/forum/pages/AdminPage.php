@@ -56,6 +56,7 @@ class AdminPage extends PageBase implements PageInterface
                 $this->content->AddEntry('{forum_online}', $this->forumData->forum_online ? 'checked' : '');
                 $this->content->AddEscapedEntry('{forum_online_msg}', $this->forumData->forum_online_msg);
                 $this->content->AddEntry('{forum_force_login}', $this->forumData->forum_force_login ? 'checked' : '');
+                $this->content->AddEntry('{forum_credits}', $this->forumData->forum_credits ? 'checked' : '');
                 $this->content->Replace();
                 break;
             }

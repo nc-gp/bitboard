@@ -45,6 +45,11 @@ class ForumDataStruct
     public bool $forum_force_login;
 
     /**
+     * @var bool Whether to show the BitBoard credit in the footer.
+     */
+    public bool $forum_credits = true;
+
+    /**
      * @var array The array of splitted URL. (/)
      * Note: Can be empty.
      */

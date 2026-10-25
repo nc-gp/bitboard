@@ -41,7 +41,7 @@ class PageBase
         $stylesTemplate = new StylesWidget($templateCategory);
         $headTemplate = new HeadWidget($this->forumName, $this->forumDesc, $stylesTemplate->Template->template);
         $headerTemplate = new HeaderWidget();
-        $footerTemplate = new FooterWidget();
+        $footerTemplate = new FooterWidget($this->forumData->forum_credits ?? true);
 
         /**
          * Here we can add more global variables in HTML.

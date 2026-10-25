@@ -246,7 +246,8 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [ ] GitHub Actions CI (lint + tests) and a Docker development environment.
 - [ ] Database migrations instead of installer-only schema creation.
 - [ ] i18n, timezones, accessibility pass, and SEO metadata.
-- [ ] Theme manager and an optional "Powered by BitBoard" credit setting.
+- [ ] Theme manager.
+- [x] Optional "Powered by BitBoard" credit setting.
 - [ ] Plugin/hook system and a public extension API.
 
 ## Contributing

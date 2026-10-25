@@ -205,8 +205,8 @@ Items marked **good first issue** are small and self-contained.
   validation, password policy, auto-login after registration, and email/password updates.
 - [x] **Finish the footer.** Replaced the placeholder links with a responsive brand, Explore,
   and GitHub footer for the default theme.
-- [ ] **Make the credits optional.** `FooterWidget.php:22` has a TODO to add the
-  "Powered by BitBoard" toggle to forum settings.
+- [x] **Make the credits optional.** Added the `forum_credits` setting to the installer,
+  admin form/API, and footer widget.
 - [ ] **Pin front-end dependencies.** `@tabler/icons-webfont@latest` and `unpkg.com/microtip`
   are unpinned CDN URLs. Pin versions and add integrity attributes, or vendor the assets.
 - [ ] **Remove duplicate request helper.** `request.js` duplicates `req()` from `main.js`;
