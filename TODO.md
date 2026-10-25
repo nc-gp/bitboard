@@ -203,8 +203,8 @@ Items marked **good first issue** are small and self-contained.
   `/ELEMENTS.html`; custom themes can remove or replace it.
 - [x] **Fix dead links.** Added `/register` and `/settings` pages with CSRF protection,
   validation, password policy, auto-login after registration, and email/password updates.
-- [ ] **Finish the footer.** `footer/footer.html` contains four `{#}` "Test" links; remove
-  them or make them configurable.
+- [x] **Finish the footer.** Replaced the placeholder links with a responsive brand, Explore,
+  and GitHub footer for the default theme.
 - [ ] **Make the credits optional.** `FooterWidget.php:22` has a TODO to add the
   "Powered by BitBoard" toggle to forum settings.
 - [ ] **Pin front-end dependencies.** `@tabler/icons-webfont@latest` and `unpkg.com/microtip`
@@ -222,7 +222,9 @@ Items marked **good first issue** are small and self-contained.
 
 - [x] Registration page with unique username/email validation and password policy.
 - [ ] Registration terms acceptance and rate limiting.
-- [ ] Email verification with resend and expiration.
+- [ ] Email activation before login/posting, with resend and expiration.
+- [ ] Anti-bot registration protection: per-IP throttling, a honeypot/minimum submit delay, and an optional challenge.
+- [ ] Configurable email-domain allowlist/blocklist for registration, seeded with common provider domains.
 - [ ] Password reset via signed, expiring tokens.
 - [x] Account settings for email and password.
 - [ ] Account settings for avatar, bio, signature, timezone, and notification preferences.

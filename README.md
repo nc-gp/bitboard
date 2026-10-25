@@ -51,7 +51,7 @@
 
 - **Admin JSON API** — session auth, CSRF, route allowlisting, granular permission checks,
   and the settings and prefix edit/delete endpoints work. There is no prefix creation UI yet.
-- **Registration** — basic registration works; terms acceptance, rate limiting, and email verification are still pending.
+- **Registration** — basic registration works; terms acceptance, anti-bot protection, email-domain policy, rate limiting, and email verification are still pending.
 - **Creating, replying to, editing, or deleting threads/posts** — no write UI yet.
 - **Profiles** — `ProfilePage` renders an empty template and does not load a user.
 - **Account settings** — email/password settings work; avatar, bio, signature, timezone, and notification preferences are still pending.
