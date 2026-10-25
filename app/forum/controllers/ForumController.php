@@ -16,7 +16,9 @@ class ForumController
      */
     static public function GetLastPost(Database $db, int $forumID)
     {
-        return $db->Query('SELECT p.post_timestamp, a.id, a.username, a.avatar, t.id AS thread_id, t.thread_title, r.rank_format FROM bit_posts AS p JOIN bit_threads AS t ON p.thread_id = t.id JOIN bit_accounts AS a ON p.user_id = a.id JOIN bit_ranks AS r ON a.rank_id = r.id WHERE t.forum_id = ? ORDER BY p.post_timestamp DESC LIMIT 1', $forumID)->FetchArray();
+        $lastPosts = self::GetLastPosts($db, [$forumID]);
+
+        return $lastPosts[$forumID] ?? [];
     }
 
     /**

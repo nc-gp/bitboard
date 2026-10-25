@@ -178,9 +178,9 @@ Items marked **good first issue** are small and self-contained.
     all forums.
   - Forum/subforum thread-list SQL is centralized in `ThreadController::GetThreads()` and
     `CountThreads()`.
-- [ ] **Cache last-post lookups.** `ForumController::GetLastPost()`,
-  `SubForumController::GetLastPost()`, and `ThreadController::GetLastPost()` can be cached
-  per request or replaced with a join.
+- [x] **Cache last-post lookups.** Forum, subforum, and thread last-post data is now
+  fetched in one batch per listing page. The single-ID controller methods reuse the same
+  batch implementation.
 
 ### Templates, pages, and assets
 

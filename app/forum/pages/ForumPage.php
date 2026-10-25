@@ -80,9 +80,11 @@ class ForumPage extends PageBase implements PageInterface
         if (count($subforums) <= 0)
             return;
 
+        $lastPosts = SubForumController::GetLastPosts($this->database, $this->forumID, array_column($subforums, 'id'));
+
         foreach ($subforums as $subforum)
         {
-            $lastPost = SubForumController::GetLastPost($this->database, $this->forumID, $subforum['id']);
+            $lastPost = $lastPosts[(int) $subforum['id']] ?? [];
 
             $lastPostTemplate = new Template('forum/subforum', 'subforum_nolastpost');
             if(!empty($lastPost))
@@ -135,15 +137,16 @@ class ForumPage extends PageBase implements PageInterface
             return;
         }
 
+        $lastPosts = ThreadController::GetLastPosts($this->database, array_column($threads, 'id'));
+
         $threadPrefix = '';
         foreach ($threads as $thread) 
         {
             $lastPostTemplate = new Template('forum/thread', 'thread_nolastpost');
+            $lastPost = $lastPosts[(int) $thread['id']] ?? [];
             $threadPrefix = '';
 
-            if ($thread['post_count'] > 0) {
-                $lastPost = ThreadController::GetLastPost($this->database, $thread['id']);
-
+            if (!empty($lastPost)) {
                 $lastPostTemplate = new Template('forum/thread', 'thread_lastpost');
                 $lastPostTemplate->AddEscapedEntry('{user_id}', $lastPost['id']);
                 $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($lastPost['avatar']));

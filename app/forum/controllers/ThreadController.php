@@ -16,7 +16,45 @@ class ThreadController
      */
     static public function GetLastPost(Database $db, int $threadID)
     {
-        return $db->Query('SELECT bit_posts.*, bit_accounts.avatar, bit_accounts.username, bit_accounts.rank_id, bit_ranks.rank_format FROM bit_posts LEFT JOIN bit_accounts ON bit_posts.user_id = bit_accounts.id LEFT JOIN bit_ranks ON bit_accounts.rank_id = bit_ranks.id WHERE bit_posts.thread_id = ? ORDER BY bit_posts.post_timestamp DESC LIMIT 1', [$threadID])->FetchArray();
+        $lastPosts = self::GetLastPosts($db, [$threadID]);
+
+        return $lastPosts[$threadID] ?? [];
+    }
+
+    /**
+     * Get the last post for each requested thread in one query.
+     *
+     * @param Database db The database instance.
+     * @param array    threadIDs The thread IDs to retrieve last posts for.
+     *
+     * @return array The last post rows keyed by thread ID.
+     */
+    static public function GetLastPosts(Database $db, array $threadIDs): array
+    {
+        $threadIDs = array_values(array_unique(array_map('intval', $threadIDs)));
+
+        if (count($threadIDs) <= 0)
+            return [];
+
+        $placeholders = implode(',', array_fill(0, count($threadIDs), '?'));
+        $lastPosts = $db->Query('SELECT bit_posts.*, bit_accounts.avatar, bit_accounts.username, bit_accounts.rank_id, bit_ranks.rank_format
+            FROM bit_posts
+            LEFT JOIN bit_accounts ON bit_posts.user_id = bit_accounts.id
+            LEFT JOIN bit_ranks ON bit_accounts.rank_id = bit_ranks.id
+            WHERE bit_posts.thread_id IN (' . $placeholders . ')
+              AND bit_posts.id = (
+                  SELECT p2.id
+                  FROM bit_posts AS p2
+                  WHERE p2.thread_id = bit_posts.thread_id
+                  ORDER BY p2.post_timestamp DESC, p2.id DESC
+                  LIMIT 1
+              )', $threadIDs)->FetchAll();
+
+        $result = [];
+        foreach ($lastPosts as $lastPost)
+            $result[(int) $lastPost['thread_id']] = $lastPost;
+
+        return $result;
     }
 
     /**

@@ -87,15 +87,16 @@ class SubforumPage extends PageBase implements PageInterface
             return;
         }
 
+        $lastPosts = ThreadController::GetLastPosts($this->database, array_column($threads, 'id'));
+
         $threadPrefix = '';
         foreach ($threads as $thread) 
         {
             $lastPostTemplate = new Template('subforum/thread', 'thread_nolastpost');
+            $lastPost = $lastPosts[(int) $thread['id']] ?? [];
             $threadPrefix = '';
 
-            if ($thread['post_count'] > 0) {
-                $lastPost = ThreadController::GetLastPost($this->database, $thread['id']);
-
+            if (!empty($lastPost)) {
                 $lastPostTemplate = new Template('subforum/thread', 'thread_lastpost');
                 $lastPostTemplate->AddEscapedEntry('{user_id}', $lastPost['id']);
                 $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($lastPost['avatar']));
