@@ -19,11 +19,24 @@
 .member {
     margin: 20px;
     border-radius: var(--border-radius);
-    width: 350px;
+    width: calc(33.333% - 40px);
+    max-width: 350px;
     overflow: hidden;
     position: relative;
     background: var(--opposite);
     box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
+}
+
+@media (max-width: 900px) {
+    .member {
+        width: calc(50% - 40px);
+    }
+}
+
+@media (max-width: 620px) {
+    .member {
+        width: calc(100% - 40px);
+    }
 }
 
 .member-container {

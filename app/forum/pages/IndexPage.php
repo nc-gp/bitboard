@@ -76,7 +76,7 @@ class IndexPage extends PageBase implements PageInterface
                 $builded_data[$d['category_id']] = $category;
             }
 
-            if($d['forum_id'] > 0 && $d['category_id'] == $d['forum_catid'])
+            if($d['forum_id'] > 0 && $d['category_id'] == $d['forum_catid'] && !isset($builded_data[$d['category_id']]->forums[$d['forum_id']]))
             {
                 $forumData = [
                     'id' => $d['forum_id'],

@@ -33,9 +33,17 @@
 #thread-author,
 .post-author {
     margin: 0 30px 30px 30px;
-    display: grid;
-    justify-content: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
     position: relative;
+}
+
+#thread-author > div {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 #thread-author > div > div,
@@ -45,12 +53,17 @@
     flex-wrap: wrap;
 }
 
+#thread-userstats,
+.post-userstats {
+    width: 100%;
+    margin-top: 20px;
+}
+
 #thread-userstats ul,
 .post-userstats ul {
     padding: 0;
     margin: 0;
     list-style-type: none;
-    position: absolute;
     width: 100%;
     display: flex;
     justify-content: space-around;
@@ -73,10 +86,6 @@
 #thread-userstats ul li span:first-letter,
 .post-userstats ul li span:first-letter {
     font-weight: bold;
-}
-
-div#thread-userstats {
-    margin-top: 35px;
 }
 
 #thread-username,
