@@ -213,8 +213,8 @@ Items marked **good first issue** are small and self-contained.
   `data-tooltip-position`.
 - [x] **Remove duplicate request helper.** Removed the unused `request.js`; `main.js` keeps
   the single `req()` implementation.
-- [ ] **Fix empty/placeholder CSS.** `themes/default/styles/profile.css` is empty and
-  `profile.html` says "soon". Build the profile styles with the profile page.
+- [x] **Fix empty/placeholder CSS.** Built the public profile page and populated
+  `themes/default/styles/profile.css`.
 
 ---
 
@@ -263,7 +263,7 @@ Items marked **good first issue** are small and self-contained.
 
 - [ ] Search threads/posts with MySQL `FULLTEXT`, filters (forum, author, date), and
   pagination.
-- [ ] Public profile page with avatar, rank, reputation, join date, recent posts/threads,
+- [x] Public profile page with avatar, rank, reputation, join date, recent posts/threads,
   and online state.
 - [ ] Member directory filters/sorting.
 - [ ] Online users list and "who is viewing" (optional).

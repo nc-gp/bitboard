@@ -53,7 +53,7 @@
   and the settings and prefix edit/delete endpoints work. There is no prefix creation UI yet.
 - **Registration** — basic registration works; terms acceptance, anti-bot protection, email-domain policy, rate limiting, and email verification are still pending.
 - **Creating, replying to, editing, or deleting threads/posts** — no write UI yet.
-- **Profiles** — `ProfilePage` renders an empty template and does not load a user.
+- **Profiles** — basic public profiles show avatar, rank, reputation, join date, online state, and recent threads/posts; bio and customization are still pending.
 - **Account settings** — email/password settings work; avatar, bio, signature, timezone, and notification preferences are still pending.
 - **Admin CRUD** — categories, forums, subforums, users, and ranks are not manageable yet.
 - **Prefix creation** — existing custom prefixes can be edited/deleted, but there is no create UI yet.
@@ -231,7 +231,7 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 ### Next — a usable forum
 
 - [x] Basic registration and email/password account settings.
-- [ ] Real user profiles and profile customization.
+- [x] Basic public profile pages with recent activity.
 - [ ] Create/reply/edit/delete threads and posts.
 - [ ] Likes for threads and posts (there is already a TODO in `ThreadPage`).
 - [ ] Admin CRUD for categories, forums, subforums, prefixes, users, and ranks.

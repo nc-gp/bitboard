@@ -6,21 +6,66 @@
 		{header}
 
 		<div id="content">
-			<div id="profile_info">
-				<div id="profile_avatar">{user_avatar}</div>
-				<div id="profile_name">{user_name}</div>
-				<div id="profile_stats">
-					<div class="profile_stats_count"><span>{post_count}</span> posts</div>
-					<div class="profile_stats_count"><span>{user_reputation}</span> reputation</div>
+			<section id="profile_hero">
+				<div id="profile_cover"></div>
+
+				<div id="profile_hero_content">
+					<div id="profile_avatar" class="{online_class}"><img src="{user_avatar}" alt="{username_plain}'s avatar"></div>
+
+					<div id="profile_identity">
+						<div id="profile_name">{user_name}</div>
+						<div id="profile_identity_meta">
+							<span class="profile-rank">{user_rank}</span>
+						</div>
+						<div id="profile_stats">
+							<div class="profile_stats_count"><span>{thread_count}</span> threads</div>
+							<div class="profile_stats_count"><span>{post_count}</span> posts</div>
+							<div class="profile_stats_count"><span>{user_reputation}</span> reputation</div>
+						</div>
+					</div>
 				</div>
-				<div id="profile_bio">soon</div>
-			</div>
-			<div id="profile_posts">
-				{user_posts}
+			</section>
+
+			<div id="profile_layout">
+				<main id="profile_activity">
+					<section class="profile-section">
+						<h2><i class="ti ti-message-2"></i> Recent posts</h2>
+						{user_posts}
+					</section>
+
+					<section class="profile-section">
+						<h2><i class="ti ti-book"></i> Recent threads</h2>
+						{user_threads}
+					</section>
+				</main>
+
+				<aside id="profile_sidebar">
+					<section class="profile-sidebar-card">
+						<h2>About</h2>
+						<dl class="profile-meta-list">
+							<div class="profile-meta-row">
+								<dt>Rank</dt>
+								<dd>{user_rank}</dd>
+							</div>
+							<div class="profile-meta-row">
+								<dt>Joined</dt>
+								<dd>{joined}</dd>
+							</div>
+							<div class="profile-meta-row">
+								<dt>Last seen</dt>
+								<dd>{last_seen}</dd>
+							</div>
+						</dl>
+						<a href="{server_url}members" class="profile-sidebar-link">
+							<i class="ti ti-users"></i>
+							Browse members
+						</a>
+					</section>
+				</aside>
 			</div>
 		</div>
-		
-        {footer}
+
+		{footer}
 	</div>
 	{scripts}
 </body>
