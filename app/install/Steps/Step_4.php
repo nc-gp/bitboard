@@ -68,13 +68,19 @@ class Step_4 extends StepBase implements StepInterface
 
 		if (!PasswordUtils::CheckNumber($password))
 		{
-			SessionManager::AddInformation('account', 'Password needs to have atleast one number!', true);
+			SessionManager::AddInformation('account', 'Password needs to have at least one number!', true);
 			return;
 		}
 
-		if (!PasswordUtils::CheckLetter($password))
+		if (!PasswordUtils::CheckLowercase($password))
 		{
-			SessionManager::AddInformation('account', 'Password needs to have atleast one character!', true);
+			SessionManager::AddInformation('account', 'Password needs to have at least one lowercase letter!', true);
+			return;
+		}
+
+		if (!PasswordUtils::CheckUppercase($password))
+		{
+			SessionManager::AddInformation('account', 'Password needs to have at least one uppercase letter!', true);
 			return;
 		}
 

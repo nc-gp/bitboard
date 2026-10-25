@@ -197,9 +197,8 @@ Items marked **good first issue** are small and self-contained.
   `toast()` wrapper now uses the local SpellAlert library, with success/warning/error styles.
 - [x] **Remove the old toast include from the login page.** Login errors now use the shared
   SpellAlert `toast()` wrapper.
-- [ ] **Align requirement with the client validator.** `install/form.js` requires an
-  uppercase letter, but `PasswordUtils` only checks length, a digit, and a letter. Decide on
-  one policy and enforce it server-side.
+- [x] **Align requirement with the client validator.** Client and server now both require
+  at least 8 characters, one digit, one lowercase letter, and one uppercase letter.
 - [ ] **Remove development pages from navigation.** `header/nav/menu.html:8` links to
   `/ELEMENTS.html` in production. Move it behind a debug flag or delete it.
 - [ ] **Fix dead links.** `header/nav/user_menu.html:6` points to `/settings` (no page), and

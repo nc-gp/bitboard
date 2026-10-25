@@ -41,6 +41,28 @@ class PasswordUtils
     }
 
     /**
+     * Check if a password contains at least one lowercase letter.
+     *
+     * @param string $password The password string to check.
+     * @return bool True if the password contains a lowercase letter; false otherwise.
+     */
+    public static function CheckLowercase(string $password): bool
+    {
+        return preg_match("#[a-z]+#", $password) === 1;
+    }
+
+    /**
+     * Check if a password contains at least one uppercase letter.
+     *
+     * @param string $password The password string to check.
+     * @return bool True if the password contains an uppercase letter; false otherwise.
+     */
+    public static function CheckUppercase(string $password): bool
+    {
+        return preg_match("#[A-Z]+#", $password) === 1;
+    }
+
+    /**
      * Get the bcrypt hash of a password.
      *
      * @param string $password The password string to hash.
