@@ -5,11 +5,7 @@
 }
 
 #content #categories {
-    width: 75%;
-}
-
-#content #topstats {
-    width: 25%;
+    width: 100%;
 }
 
 .category:not(:first-child) {
@@ -134,8 +130,6 @@
     color: inherit;
     display: block;
 }
-
-#topstats {}
 
 #stats {
     display: flex;

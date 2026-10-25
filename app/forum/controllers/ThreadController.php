@@ -20,6 +20,63 @@ class ThreadController
     }
 
     /**
+     * Count top-level threads in a forum or all threads in a subforum.
+     *
+     * @param Database db The database instance.
+     * @param int      forumID The forum ID for a forum listing.
+     * @param int      subforumID The subforum ID for a subforum listing.
+     *
+     * @return int The thread count.
+     */
+    static public function CountThreads(Database $db, int $forumID, int $subforumID): int
+    {
+        [$where, $params] = self::GetThreadFilter($forumID, $subforumID);
+        $count = $db->Query('SELECT COUNT(*) AS thread_count FROM bit_threads WHERE ' . $where, $params)->FetchArray();
+
+        return (int) ($count['thread_count'] ?? 0);
+    }
+
+    /**
+     * Get top-level forum threads or subforum threads with author and post summaries.
+     *
+     * @param Database db The database instance.
+     * @param int      forumID The forum ID for a forum listing.
+     * @param int      subforumID The subforum ID for a subforum listing.
+     * @param int      offset The number of rows to skip.
+     * @param int      limit The maximum number of rows.
+     *
+     * @return array The thread rows.
+     */
+    static public function GetThreads(Database $db, int $forumID, int $subforumID, int $offset, int $limit): array
+    {
+        [$where, $params] = self::GetThreadFilter($forumID, $subforumID);
+        $params[] = $offset;
+        $params[] = $limit;
+
+        return $db->Query('SELECT bit_threads.*, bit_accounts.id AS author_id, bit_accounts.username, bit_accounts.rank_id, bit_ranks.rank_format,
+            COUNT(bit_posts.id) AS post_count, MAX(bit_posts.post_timestamp) AS latest_post_timestamp
+            FROM bit_threads
+            LEFT JOIN bit_posts ON bit_threads.id = bit_posts.thread_id
+            LEFT JOIN bit_accounts ON bit_threads.user_id = bit_accounts.id
+            LEFT JOIN bit_ranks ON bit_accounts.rank_id = bit_ranks.id
+            WHERE ' . $where . '
+            GROUP BY bit_threads.id
+            ORDER BY bit_threads.is_pinned DESC, latest_post_timestamp DESC, bit_threads.thread_timestamp DESC
+            LIMIT ?, ?', $params)->FetchAll();
+    }
+
+    /**
+     * Build the shared thread filter for forum and subforum listings.
+     */
+    private static function GetThreadFilter(int $forumID, int $subforumID): array
+    {
+        if ($subforumID > 0)
+            return ['bit_threads.subforum_id = ?', [$subforumID]];
+
+        return ['bit_threads.forum_id = ? AND bit_threads.subforum_id = -1', [$forumID]];
+    }
+
+    /**
      * CreateTable creates the 'bit_threads' and 'bit_threads_likes' tables in the database if they do not already exist.
      *
      * @param Database db The database instance.

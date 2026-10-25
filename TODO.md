@@ -168,15 +168,16 @@ Items marked **good first issue** are small and self-contained.
   `PageNotFoundException`; `PageFactory` renders `_404Page`, which sends an HTTP 404 status.
   Unknown routes and malformed forum/thread/subforum URLs use the same path.
 - [x] **Fix `/index` duplicating output** (also listed under P0); a routing test is still pending.
-- [ ] **Remove leftover template placeholders.** `themes/default/templates/index/index.html`
-  contains `{top_stats}`, which `IndexPage` never replaces.
-- [ ] **Reduce query counts.**
-  - `ThreadPage::fetchPosts()` runs three queries per post (author + thread count + post
-    count). Fetch authors and counts in the posts query or with one aggregate query.
-  - `IndexPage` runs one last-post query per forum and uses `SELECT * ... NumRows()` for
-    statistics; use `COUNT(*)` and a single aggregate.
-  - `ForumPage`/`SubforumPage` repeat the same thread-list query with small differences;
-    extract a shared controller method.
+- [x] **Remove leftover template placeholders.** Removed the unused `{top_stats}` slot and
+  its styles from the index page. Latest-thread/post stats can return through the future
+  plugin/event system.
+- [x] **Reduce query counts.**
+  - `ThreadPage` joins post authors and ranks directly and fetches thread/post totals once
+    per user on the page.
+  - `IndexPage` uses one aggregate query for statistics and a batched last-post lookup for
+    all forums.
+  - Forum/subforum thread-list SQL is centralized in `ThreadController::GetThreads()` and
+    `CountThreads()`.
 - [ ] **Cache last-post lookups.** `ForumController::GetLastPost()`,
   `SubForumController::GetLastPost()`, and `ThreadController::GetLastPost()` can be cached
   per request or replaced with a join.
@@ -346,7 +347,7 @@ Items marked **good first issue** are small and self-contained.
 - [x] Fix `Template::AddEntries()` count comparison and initialize arrays.
 - [x] Fix `Step_5` `strlen($value <= 0)` validation.
 - [ ] Fix `RankController::Create()` default flags (`0000000000` is octal zero; use `0`).
-- [ ] Remove the leftover `{top_stats}` placeholder.
+- [x] Remove the leftover `{top_stats}` placeholder.
 - [ ] Add `config.example.php`.
 - [ ] Replace the four "Test" footer links.
 - [x] Remove `Console::Log()` debug calls from `ThreadPage` and `Setup`.

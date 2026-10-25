@@ -110,7 +110,7 @@ class ForumPage extends PageBase implements PageInterface
 
     private function FetchThreads()
     {
-        $this->threadsCount = $this->database->Query('SELECT id FROM bit_threads WHERE forum_id = ? AND subforum_id = -1', $this->forumID)->NumRows();
+        $this->threadsCount = ThreadController::CountThreads($this->database, $this->forumID, -1);
        
         $totalPages = ceil($this->threadsCount / $this->maximumResults);
 
@@ -120,18 +120,13 @@ class ForumPage extends PageBase implements PageInterface
             return;
         }
        
-        $threads = $this->database->Query('SELECT bit_threads.*, bit_accounts.id AS author_id, bit_accounts.username, bit_accounts.rank_id, bit_ranks.rank_format, 
-            COUNT(bit_posts.id) AS post_count, MAX(bit_posts.post_timestamp) AS latest_post_timestamp
-            FROM bit_threads 
-            LEFT JOIN bit_posts ON bit_threads.id = bit_posts.thread_id 
-            LEFT JOIN bit_accounts ON bit_threads.user_id = bit_accounts.id 
-            LEFT JOIN bit_ranks ON bit_accounts.rank_id = bit_ranks.id 
-            WHERE forum_id = ? AND subforum_id = -1 
-            GROUP BY bit_threads.id 
-            ORDER BY bit_threads.is_pinned DESC, latest_post_timestamp DESC, bit_threads.thread_timestamp DESC
-            LIMIT ?, ?',
-            [$this->forumID, ($this->forumPage - 1) * $this->maximumResults, $this->maximumResults]
-        )->FetchAll();
+        $threads = ThreadController::GetThreads(
+            $this->database,
+            $this->forumID,
+            -1,
+            ($this->forumPage - 1) * $this->maximumResults,
+            $this->maximumResults
+        );
 
         if ($this->threadsCount <= 0)
         {

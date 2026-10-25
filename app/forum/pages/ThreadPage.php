@@ -82,10 +82,9 @@ class ThreadPage extends PageBase implements PageInterface
                                     JOIN bit_ranks r ON u.rank_id = r.id
                                     WHERE t.id = ?', $this->threadID)->FetchArray();
 
-        // i guess we need one query of that, or just add another label for the user in database.
-        $threadCount = $this->database->Query('SELECT COUNT(*) AS thread_count FROM bit_threads WHERE user_id = ?', $thread['user_id'])->FetchArray();
-        $postCount = $this->database->Query('SELECT COUNT(*) AS post_count FROM bit_posts WHERE user_id = ?', $thread['user_id'])->FetchArray();
-        $userPostCount = $threadCount['thread_count'] + $postCount['post_count'];
+        $userStats = $this->fetchUserStats([$thread['user_id']]);
+        $threadUserStats = $userStats[(int) $thread['user_id']] ?? ['thread_count' => 0, 'post_count' => 0];
+        $userPostCount = $threadUserStats['thread_count'] + $threadUserStats['post_count'];
 
         $userStatsTemplate = new Template('thread', 'thread_user_stats');
         $userStatsTemplate->AddEscapedEntry('{user_reputation}', $thread['user_reputation']);
@@ -114,28 +113,39 @@ class ThreadPage extends PageBase implements PageInterface
 
     private function fetchPosts()
     {
-        $posts = $this->database->Query('SELECT * FROM bit_posts WHERE thread_id = ? LIMIT ?, ?', $this->threadID, (($this->threadPage - 1) * $this->maximumResults), $this->maximumResults)->FetchAll();
+        $posts = $this->database->Query('SELECT p.*, a.id AS author_id, a.username, a.avatar, a.reputation, r.rank_name, r.rank_format
+            FROM bit_posts AS p
+            JOIN bit_accounts AS a ON p.user_id = a.id
+            JOIN bit_ranks AS r ON a.rank_id = r.id
+            WHERE p.thread_id = ?
+            LIMIT ?, ?', $this->threadID, (($this->threadPage - 1) * $this->maximumResults), $this->maximumResults)->FetchAll();
+
+        if (count($posts) <= 0)
+            return;
+
+        $userIds = [];
+        foreach ($posts as $post)
+            $userIds[] = (int) $post['user_id'];
+
+        $userStats = $this->fetchUserStats($userIds);
 
         $postTemplate = '';
         foreach ($posts as $post) 
         {
-            $author = $this->database->Query('SELECT b.*, r.* FROM bit_accounts AS b JOIN bit_ranks AS r ON b.rank_id = r.id WHERE b.id = ?', $post['user_id'])->FetchArray();
-
-            $threadCount = $this->database->Query('SELECT COUNT(*) AS thread_count FROM bit_threads WHERE user_id = ?', $post['user_id'])->FetchArray();
-            $postCount = $this->database->Query('SELECT COUNT(*) AS post_count FROM bit_posts WHERE user_id = ?', $post['user_id'])->FetchArray();
-            $userPostCount = $threadCount['thread_count'] + $postCount['post_count'];
+            $postUserStats = $userStats[(int) $post['user_id']] ?? ['thread_count' => 0, 'post_count' => 0];
+            $userPostCount = $postUserStats['thread_count'] + $postUserStats['post_count'];
 
             $userStatsTemplate = new Template('thread', 'thread_user_stats');
-            $userStatsTemplate->AddEscapedEntry('{user_reputation}', $author['reputation']);
+            $userStatsTemplate->AddEscapedEntry('{user_reputation}', $post['reputation']);
             $userStatsTemplate->AddEscapedEntry('{user_postcount}', $userPostCount);
             $userStatsTemplate->Replace();
 
             $postTemplate = new Template('thread', 'post');
-            $postTemplate->AddEscapedEntry('{user_id}', $author['id']);
-            $postTemplate->AddEntry('{user_name}', UsernameUtils::Format($author['rank_format'], $author['username']));
-            $postTemplate->AddEntry('{user_avatar}', AvatarUtils::GetPath($author['avatar']));
-            $postTemplate->AddEscapedEntry('{user_avatar_alt}', $author['username']);
-            $postTemplate->AddEscapedEntry('{user_rank}', $author['rank_name']);
+            $postTemplate->AddEscapedEntry('{user_id}', $post['author_id']);
+            $postTemplate->AddEntry('{user_name}', UsernameUtils::Format($post['rank_format'], $post['username']));
+            $postTemplate->AddEntry('{user_avatar}', AvatarUtils::GetPath($post['avatar']));
+            $postTemplate->AddEscapedEntry('{user_avatar_alt}', $post['username']);
+            $postTemplate->AddEscapedEntry('{user_rank}', $post['rank_name']);
             $postTemplate->AddEntry('{user_stats}', $userStatsTemplate->template);
             $postTemplate->AddEscapedEntry('{post_timestamp}', 'Published ' . RelativeTime::Format($post['post_timestamp']));
             $postTemplate->AddEntry('{post_content}', HtmlSanitizer::Sanitize($post['post_content']));
@@ -144,6 +154,35 @@ class ThreadPage extends PageBase implements PageInterface
 
             $this->posts .= $postTemplate->template;
         }
+    }
+
+    /**
+     * Fetch thread/post counters for several users in one query.
+     */
+    private function fetchUserStats(array $userIds): array
+    {
+        $userIds = array_values(array_unique(array_map('intval', $userIds)));
+
+        if (count($userIds) <= 0)
+            return [];
+
+        $placeholders = implode(',', array_fill(0, count($userIds), '?'));
+        $rows = $this->database->Query('SELECT a.id,
+                (SELECT COUNT(*) FROM bit_threads AS t WHERE t.user_id = a.id) AS thread_count,
+                (SELECT COUNT(*) FROM bit_posts AS p WHERE p.user_id = a.id) AS post_count
+            FROM bit_accounts AS a
+            WHERE a.id IN (' . $placeholders . ')', $userIds)->FetchAll();
+
+        $stats = [];
+        foreach ($rows as $row)
+        {
+            $stats[(int) $row['id']] = [
+                'thread_count' => (int) $row['thread_count'],
+                'post_count' => (int) $row['post_count'],
+            ];
+        }
+
+        return $stats;
     }
 
     public function Do()

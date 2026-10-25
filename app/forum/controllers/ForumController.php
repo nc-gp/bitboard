@@ -20,6 +20,44 @@ class ForumController
     }
 
     /**
+     * GetLastPosts retrieves the last post for each requested forum in one query.
+     *
+     * @param Database db The database instance.
+     * @param array forumIDs The forum IDs to retrieve last posts for.
+     *
+     * @return array The last post rows keyed by forum ID.
+     */
+    static public function GetLastPosts(Database $db, array $forumIDs): array
+    {
+        $forumIDs = array_values(array_unique(array_map('intval', $forumIDs)));
+
+        if (count($forumIDs) <= 0)
+            return [];
+
+        $placeholders = implode(',', array_fill(0, count($forumIDs), '?'));
+        $lastPosts = $db->Query('SELECT p.post_timestamp, a.id, a.username, a.avatar, t.id AS thread_id, t.thread_title, t.forum_id, r.rank_format
+            FROM bit_posts AS p
+            JOIN bit_threads AS t ON p.thread_id = t.id
+            JOIN bit_accounts AS a ON p.user_id = a.id
+            JOIN bit_ranks AS r ON a.rank_id = r.id
+            WHERE t.forum_id IN (' . $placeholders . ')
+              AND p.id = (
+                  SELECT p2.id
+                  FROM bit_posts AS p2
+                  JOIN bit_threads AS t2 ON p2.thread_id = t2.id
+                  WHERE t2.forum_id = t.forum_id
+                  ORDER BY p2.post_timestamp DESC, p2.id DESC
+                  LIMIT 1
+              )', $forumIDs)->FetchAll();
+
+        $result = [];
+        foreach ($lastPosts as $lastPost)
+            $result[(int) $lastPost['forum_id']] = $lastPost;
+
+        return $result;
+    }
+
+    /**
      * CreateTable creates the 'bit_forums' table in the database if it does not already exist.
      *
      * @param Database db The database instance.

@@ -41,9 +41,14 @@ class IndexPage extends PageBase implements PageInterface
 
     private function FetchStats()
     {
-        $this->totalPosts = $this->database->Query('SELECT * FROM bit_posts')->NumRows();
-        $this->totalThreads = $this->database->Query('SELECT * FROM bit_threads')->NumRows();
-        $this->totalUsers = $this->database->Query('SELECT * FROM bit_accounts')->NumRows();
+        $stats = $this->database->Query('SELECT
+            (SELECT COUNT(*) FROM bit_posts) AS total_posts,
+            (SELECT COUNT(*) FROM bit_threads) AS total_threads,
+            (SELECT COUNT(*) FROM bit_accounts) AS total_users')->FetchArray();
+
+        $this->totalPosts = (int) $stats['total_posts'];
+        $this->totalThreads = (int) $stats['total_threads'];
+        $this->totalUsers = (int) $stats['total_users'];
     }
 
     private function FetchCategories()
@@ -103,6 +108,15 @@ class IndexPage extends PageBase implements PageInterface
             }
         }
 
+        $forumIDs = [];
+        foreach ($builded_data as $category)
+        {
+            foreach ($category->forums as $forum)
+                $forumIDs[] = $forum->id;
+        }
+
+        $lastPosts = ForumController::GetLastPosts($this->database, $forumIDs);
+
         $lastPostTemplate = '';
         $categoryTemplate = '';
         $forumTemplate = '';
@@ -128,10 +142,10 @@ class IndexPage extends PageBase implements PageInterface
                 }
 
                 $lastPostTemplate = new Template('index/forum', 'forum_nolastpost');
-                if ($forum->post_count > 0)
-                {
-                    $lastPost = ForumController::GetLastPost($this->database, $forum->id);
+                $lastPost = $lastPosts[(int) $forum->id] ?? [];
 
+                if (!empty($lastPost))
+                {
                     $lastPostTemplate = new Template('index/forum', 'forum_lastpost');
                     $lastPostTemplate->AddEscapedEntry('{user_id}', $lastPost['id']);
                     $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($lastPost['avatar']));
