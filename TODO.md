@@ -191,9 +191,8 @@ Items marked **good first issue** are small and self-contained.
 - [x] **Move `{server_url}` replacement before page content injection.** Template files now
   resolve the base URL at load time. Pagination uses a separate `{pagination_url}` prefix,
   and injected user content is no longer affected by a global server-URL replacement pass.
-- [ ] **Append the global JS inside `<body>`.** `PageBase::CommonSetup()` appends
-  `footer/end.html` after `</html>`, producing invalid markup. Add a `{scripts}` placeholder
-  to every layout, or append before the closing body tag.
+- [x] **Append the global JS inside `<body>`.** Every page layout now has a `{scripts}`
+  placeholder before `</body>`, and `PageBase` renders `footer/end.html` through it.
 - [x] **Restore notifications.** Restored `assets/javascripts/toastify.js` and
   `assets/stylesheets/toastify.css`; the local `toast()` wrapper uses the existing Toastify
   CDN and provides a small local fallback. Admin settings save was verified end-to-end.

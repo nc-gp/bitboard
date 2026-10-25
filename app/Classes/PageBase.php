@@ -52,9 +52,9 @@ class PageBase
         $this->template->AddEntry('{footer}', $footerTemplate->template);
         $this->template->AddEntry('{csrf_token}', SessionManager::CsrfToken());
 
-        // Adding global javascripts..
+        // Adding global javascripts inside the page body.
         $globalJS = new Template('footer', 'end');
-        $this->template->template .= $globalJS->template;
+        $this->template->AddEntry('{scripts}', $globalJS->template);
     }
 }
 
