@@ -35,6 +35,17 @@ class PaginationWidget
     }
 
     /**
+     * Create a pagination link template with the current route prefix.
+     */
+    private function CreatePageTemplate(string $name): Template
+    {
+        $template = new Template('pagination', $name);
+        $template->AddEntry('{pagination_url}', UrlManager::GetPath() . $this->baseRedirectPath);
+
+        return $template;
+    }
+
+    /**
      * Generate the pagination widget with dynamic page links.
      */
     private function Do()
@@ -49,7 +60,7 @@ class PaginationWidget
 
         if ($this->currentPage > 1)
         {
-            $btnprevTemplate = new Template('pagination', 'prev_button');
+            $btnprevTemplate = $this->CreatePageTemplate('prev_button');
             $btnprevTemplate->AddEntry('{page}', $this->currentPage - 1);
             $btnprevTemplate->Replace();
             $btnprev = $btnprevTemplate->template;
@@ -59,7 +70,8 @@ class PaginationWidget
 
         if ($this->currentPage > 3)
         {
-            $startdocsTemplate = new Template('pagination', 'start_dots');
+            $startdocsTemplate = $this->CreatePageTemplate('start_dots');
+            $startdocsTemplate->Replace();
             $startdots = $startdocsTemplate->template;
         }
 
@@ -68,7 +80,7 @@ class PaginationWidget
 
         if ($this->currentPage - 2 > 0)
         {
-            $pagesub2Template = new Template('pagination', 'page_m2');
+            $pagesub2Template = $this->CreatePageTemplate('page_m2');
             $pagesub2Template->AddEntry('{page}', $this->currentPage - 2);
             $pagesub2Template->Replace();
             $pagesub2 = $pagesub2Template->template;
@@ -76,7 +88,7 @@ class PaginationWidget
 
         if ($this->currentPage - 1 > 0)
         {
-            $pagesub1Template = new Template('pagination', 'page_m1');
+            $pagesub1Template = $this->CreatePageTemplate('page_m1');
             $pagesub1Template->AddEntry('{page}', $this->currentPage - 1);
             $pagesub1Template->Replace();
             $pagesub1 = $pagesub1Template->template;
@@ -91,7 +103,7 @@ class PaginationWidget
 
         if ($this->currentPage + 1 <= $totalPages)
         {
-            $pageadd1Template = new Template('pagination', 'page_next');
+            $pageadd1Template = $this->CreatePageTemplate('page_next');
             $pageadd1Template->AddEntry('{page}', $this->currentPage + 1);
             $pageadd1Template->Replace();
             $pageadd1 = $pageadd1Template->template;
@@ -99,7 +111,7 @@ class PaginationWidget
 
         if ($this->currentPage + 2 <= $totalPages)
         {
-            $pageadd2Template = new Template('pagination', 'page_next');
+            $pageadd2Template = $this->CreatePageTemplate('page_next');
             $pageadd2Template->AddEntry('{page}', $this->currentPage + 2);
             $pageadd2Template->Replace();
             $pageadd2 = $pageadd2Template->template;
@@ -109,7 +121,7 @@ class PaginationWidget
 
         if ($this->currentPage < $totalPages - 2)
         {
-            $enddocsTemplate = new Template('pagination', 'end_dots');
+            $enddocsTemplate = $this->CreatePageTemplate('end_dots');
             $enddocsTemplate->AddEntry('{page}', $totalPages);
             $enddocsTemplate->Replace();
             $enddots = $enddocsTemplate->template;
@@ -119,7 +131,7 @@ class PaginationWidget
 
         if ($this->currentPage < $totalPages)
         {
-            $btnnextTemplate = new Template('pagination', 'next_button');
+            $btnnextTemplate = $this->CreatePageTemplate('next_button');
             $btnnextTemplate->AddEntry('{page}', $this->currentPage + 1);
             $btnnextTemplate->Replace();
             $btnnext = $btnnextTemplate->template;
@@ -134,9 +146,6 @@ class PaginationWidget
         $this->Template->AddEntry('{page_next_m2}', $pageadd2);
         $this->Template->AddEntry('{end_dots}', $enddots);
         $this->Template->AddEntry('{next_button}', $btnnext);
-        $this->Template->Replace();
-
-        $this->Template->AddEntry('{server_url}', UrlManager::GetPath() . $this->baseRedirectPath);
         $this->Template->Replace();
     }
 }

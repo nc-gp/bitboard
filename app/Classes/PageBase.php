@@ -50,7 +50,6 @@ class PageBase
         $this->template->AddEntry('{head}', $headTemplate->template);
         $this->template->AddEntry('{header}', $headerTemplate->template);
         $this->template->AddEntry('{footer}', $footerTemplate->template);
-        $this->template->Addentry('{server_url}', $this->serverPath);
         $this->template->AddEntry('{csrf_token}', SessionManager::CsrfToken());
 
         // Adding global javascripts..

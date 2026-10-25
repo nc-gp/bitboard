@@ -186,11 +186,11 @@ Items marked **good first issue** are small and self-contained.
 
 - [x] **Fix `Template` initialization and `AddEntries()`.** `$variables`/`$replaces` now
   initialize to `[]`; `AddEntries()` compares the two `count()` values.
-- [ ] **Simplify `Template::Load()`.** Use `file_get_contents()` with an explicit error
-  instead of `fopen`/`flock`/`filesize`; handle empty files and missing templates.
-- [ ] **Move `{server_url}` replacement before page content injection.** Currently global
-  widgets and page content both rely on a second replacement pass. Document or centralize
-  this to avoid double-replacement surprises.
+- [x] **Simplify `Template::Load()`.** Uses `file_get_contents()` with explicit errors for
+  missing/unreadable files; empty template files load with their start/end markers.
+- [x] **Move `{server_url}` replacement before page content injection.** Template files now
+  resolve the base URL at load time. Pagination uses a separate `{pagination_url}` prefix,
+  and injected user content is no longer affected by a global server-URL replacement pass.
 - [ ] **Append the global JS inside `<body>`.** `PageBase::CommonSetup()` appends
   `footer/end.html` after `</html>`, producing invalid markup. Add a `{scripts}` placeholder
   to every layout, or append before the closing body tag.

@@ -39,22 +39,19 @@ class Template
      */
     private function Load()
     {
-        if (!file_exists($this->fullPath))
+        if (!is_file($this->fullPath))
             throw new Error("Template file does not exist: " . $this->fullPath);
 
-        $handle = fopen($this->fullPath, 'r');
-        if ($handle) 
-        {
-            if (flock($handle, LOCK_SH)) 
-            {
-                $this->template = '<!-- start: ' . $this->name . ' -->';
-                $this->template .= fread($handle, filesize($this->fullPath));
-                flock($handle, LOCK_UN);
-            }
+        $content = @file_get_contents($this->fullPath);
+        if ($content === false)
+            throw new Error("Unable to read template file: " . $this->fullPath);
 
-            fclose($handle);
-        }
+        // Resolve the global base URL before any page content is injected.
+        // Pagination uses its own route-specific placeholder instead.
+        $content = str_replace('{server_url}', UrlManager::GetPath(), $content);
 
+        $this->template = '<!-- start: ' . $this->name . ' -->';
+        $this->template .= $content;
         $this->template .= '<!-- end: ' . $this->name . ' -->';
     }
 
