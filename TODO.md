@@ -211,8 +211,8 @@ Items marked **good first issue** are small and self-contained.
   SHA-384 integrity hash.
 - [x] **Remove Microtip.** Replaced it with local `tooltip.css` using
   `data-tooltip-position`.
-- [ ] **Remove duplicate request helper.** `request.js` duplicates `req()` from `main.js`;
-  keep one implementation.
+- [x] **Remove duplicate request helper.** Removed the unused `request.js`; `main.js` keeps
+  the single `req()` implementation.
 - [ ] **Fix empty/placeholder CSS.** `themes/default/styles/profile.css` is empty and
   `profile.html` says "soon". Build the profile styles with the profile page.
 
