@@ -25,6 +25,17 @@ class Permissions
     const VIEWING_REPORTS = 32768;
     const MANAGING_SETTINGS = 65536;
 
+    // Permissions that identify administrators and moderators.
+    public const STAFF =
+    self::ADMIN_PANEL_ACCESS |
+    self::LOCKING_THREADS |
+    self::PINNING_THREADS |
+    self::DELETING_THREADS |
+    self::VIEWING_REPORTS |
+    self::MANAGING_USERS |
+    self::MANAGING_ROLES |
+    self::MANAGING_SETTINGS;
+
     // All permisions in one
     public static int $All = 
     self::VIEWING_FORUM |
@@ -55,6 +66,17 @@ class Permissions
     public static function hasPermission($userPermissions, $permission)
     {
         return ($userPermissions & $permission) !== 0;
+    }
+
+    /**
+     * Check whether a permission bitmask belongs to staff.
+     *
+     * @param int $userPermissions The user's permission bitmask.
+     * @return bool
+     */
+    public static function isStaff($userPermissions): bool
+    {
+        return ($userPermissions & self::STAFF) !== 0;
     }
 
     /**

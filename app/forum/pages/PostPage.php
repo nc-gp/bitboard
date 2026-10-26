@@ -138,7 +138,7 @@ class PostPage extends PageBase implements PageInterface
         $this->subheading = 'Replying to "' . $thread['thread_title'] . '"';
         $this->submitLabel = 'Post reply';
 
-        if ((int) $thread['is_closed'] === 1)
+        if ((int) $thread['is_closed'] === 1 && !SessionManager::IsStaff())
         {
             $this->Deny('This thread is closed and no longer accepts replies.');
             return;

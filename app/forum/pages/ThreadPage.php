@@ -278,7 +278,8 @@ class ThreadPage extends PageBase implements PageInterface
         $this->fetchThread();
         $this->fetchPosts();
 
-        $canReply = !$this->threadClosed && SessionManager::HasPermission(Permissions::CREATING_POSTS);
+        $canReply = SessionManager::HasPermission(Permissions::CREATING_POSTS)
+            && (!$this->threadClosed || SessionManager::IsStaff());
 
         if ($canReply && $this->threadLocked)
         {
@@ -286,7 +287,7 @@ class ThreadPage extends PageBase implements PageInterface
                 && SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED);
         }
 
-        if ($this->threadClosed)
+        if ($this->threadClosed && !$canReply)
         {
             $closedTemplate = new Template('thread', 'closed_notice');
             $this->replyArea = $closedTemplate->template;
@@ -296,6 +297,9 @@ class ThreadPage extends PageBase implements PageInterface
             $replyTemplate = new Template('thread', 'fast_reply');
             $replyTemplate->AddEscapedEntry('{thread_id}', $this->threadID);
             $replyTemplate->AddEscapedEntry('{return_page}', $this->threadPage);
+            $replyTemplate->AddEscapedEntry('{hint}', $this->threadClosed
+                ? 'This thread is closed, but staff can still reply.'
+                : 'Post a reply without leaving this thread.');
             $replyTemplate->Replace();
             $this->replyArea = $replyTemplate->template;
         }

@@ -239,6 +239,9 @@ Items marked **good first issue** are small and self-contained.
   `CREATING_THREADS`, `CREATING_POSTS`, and locked variants. A shared `/post` form creates
   threads in forums/subforums or replies to threads, with CSRF, validation, and redirects.
   Thread pages also include an inline fast-reply form, and replies render oldest to newest.
+- [x] Allow moderators/administrators to create threads and replies in locked forums/subforums
+  and closed threads. Locked forums still honor `CREATING_*_LOCKED`; staff can now reply in
+  closed threads, with a clear staff-only hint in the fast-reply form.
 - [ ] Edit and delete with `EDITING_*`/`DELETING_*` permissions, edit history, and
   soft-delete/restore.
 - [x] Likes for threads and posts with one-like-per-user constraints and cached counters.
@@ -263,6 +266,8 @@ Items marked **good first issue** are small and self-contained.
 - [ ] Rank/permission matrix editor with readable labels for every bit flag.
 - [ ] Audit log for admin actions and moderator actions.
 - [ ] Admin dashboard statistics and recent activity.
+- [x] Offline-mode notice for moderators/administrators: staff see a persistent banner with the
+  offline message while browsing; everyone else is redirected to the offline page.
 - [x] Finish the prefix edit/delete API and add validation.
 
 ### Discovery and profiles

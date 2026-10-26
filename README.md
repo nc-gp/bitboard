@@ -51,7 +51,8 @@
   `/feed.xml`.
 - Admin panel shell with forum settings and prefix management (edit/delete).
 - Theme system with the bundled `default` theme and light/dark/auto switcher.
-- Offline mode, force-login mode, banned page, and a 404 page with a real 404 status.
+- Offline mode with a staff-only banner and browsing bypass, force-login mode, banned page, and
+  a 404 page with a real 404 status.
 - Output escaping for user-controlled text and allowlist sanitization for rich thread/post HTML.
 - Creating threads and replying to threads with permission checks, CSRF protection,
   plain-text-to-HTML formatting, and an inline fast-reply form. Replies render oldest to
@@ -248,6 +249,7 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] Create threads and reply to threads.
 - [ ] Edit and delete threads/posts.
 - [x] Reactions for threads and posts.
+- [x] Staff can reply to closed threads and see an offline-mode banner.
 - [ ] Admin CRUD for categories, forums, subforums, prefixes, users, and ranks.
 - [x] Thread and post search with forum/author/date filters.
 - [x] Online members list with an index preview.

@@ -131,6 +131,18 @@ class SessionManager
     }
 
     /**
+     * Check whether the current user has moderator or administrator permissions.
+     */
+    static public function IsStaff(): bool
+    {
+        return self::IsLogged()
+            && isset($_SESSION['bitboard_user'])
+            && is_object($_SESSION['bitboard_user'])
+            && isset($_SESSION['bitboard_user']->permissions)
+            && Permissions::isStaff($_SESSION['bitboard_user']->permissions);
+    }
+
+    /**
      * Get the CSRF token for the current session, creating it when needed.
      *
      * @return string The session CSRF token.

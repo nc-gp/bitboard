@@ -67,7 +67,18 @@ class PageBase
         ];
 
         $headTemplate = new HeadWidget($this->forumName, $this->forumDesc, $stylesTemplate->Template->template, $metadata);
-        $headerTemplate = new HeaderWidget();
+
+        $offlineNotice = '';
+        if (!$this->forumData->forum_online && SessionManager::IsStaff())
+        {
+            $offlineNotice = 'Forum is offline. Staff can still browse.';
+            $offlineMessage = trim((string) ($this->forumData->forum_online_msg ?? ''));
+
+            if ($offlineMessage !== '')
+                $offlineNotice .= ' ' . $offlineMessage;
+        }
+
+        $headerTemplate = new HeaderWidget($offlineNotice);
         $footerTemplate = new FooterWidget($this->forumData->forum_credits ?? true);
 
         /**

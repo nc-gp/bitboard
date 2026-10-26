@@ -18,10 +18,18 @@ class HeaderWidget
     public $template;
 
     /**
-     * Constructs a new HeaderWidget instance.
+     * @var string The optional staff-only offline notice.
      */
-    public function __construct()
+    private string $offlineNotice = '';
+
+    /**
+     * Constructs a new HeaderWidget instance.
+     *
+     * @param string offlineNotice Optional staff-only offline notice.
+     */
+    public function __construct(string $offlineNotice = '')
     {
+        $this->offlineNotice = $offlineNotice;
         $this->template = new Template('header', 'header');
         $this->Do();
     }
@@ -33,6 +41,16 @@ class HeaderWidget
     {
         $menuTemplate = new Template('header/nav', 'menu');
 
+        $offlineNotice = '';
+        if ($this->offlineNotice !== '')
+        {
+            $noticeTemplate = new Template('header', 'offline_notice');
+            $noticeTemplate->AddEscapedEntry('{message}', $this->offlineNotice);
+            $noticeTemplate->Replace();
+            $offlineNotice = $noticeTemplate->template;
+        }
+
+        $this->template->AddEntry('{offline_notice}', $offlineNotice);
         $this->template->AddEntry('{menu}', $menuTemplate->template);
 
         if (SessionManager::IsLogged())

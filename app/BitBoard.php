@@ -57,9 +57,10 @@ class BitBoard
 
 		if(!$this->IsOnline())
 		{
-			$canViewLocked = SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED);
+			$canBypassOffline = SessionManager::IsStaff()
+				|| SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED);
 
-			if((count($SplitedURL) > 1 || empty($SplitedURL)) && !$canViewLocked && $firstParameter !== 'login')
+			if((count($SplitedURL) > 1 || empty($SplitedURL)) && !$canBypassOffline && $firstParameter !== 'login')
 				UrlManager::Redirect(UrlManager::GetPath() . 'offline');
 		}
 
