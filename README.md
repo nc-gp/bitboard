@@ -42,6 +42,8 @@
 - Login rate limiting (10 failures per IP or 5 per account in a 15-minute window) with
   failed-attempt logging.
 - Members list with online/offline state.
+- Thread and post search with forum/author/date filters, relevance/newest sorting, and
+  pagination.
 - Admin panel shell with forum settings and prefix management (edit/delete).
 - Theme system with the bundled `default` theme and light/dark/auto switcher.
 - Offline mode, force-login mode, banned page, and a 404 page with a real 404 status.
@@ -57,7 +59,7 @@
 - **Account settings** — email/password settings work; avatar, bio, signature, timezone, and notification preferences are still pending.
 - **Admin CRUD** — categories, forums, subforums, users, and ranks are not manageable yet.
 - **Prefix creation** — existing custom prefixes can be edited/deleted, but there is no create UI yet.
-- **Likes, reports, moderation tools, search, avatars/uploads.**
+- **Likes, reports, moderation tools, avatars/uploads.**
 - **Email verification and password reset.**
 - **Tests, CI, Composer, migrations, and a documented public API.**
 
@@ -235,7 +237,8 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [ ] Create/reply/edit/delete threads and posts.
 - [ ] Likes for threads and posts (there is already a TODO in `ThreadPage`).
 - [ ] Admin CRUD for categories, forums, subforums, prefixes, users, and ranks.
-- [ ] Search, moderation tools (pin/lock/delete), and reports.
+- [x] Thread and post search with forum/author/date filters.
+- [ ] Moderation tools (pin/lock/delete) and reports.
 - [ ] Avatar uploads and profile customization.
 - [ ] Email verification and password reset.
 - [ ] Stable, documented API (v1) with token auth.

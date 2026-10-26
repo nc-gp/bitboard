@@ -261,8 +261,8 @@ Items marked **good first issue** are small and self-contained.
 
 ### Discovery and profiles
 
-- [ ] Search threads/posts with MySQL `FULLTEXT`, filters (forum, author, date), and
-  pagination.
+- [x] Search threads/posts with MySQL `FULLTEXT`, filters (forum, author, date), and
+  pagination. Falls back to `LIKE` when the database user cannot add the indexes.
 - [x] Public profile page with avatar, rank, reputation, join date, recent posts/threads,
   and online state.
 - [x] Member directory filters/sorting. Search by username; sort by newest, oldest,

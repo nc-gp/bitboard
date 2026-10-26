@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+{head}
+<body>
+	<div class="bit-container">
+		{header}
+
+		<div id="content">
+			<div id="search_page">
+				<form id="search_form" action="{server_url}search/page/1" method="get" role="search">
+					<div class="search-main">
+						<input type="search" name="q" value="{query}" maxlength="128"
+							placeholder="Search threads and posts..." aria-label="Search threads and posts">
+						<button type="submit"><i class="ti ti-search"></i> Search</button>
+					</div>
+
+					<div class="search-filters">
+						<label class="search-field">
+							<span>Forum</span>
+							<select name="forum">{forum_options}</select>
+						</label>
+						<label class="search-field">
+							<span>Author</span>
+							<input type="text" name="author" value="{author}" maxlength="32" placeholder="Username">
+						</label>
+						<label class="search-field">
+							<span>Date</span>
+							<select name="date">{date_options}</select>
+						</label>
+						<label class="search-field">
+							<span>Sort</span>
+							<select name="sort">{sort_options}</select>
+						</label>
+						<a class="search-reset" href="{server_url}search/page/1">Reset</a>
+					</div>
+				</form>
+
+				<div class="search-summary">{summary}</div>
+				<div id="search_results">{results}</div>
+				{pagination}
+			</div>
+		</div>
+
+		{footer}
+	</div>
+	{scripts}
+</body>
+</html>
