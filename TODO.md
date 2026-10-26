@@ -269,7 +269,9 @@ Items marked **good first issue** are small and self-contained.
   username, reputation, posts, or threads; pagination preserves the filters.
 - [x] Online members list with a 15-minute activity window and an index preview.
 - [ ] "Who is viewing" indicators (optional).
-- [ ] SEO-friendly thread slugs and canonical URLs.
+- [x] SEO-friendly thread slugs and canonical URLs. Thread URLs use
+  `/thread/{id}/{slug}/page/{page}`, old URLs redirect with a 301, and thread pages
+  expose a canonical link.
 - [ ] OpenGraph/Twitter metadata, sitemap, RSS/Atom feeds.
 
 ### API and integrations

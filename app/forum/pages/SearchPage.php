@@ -8,6 +8,7 @@ use App\Classes\Template;
 use App\Classes\Permissions;
 use App\Classes\RelativeTime;
 use App\Classes\SessionManager;
+use App\Classes\Slug;
 use App\Classes\UrlManager;
 use App\Classes\UsernameUtils;
 use App\Interfaces\PageInterface;
@@ -342,7 +343,10 @@ class SearchPage extends PageBase implements PageInterface
         foreach ($rows as $result)
         {
             $resultTemplate = new Template('search', 'result');
-            $resultTemplate->AddEntry('{url}', $this->serverPath . 'thread/' . (int) $result['thread_id'] . '/page/1');
+            $resultTemplate->AddEntry('{url}', UrlManager::ThreadUrl(
+                (int) $result['thread_id'],
+                Slug::FromTitle($result['title'])
+            ));
             $resultTemplate->AddEscapedEntry('{title}', $result['title']);
             $resultTemplate->AddEntry('{excerpt}', Template::Escape($this->Excerpt($result['content'])));
             $resultTemplate->AddEntry('{location}', $this->BuildLocation($result));

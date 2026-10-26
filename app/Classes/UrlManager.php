@@ -33,6 +33,36 @@ class UrlManager
     }
 
     /**
+     * Permanently redirect to a specified URL. Used to point old thread URLs at
+     * their current slug.
+     *
+     * @param string $url The URL to redirect to.
+     * @return void
+     */
+    static public function RedirectPermanent(string $url): void
+    {
+        header('Location: ' . $url, true, 301);
+        die();
+    }
+
+    /**
+     * Build a thread URL with its readable slug.
+     *
+     * @param int    $threadID The thread ID.
+     * @param string $slug     The thread slug.
+     * @param int    $page     The thread page.
+     *
+     * @return string The absolute thread URL.
+     */
+    static public function ThreadUrl(int $threadID, string $slug, int $page = 1): string
+    {
+        if ($slug === '')
+            $slug = 'thread';
+
+        return self::GetPath() . 'thread/' . $threadID . '/' . rawurlencode($slug) . '/page/' . $page;
+    }
+
+    /**
      * Get the base URL path for the current application.
      *
      * Always returns a value with a trailing slash and forward slashes so it can

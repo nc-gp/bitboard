@@ -20,12 +20,18 @@ class HeadWidget
      * @param string forumName       The name of the forum.
      * @param string forumDesc       The description of the forum, used as the page title.
      * @param string stylesTemplate  Additional styles to be included in the <head> section.
+     * @param string canonicalUrl    Optional canonical URL for the page.
      */
-    public function __construct(string $forumName, string $forumDesc, string $stylesTemplate = '')
+    public function __construct(string $forumName, string $forumDesc, string $stylesTemplate = '', string $canonicalUrl = '')
     {
+        $canonical = $canonicalUrl !== ''
+            ? '<link rel="canonical" href="' . Template::Escape($canonicalUrl) . '">'
+            : '';
+
         $this->template = new Template('head', 'head');
         $this->template->AddEscapedEntry('{forum_name}', $forumName);
         $this->template->AddEscapedEntry('{page_title}', $forumDesc);
+        $this->template->AddEntry('{canonical}', $canonical);
         $this->template->AddEntry('{styles}', $stylesTemplate);
         $this->template->Replace();
         $this->template = $this->template->template;

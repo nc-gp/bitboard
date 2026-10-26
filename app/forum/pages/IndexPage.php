@@ -6,6 +6,8 @@ use App\Classes\PageBase;
 use App\Classes\Template;
 use App\Classes\RelativeTime;
 use App\Classes\AvatarUtils;
+use App\Classes\Slug;
+use App\Classes\UrlManager;
 use App\Classes\UsernameUtils;
 use App\Classes\Database;
 
@@ -176,6 +178,10 @@ class IndexPage extends PageBase implements PageInterface
                     $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($lastPost['avatar']));
                     $lastPostTemplate->AddEscapedEntry('{thread_id}', $lastPost['thread_id']);
                     $lastPostTemplate->AddEscapedEntry('{thread_title}', $lastPost['thread_title']);
+                    $lastPostTemplate->AddEntry('{thread_url}', UrlManager::ThreadUrl(
+                        (int) $lastPost['thread_id'],
+                        Slug::FromTitle($lastPost['thread_title'])
+                    ));
                     $lastPostTemplate->AddEscapedEntry('{post_date}', RelativeTime::Convert($lastPost['post_timestamp']));
                     $lastPostTemplate->AddEntry('{username}', UsernameUtils::Format($lastPost['rank_format'], $lastPost['username']));
                     $lastPostTemplate->Replace();

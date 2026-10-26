@@ -9,7 +9,9 @@ use App\Classes\PageNotFoundException;
 use App\Classes\Permissions;
 use App\Classes\RelativeTime;
 use App\Classes\SessionManager;
+use App\Classes\Slug;
 use App\Classes\Template;
+use App\Classes\UrlManager;
 use App\Classes\UsernameUtils;
 
 use App\Interfaces\PageInterface;
@@ -79,6 +81,10 @@ class ProfilePage extends PageBase implements PageInterface
             $template = new Template('profile', 'thread');
             $template->AddEscapedEntry('{id}', $thread['id']);
             $template->AddEscapedEntry('{thread_title}', $thread['thread_title']);
+            $template->AddEntry('{thread_url}', UrlManager::ThreadUrl(
+                (int) $thread['id'],
+                Slug::FromTitle($thread['thread_title'])
+            ));
             $template->AddEscapedEntry('{thread_date}', RelativeTime::Convert($thread['thread_timestamp']));
             $template->AddEscapedEntry('{post_count}', $thread['post_count']);
             $template->Replace();
@@ -120,6 +126,10 @@ class ProfilePage extends PageBase implements PageInterface
             $template = new Template('profile', 'post');
             $template->AddEscapedEntry('{thread_id}', $post['thread_id']);
             $template->AddEscapedEntry('{thread_title}', $post['thread_title']);
+            $template->AddEntry('{thread_url}', UrlManager::ThreadUrl(
+                (int) $post['thread_id'],
+                Slug::FromTitle($post['thread_title'])
+            ));
             $template->AddEscapedEntry('{post_excerpt}', $excerpt);
             $template->AddEscapedEntry('{post_date}', RelativeTime::Convert($post['post_timestamp']));
             $template->AddEscapedEntry('{location}', $post['location']);

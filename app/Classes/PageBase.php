@@ -16,6 +16,7 @@ class PageBase
     protected string $forumName;
     protected string $forumDesc;
     protected string $serverPath;
+    protected string $canonicalUrl = '';
 
     protected object $forumData;
 
@@ -39,7 +40,7 @@ class PageBase
     private function CommonSetup(string $templateCategory): void
     {
         $stylesTemplate = new StylesWidget($templateCategory);
-        $headTemplate = new HeadWidget($this->forumName, $this->forumDesc, $stylesTemplate->Template->template);
+        $headTemplate = new HeadWidget($this->forumName, $this->forumDesc, $stylesTemplate->Template->template, $this->canonicalUrl);
         $headerTemplate = new HeaderWidget();
         $footerTemplate = new FooterWidget($this->forumData->forum_credits ?? true);
 

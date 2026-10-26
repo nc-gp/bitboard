@@ -16,6 +16,7 @@ use App\Forum\Controllers\ThreadController;
 
 use App\Classes\AvatarUtils;
 use App\Classes\RelativeTime;
+use App\Classes\Slug;
 use App\Classes\UsernameUtils;
 use App\Forum\Widgets\PrefixWidget;
 
@@ -136,6 +137,10 @@ class SubforumPage extends PageBase implements PageInterface
 
             $threadTemplate->AddEscapedEntry('{id}', $thread['id']);
             $threadTemplate->AddEscapedEntry('{thread_title}', $thread['thread_title']);
+            $threadTemplate->AddEntry('{thread_url}', UrlManager::ThreadUrl(
+                (int) $thread['id'],
+                Slug::FromTitle($thread['thread_title'])
+            ));
             $threadTemplate->AddEscapedEntry('{thread_author_id}', $thread['author_id']);
             $threadTemplate->AddEntry('{thread_author_username}', UsernameUtils::Format($thread['rank_format'], $thread['username']));
             $threadTemplate->AddEscapedEntry('{thread_date}', RelativeTime::Convert($thread['thread_timestamp']));

@@ -9,6 +9,7 @@ use App\Classes\Template;
 use App\Classes\AvatarUtils;
 use App\Classes\UsernameUtils;
 use App\Classes\RelativeTime;
+use App\Classes\Slug;
 use App\Classes\UrlManager;
 use App\Classes\HtmlSanitizer;
 use App\Classes\Permissions;
@@ -25,6 +26,7 @@ class ThreadPage extends PageBase implements PageInterface
 
     private int $threadID;
     private int $threadPage;
+    private string $threadSlug = '';
 
     private int $maximumResults = 7;
     private int $postsCount = 0;
@@ -37,21 +39,43 @@ class ThreadPage extends PageBase implements PageInterface
 
     private function UrlHandler()
     {
+        $parameters = $this->forumData->actionParameters;
+        $threadID = 0;
+        $threadPage = 0;
+        $requestedSlug = '';
+
         if (
-            (count($this->forumData->actionParameters) < 4) || // Check if the URL has enough segments
-            ($this->forumData->actionParameters[2] !== 'page') || // Check if the segment after 'forum' is 'page'
-            !is_numeric($this->forumData->actionParameters[1]) || // Check if the second segment is a numeric thread ID
-            !is_numeric($this->forumData->actionParameters[3]) // Check if the fourth segment is a numeric page number
+            count($parameters) >= 5 &&
+            ($parameters[3] ?? '') === 'page' &&
+            is_numeric($parameters[1] ?? '') &&
+            is_numeric($parameters[4] ?? '')
         )
+        {
+            $threadID = (int) $parameters[1];
+            $requestedSlug = (string) ($parameters[2] ?? '');
+            $threadPage = (int) $parameters[4];
+        }
+        elseif (
+            count($parameters) >= 4 &&
+            ($parameters[2] ?? '') === 'page' &&
+            is_numeric($parameters[1] ?? '') &&
+            is_numeric($parameters[3] ?? '')
+        )
+        {
+            // Legacy /thread/{id}/page/{page} URLs redirect to the slug URL below.
+            $threadID = (int) $parameters[1];
+            $threadPage = (int) $parameters[3];
+        }
+        else
             throw new PageNotFoundException();
 
-        $this->threadPage = (int) $this->forumData->actionParameters[3];
-        $this->threadID = (int) $this->forumData->actionParameters[1];
-
-        if ($this->threadPage <= 0 || $this->threadID <= 0)
+        if ($threadPage <= 0 || $threadID <= 0)
             throw new PageNotFoundException();
 
-        $thread = $this->database->Query('SELECT t.id, f.is_locked AS forum_locked, sf.is_locked AS subforum_locked
+        $this->threadID = $threadID;
+        $this->threadPage = $threadPage;
+
+        $thread = $this->database->Query('SELECT t.id, t.thread_title, f.is_locked AS forum_locked, sf.is_locked AS subforum_locked
             FROM bit_threads AS t
             JOIN bit_forums AS f ON f.id = t.forum_id
             LEFT JOIN bit_subforums AS sf ON sf.id = t.subforum_id
@@ -63,12 +87,19 @@ class ThreadPage extends PageBase implements PageInterface
         if ($isLocked && !SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED))
             UrlManager::Redirect($this->serverPath);
 
+        $this->threadSlug = Slug::FromTitle($thread['thread_title']);
+
+        if ($requestedSlug !== $this->threadSlug)
+            UrlManager::RedirectPermanent(UrlManager::ThreadUrl($this->threadID, $this->threadSlug, $this->threadPage));
+
+        $this->canonicalUrl = UrlManager::ThreadUrl($this->threadID, $this->threadSlug, $this->threadPage);
+
         $postCount = $this->database->Query('SELECT COUNT(*) AS post_count FROM bit_posts WHERE thread_id = ?', $this->threadID)->FetchArray();
         $this->postsCount = (int) ($postCount['post_count'] ?? 0);
 
         $totalPages = max(1, (int) ceil($this->postsCount / $this->maximumResults));
         if ($this->threadPage > $totalPages)
-            UrlManager::Redirect($this->serverPath . 'thread/' . $this->threadID . '/page/' . $totalPages);
+            UrlManager::Redirect(UrlManager::ThreadUrl($this->threadID, $this->threadSlug, $totalPages));
     }
 
     private function fetchThread()
@@ -190,7 +221,7 @@ class ThreadPage extends PageBase implements PageInterface
         $this->fetchThread();
         $this->fetchPosts();
 
-        $paginationTemplate = new PaginationWidget($this->threadPage, $this->postsCount, $this->maximumResults, 'thread/' . $this->threadID . '/page/');
+        $paginationTemplate = new PaginationWidget($this->threadPage, $this->postsCount, $this->maximumResults, 'thread/' . $this->threadID . '/' . $this->threadSlug . '/page/');
     
         $this->template = new Template('thread', 'thread');
         $this->template->AddEntry('{thread}', $this->thread);
