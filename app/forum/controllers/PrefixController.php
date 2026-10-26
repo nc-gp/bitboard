@@ -20,6 +20,17 @@ class PrefixController
     }
 
     /**
+     * Get the editable custom prefixes. Built-in status prefixes (Closed and
+     * Pinned) are represented by thread flags and are not part of this list.
+     */
+    public static function GetCustomPrefixes(Database $db): array
+    {
+        return $db->Query('SELECT id, prefix_name FROM bit_prefixes
+            WHERE id > 2
+            ORDER BY prefix_name ASC')->FetchAll();
+    }
+
+    /**
      * CreateTable creates the 'bit_prefixes' table in the database if it does not already exist.
      *
      * @param Database db The database instance.

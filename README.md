@@ -68,6 +68,8 @@
   refresh, and an optional notification chime.
 - Staff can pin and lock threads from the thread page. Pinned threads sort first, locked
   threads show the closed prefix, and staff keep their posting exceptions.
+- Custom thread prefixes/tags are visible on thread pages and can be changed from the thread
+  edit form; pin and lock remain separate staff controls.
 - Thread/post editing with revision history and permission-based permanent deletion.
   Deleting a thread also removes every post inside it.
 
@@ -267,6 +269,7 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] SEO-friendly thread slugs and canonical URLs.
 - [x] OpenGraph/Twitter metadata, sitemap, and Atom feed.
 - [x] Pin and lock threads.
+- [x] Thread prefix display and editing.
 - [ ] Move, merge, and split threads, plus reports.
 - [ ] Avatar uploads and profile customization.
 - [ ] Email verification and password reset.

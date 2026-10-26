@@ -23,6 +23,7 @@ use App\Forum\Controllers\LikeController;
 use App\Forum\Controllers\MentionController;
 use App\Forum\Controllers\PostController;
 use App\Forum\Widgets\PaginationWidget;
+use App\Forum\Widgets\PrefixWidget;
 use App\Forum\Widgets\ReactionWidget;
 
 class ThreadPage extends PageBase implements PageInterface
@@ -87,7 +88,7 @@ class ThreadPage extends PageBase implements PageInterface
         $this->threadID = $threadID;
         $this->threadPage = $threadPage;
 
-        $thread = $this->database->Query('SELECT t.id, t.thread_title, t.thread_content, t.is_closed, t.is_pinned,
+        $thread = $this->database->Query('SELECT t.id, t.thread_title, t.thread_content, t.is_closed, t.is_pinned, t.prefix_id,
                 u.username AS author_name, u.avatar AS author_avatar,
                 f.is_locked AS forum_locked, sf.is_locked AS subforum_locked
             FROM bit_threads AS t
@@ -150,6 +151,12 @@ class ThreadPage extends PageBase implements PageInterface
         $userStatsTemplate->Replace();
 
         $threadContentTemplate = new Template('thread', 'thread_content');
+
+        $threadPrefix = '';
+        if ((int) ($thread['prefix_id'] ?? 0) > 2)
+            $threadPrefix = (new PrefixWidget($this->database, (int) $thread['prefix_id']))->template;
+
+        $threadContentTemplate->AddEntry('{thread_prefix}', $threadPrefix);
         $threadContentTemplate->AddEscapedEntry('{thread_title}', $thread['thread_title']);
         $threadContentTemplate->AddEscapedEntry('{thread_timestamp}', 'Published ' . RelativeTime::Format($thread['thread_timestamp']));
         $threadContentTemplate->AddEscapedEntry('{thread_edited}', $this->EditedLabel($thread['thread_timestamp'], $thread['thread_edited_timestamp']));

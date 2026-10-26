@@ -19,6 +19,7 @@ use App\Classes\UsernameUtils;
 
 use App\Forum\Controllers\ContentController;
 use App\Forum\Controllers\MentionController;
+use App\Forum\Controllers\PrefixController;
 
 use App\Interfaces\PageInterface;
 
@@ -42,6 +43,8 @@ class EditPage extends PageBase implements PageInterface
     private string $contentValue = '';
     private string $error = '';
     private string $cancelUrl = '';
+    private int $prefixID = 0;
+    private array $customPrefixes = [];
 
     private bool $denied = false;
     private string $deniedMessage = '';
@@ -114,6 +117,11 @@ class EditPage extends PageBase implements PageInterface
         $this->cancelUrl = UrlManager::ThreadUrl($this->id, Slug::FromTitle($thread['thread_title']), 1);
         $this->titleValue = $thread['thread_title'];
         $this->contentValue = Text::FromHtml($thread['thread_content']);
+        $this->customPrefixes = PrefixController::GetCustomPrefixes($this->database);
+        $this->prefixID = (int) ($thread['prefix_id'] ?? 0);
+
+        if (!$this->IsAllowedPrefix($this->prefixID))
+            $this->prefixID = 0;
 
         if (!$this->canEdit && !$this->canDelete)
             $this->Deny('You do not have permission to edit or delete this thread.');
@@ -225,6 +233,18 @@ class EditPage extends PageBase implements PageInterface
                 : '';
             $this->titleValue = $title;
 
+            $prefixID = isset($_POST['prefix_id']) && is_string($_POST['prefix_id']) && ctype_digit($_POST['prefix_id'])
+                ? (int) $_POST['prefix_id']
+                : 0;
+
+            if ($prefixID !== 0 && !$this->IsAllowedPrefix($prefixID))
+            {
+                $this->error = 'Please choose a valid prefix.';
+                return;
+            }
+
+            $this->prefixID = $prefixID;
+
             if (mb_strlen($title) < 3)
             {
                 $this->error = 'Title must be at least 3 characters.';
@@ -270,7 +290,7 @@ class EditPage extends PageBase implements PageInterface
 
             if ($this->type === 'thread')
             {
-                ContentController::UpdateThread($this->database, $this->id, $editorID, $this->titleValue, $html);
+                ContentController::UpdateThread($this->database, $this->id, $editorID, $this->titleValue, $html, $this->prefixID);
                 UrlManager::Redirect(UrlManager::ThreadUrl($this->id, Slug::FromTitle($this->titleValue), 1));
             }
 
@@ -288,6 +308,45 @@ class EditPage extends PageBase implements PageInterface
             error_log('BitBoard content update failed: ' . $e->getMessage());
             $this->error = 'Unable to save your changes. Please try again.';
         }
+    }
+
+    /**
+     * Check whether a prefix ID is an editable custom prefix.
+     */
+    private function IsAllowedPrefix(int $prefixID): bool
+    {
+        if ($prefixID <= 2)
+            return $prefixID === 0;
+
+        foreach ($this->customPrefixes as $prefix)
+        {
+            if ((int) $prefix['id'] === $prefixID)
+                return true;
+        }
+
+        return false;
+    }
+
+    private function BuildPrefixField(): string
+    {
+        if ($this->type !== 'thread' || !$this->canEdit)
+            return '';
+
+        $options = '<option value="0"' . ($this->prefixID === 0 ? ' selected' : '') . '>No prefix</option>';
+
+        foreach ($this->customPrefixes as $prefix)
+        {
+            $id = (int) $prefix['id'];
+            $selected = $this->prefixID === $id ? ' selected' : '';
+            $options .= '<option value="' . $id . '"' . $selected . '>'
+                . Template::Escape($prefix['prefix_name']) . '</option>';
+        }
+
+        $template = new Template('edit', 'prefix_field');
+        $template->AddEntry('{options}', $options);
+        $template->Replace();
+
+        return $template->template;
     }
 
     private function BuildEditForm(): string
@@ -310,6 +369,7 @@ class EditPage extends PageBase implements PageInterface
         $form->AddEscapedEntry('{content}', $this->contentValue);
         $form->AddEscapedEntry('{cancel_url}', $this->cancelUrl);
         $form->AddEntry('{title_field}', $titleField);
+        $form->AddEntry('{prefix_field}', $this->BuildPrefixField());
         $form->Replace();
 
         return $form->template;

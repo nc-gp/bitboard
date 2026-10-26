@@ -92,7 +92,7 @@ class ContentController
             && (int) $_SESSION['bitboard_user']->id === $authorID;
     }
 
-    public static function UpdateThread(Database $db, int $threadID, int $editorID, string $title, string $content): void
+    public static function UpdateThread(Database $db, int $threadID, int $editorID, string $title, string $content, int $prefixID = 0): void
     {
         $db->BeginTransaction();
 
@@ -107,8 +107,8 @@ class ContentController
             $db->Query('INSERT INTO bit_thread_edits (thread_id, user_id, thread_title, thread_content)
                 VALUES (?, ?, ?, ?)', $threadID, $editorID, $thread['thread_title'], $thread['thread_content']);
 
-            $db->Query('UPDATE bit_threads SET thread_title = ?, thread_content = ? WHERE id = ?',
-                $title, $content, $threadID);
+            $db->Query('UPDATE bit_threads SET thread_title = ?, thread_content = ?, prefix_id = ? WHERE id = ?',
+                $title, $content, $prefixID, $threadID);
 
             $db->Commit();
         }

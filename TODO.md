@@ -264,6 +264,8 @@ Items marked **good first issue** are small and self-contained.
   and 15-second polling. New items play a soft chime, with a per-browser sound
   toggle. Mentions inside quotes are ignored, and deleting content removes its
   notifications.
+- [x] Show custom thread prefixes on the thread page and let thread editors change them
+  without exposing the built-in pin/lock statuses.
 - [ ] Rich editor with preview, drafts, and a Markdown/HTML policy.
 - [ ] Attachments/uploads with extension/MIME/size validation and private storage.
 - [ ] Thread subscriptions and "watch forum" notifications.
@@ -292,6 +294,8 @@ Items marked **good first issue** are small and self-contained.
 
 - [x] Search threads/posts with MySQL `FULLTEXT`, filters (forum, author, date), and
   pagination. Falls back to `LIKE` when the database user cannot add the indexes.
+- [ ] Search by thread prefix/tag, preserving the selected prefix in the filter form and
+  pagination links.
 - [x] Public profile page with avatar, rank, reputation, join date, recent posts/threads,
   and online state.
 - [x] Member directory filters/sorting. Search by username; sort by newest, oldest,
