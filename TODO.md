@@ -268,10 +268,15 @@ Items marked **good first issue** are small and self-contained.
 - [ ] Attachments/uploads with extension/MIME/size validation and private storage.
 - [ ] Thread subscriptions and "watch forum" notifications.
 - [ ] Pagination-preserving anchors and "jump to last unread".
+- [ ] Submit replies from the inline fast reply via AJAX, append the new post in place, and
+  scroll to it. Keep the normal POST fallback.
 
 ### Moderation and admin
 
-- [ ] Pin, lock, move, merge, and split threads.
+- [x] Pin and lock threads from the thread page with `PINNING_THREADS`/`LOCKING_THREADS`.
+  Pinned threads sort first and show the pinned prefix; locked threads show the closed prefix
+  and keep staff posting exceptions.
+- [ ] Move, merge, and split threads.
 - [ ] Report queue with statuses, notes, and `VIEWING_REPORTS`.
 - [ ] Admin CRUD for categories, forums, subforums, and prefixes, including drag-and-drop
   ordering and locked toggles. The admin nav links already exist.

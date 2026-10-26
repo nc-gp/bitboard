@@ -115,6 +115,22 @@ class ThreadController
     }
 
     /**
+     * Pin or unpin a thread.
+     */
+    public static function SetPinned(Database $db, int $threadID, bool $pinned): void
+    {
+        $db->Query('UPDATE bit_threads SET is_pinned = ? WHERE id = ?', $pinned ? 1 : 0, $threadID);
+    }
+
+    /**
+     * Lock or unlock a thread.
+     */
+    public static function SetClosed(Database $db, int $threadID, bool $closed): void
+    {
+        $db->Query('UPDATE bit_threads SET is_closed = ? WHERE id = ?', $closed ? 1 : 0, $threadID);
+    }
+
+    /**
      * CreateTable creates the 'bit_threads' and 'bit_threads_likes' tables in the database if they do not already exist.
      *
      * @param Database db The database instance.

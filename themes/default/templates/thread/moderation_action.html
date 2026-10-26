@@ -1,0 +1,9 @@
+<form class="thread-moderation-form" action="{server_url}moderate" method="post">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
+    <input type="hidden" name="thread" value="{thread_id}">
+    <input type="hidden" name="page" value="{page}">
+    <input type="hidden" name="action" value="{action}">
+    <button type="submit" class="thread-moderation-button">
+        <i class="ti {icon}" aria-hidden="true"></i> {label}
+    </button>
+</form>

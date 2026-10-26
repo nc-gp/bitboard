@@ -36,6 +36,7 @@ class ThreadPage extends PageBase implements PageInterface
     private string $threadSlug = '';
     private bool $threadClosed = false;
     private bool $threadLocked = false;
+    private bool $threadPinned = false;
     private bool $canLike = false;
 
     private int $maximumResults = PostController::POSTS_PER_PAGE;
@@ -86,7 +87,7 @@ class ThreadPage extends PageBase implements PageInterface
         $this->threadID = $threadID;
         $this->threadPage = $threadPage;
 
-        $thread = $this->database->Query('SELECT t.id, t.thread_title, t.thread_content, t.is_closed,
+        $thread = $this->database->Query('SELECT t.id, t.thread_title, t.thread_content, t.is_closed, t.is_pinned,
                 u.username AS author_name, u.avatar AS author_avatar,
                 f.is_locked AS forum_locked, sf.is_locked AS subforum_locked
             FROM bit_threads AS t
@@ -103,6 +104,7 @@ class ThreadPage extends PageBase implements PageInterface
 
         $this->threadClosed = (int) $thread['is_closed'] === 1;
         $this->threadLocked = $isLocked;
+        $this->threadPinned = (int) $thread['is_pinned'] === 1;
 
         $this->threadSlug = Slug::FromTitle($thread['thread_title']);
         $this->forumDesc = $thread['thread_title'];
@@ -155,6 +157,7 @@ class ThreadPage extends PageBase implements PageInterface
             $this->database,
             HtmlSanitizer::Sanitize($thread['thread_content'])
         ));
+        $threadContentTemplate->AddEntry('{thread_moderation}', $this->BuildModeration());
 
         $threadQuote = '';
         if ($this->CanReply())
@@ -303,6 +306,67 @@ class ThreadPage extends PageBase implements PageInterface
 
             $this->posts .= $postTemplate->template;
         }
+    }
+
+    /**
+     * Build the staff pin/lock controls for the thread opener.
+     */
+    private function BuildModeration(): string
+    {
+        $canPin = SessionManager::HasPermission(Permissions::PINNING_THREADS);
+        $canLock = SessionManager::HasPermission(Permissions::LOCKING_THREADS);
+
+        if (!$canPin && !$canLock)
+            return '';
+
+        $actions = '';
+
+        if ($canPin)
+        {
+            $actions .= $this->BuildModerationAction(
+                $this->threadPinned ? 'unpin' : 'pin',
+                $this->threadPinned ? 'Unpin' : 'Pin',
+                'ti-pin'
+            );
+        }
+
+        if ($canLock)
+        {
+            $actions .= $this->BuildModerationAction(
+                $this->threadClosed ? 'unlock' : 'lock',
+                $this->threadClosed ? 'Unlock' : 'Lock',
+                $this->threadClosed ? 'ti-lock-open' : 'ti-lock'
+            );
+        }
+
+        $status = '';
+
+        if ($this->threadPinned)
+            $status .= '<span class="thread-moderation-status is-pinned"><i class="ti ti-pin" aria-hidden="true"></i> Pinned</span>';
+
+        if ($this->threadClosed)
+            $status .= '<span class="thread-moderation-status is-locked"><i class="ti ti-lock" aria-hidden="true"></i> Locked</span>';
+
+        $template = new Template('thread', 'moderation');
+        $template->AddEntry('{status}', $status);
+        $template->AddEntry('{actions}', $actions);
+        $template->Replace();
+
+        return $template->template;
+    }
+
+    private function BuildModerationAction(string $action, string $label, string $icon): string
+    {
+        $template = new Template('thread', 'moderation_action');
+        $template->AddEscapedEntry('{action}', $action);
+        $template->AddEscapedEntry('{label}', $label);
+        $template->AddEscapedEntry('{icon}', $icon);
+        $template->AddEscapedEntry('{thread_id}', $this->threadID);
+        $template->AddEscapedEntry('{page}', $this->threadPage);
+        $template->AddEscapedEntry('{csrf_token}', SessionManager::CsrfToken());
+        $template->Replace();
+
+        return $template->template;
     }
 
     private function EditedLabel(string $createdAt, string $editedAt): string

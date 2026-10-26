@@ -66,6 +66,8 @@
 - `@username` mentions with profile links, plus reaction notifications. A header bell shows
   the unread count and opens an AJAX panel with read tracking, "mark all as read", periodic
   refresh, and an optional notification chime.
+- Staff can pin and lock threads from the thread page. Pinned threads sort first, locked
+  threads show the closed prefix, and staff keep their posting exceptions.
 - Thread/post editing with revision history and permission-based permanent deletion.
   Deleting a thread also removes every post inside it.
 
@@ -78,7 +80,7 @@
 - **Account settings** — email/password settings work; avatar, bio, signature, timezone, and notification preferences are still pending.
 - **Admin CRUD** — categories, forums, subforums, users, and ranks are not manageable yet.
 - **Prefix creation** — existing custom prefixes can be edited/deleted, but there is no create UI yet.
-- **Likes, reports, moderation tools, avatars/uploads.**
+- **Reports, thread moves/merges/splits, avatars/uploads, and notification preferences.**
 - **Email verification and password reset.**
 - **Tests, CI, Composer, migrations, and a documented public API.**
 
@@ -264,7 +266,8 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] Online members list with an index preview.
 - [x] SEO-friendly thread slugs and canonical URLs.
 - [x] OpenGraph/Twitter metadata, sitemap, and Atom feed.
-- [ ] Thread moderation (pin/lock/move/merge/split) and reports.
+- [x] Pin and lock threads.
+- [ ] Move, merge, and split threads, plus reports.
 - [ ] Avatar uploads and profile customization.
 - [ ] Email verification and password reset.
 - [ ] Stable, documented API (v1) with token auth.
