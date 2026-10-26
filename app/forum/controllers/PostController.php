@@ -17,7 +17,7 @@ class PostController
     {
         $db->Query('CREATE TABLE IF NOT EXISTS bit_posts (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, user_id INT(6) NOT NULL, thread_id INT(6) NOT NULL, post_content VARCHAR(4096) NOT NULL, post_likes INT(6) NOT NULL, post_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, post_edited_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, FULLTEXT KEY ft_post_search (post_content))');
 
-        $db->Query('CREATE TABLE IF NOT EXISTS bit_posts_likes (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, user_id INT(6) NOT NULL, post_id INT(6) NOT NULL)');
+        $db->Query("CREATE TABLE IF NOT EXISTS bit_posts_likes (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, user_id INT(6) NOT NULL, post_id INT(6) NOT NULL, reaction VARCHAR(16) NOT NULL DEFAULT 'heart', UNIQUE KEY uniq_post_like (user_id, post_id))");
     }
 
     /**

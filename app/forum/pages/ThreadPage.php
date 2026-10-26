@@ -18,7 +18,9 @@ use App\Classes\SessionManager;
 
 use App\Interfaces\PageInterface;
 
+use App\Forum\Controllers\LikeController;
 use App\Forum\Widgets\PaginationWidget;
+use App\Forum\Widgets\ReactionWidget;
 
 class ThreadPage extends PageBase implements PageInterface
 {
@@ -33,6 +35,7 @@ class ThreadPage extends PageBase implements PageInterface
     private string $threadSlug = '';
     private bool $threadClosed = false;
     private bool $threadLocked = false;
+    private bool $canLike = false;
 
     private int $maximumResults = self::POSTS_PER_PAGE;
     private int $postsCount = 0;
@@ -40,6 +43,7 @@ class ThreadPage extends PageBase implements PageInterface
     public function __construct(Database $db, object $data)
     {
         parent::__construct($db, $data);
+        $this->canLike = SessionManager::IsLogged();
         $this->UrlHandler();
     }
 
@@ -146,8 +150,25 @@ class ThreadPage extends PageBase implements PageInterface
         $threadContentTemplate->AddEscapedEntry('{thread_title}', $thread['thread_title']);
         $threadContentTemplate->AddEscapedEntry('{thread_timestamp}', 'Published ' . RelativeTime::Format($thread['thread_timestamp']));
         $threadContentTemplate->AddEntry('{thread_content}', HtmlSanitizer::Sanitize($thread['thread_content']));
-        $threadContentTemplate->AddEscapedEntry('{thread_likes}', $thread['thread_likes'] > 0 ? $thread['thread_likes'] : '');
-        // TODO: Add like button or new like widgets for posts if user is logged!
+
+        LikeController::EnsureSchema($this->database);
+        $userId = $this->canLike ? (int) $_SESSION['bitboard_user']->id : null;
+        [$threadReactionCounts, $threadUserReaction, $threadReactionTotal] = LikeController::GetThreadReactions(
+            $this->database,
+            $this->threadID,
+            $userId
+        );
+
+        $reactionWidget = new ReactionWidget(
+            'thread',
+            $this->threadID,
+            $this->threadPage,
+            $threadReactionTotal,
+            $threadReactionCounts,
+            $threadUserReaction,
+            $this->canLike
+        );
+        $threadContentTemplate->AddEntry('{thread_like}', $reactionWidget->Template);
 
         $threadContentTemplate->AddEscapedEntry('{user_id}', $thread['user_id']);
         $threadContentTemplate->AddEntry('{user_name}', UsernameUtils::Format($thread['rank_format'], $thread['user_name']));
@@ -173,6 +194,12 @@ class ThreadPage extends PageBase implements PageInterface
         if (count($posts) <= 0)
             return;
 
+        LikeController::EnsureSchema($this->database);
+
+        $postIDs = array_map('intval', array_column($posts, 'id'));
+        $userId = $this->canLike ? (int) $_SESSION['bitboard_user']->id : null;
+        [$reactionCounts, $userReactions] = LikeController::GetPostReactions($this->database, $postIDs, $userId);
+
         $userIds = [];
         foreach ($posts as $post)
             $userIds[] = (int) $post['user_id'];
@@ -191,6 +218,7 @@ class ThreadPage extends PageBase implements PageInterface
             $userStatsTemplate->Replace();
 
             $postTemplate = new Template('thread', 'post');
+            $postTemplate->AddEscapedEntry('{post_id}', $post['id']);
             $postTemplate->AddEscapedEntry('{user_id}', $post['author_id']);
             $postTemplate->AddEntry('{user_name}', UsernameUtils::Format($post['rank_format'], $post['username']));
             $postTemplate->AddEntry('{user_avatar}', AvatarUtils::GetPath($post['avatar']));
@@ -199,7 +227,17 @@ class ThreadPage extends PageBase implements PageInterface
             $postTemplate->AddEntry('{user_stats}', $userStatsTemplate->template);
             $postTemplate->AddEscapedEntry('{post_timestamp}', 'Published ' . RelativeTime::Format($post['post_timestamp']));
             $postTemplate->AddEntry('{post_content}', HtmlSanitizer::Sanitize($post['post_content']));
-            $postTemplate->AddEscapedEntry('{post_likes}', $post['post_likes'] > 0 ? $post['post_likes'] : '');
+
+            $reactionWidget = new ReactionWidget(
+                'post',
+                (int) $post['id'],
+                $this->threadPage,
+                (int) $post['post_likes'],
+                $reactionCounts[(int) $post['id']] ?? [],
+                $userReactions[(int) $post['id']] ?? null,
+                $this->canLike
+            );
+            $postTemplate->AddEntry('{post_like}', $reactionWidget->Template);
             $postTemplate->Replace();
 
             $this->posts .= $postTemplate->template;

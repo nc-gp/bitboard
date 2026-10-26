@@ -56,6 +56,9 @@
 - Creating threads and replying to threads with permission checks, CSRF protection,
   plain-text-to-HTML formatting, and an inline fast-reply form. Replies render oldest to
   newest.
+- Thread and post reactions (heart, sad, funny, what?, angry) with one reaction per user,
+  a combined total indicator, cached counters, a vertical hover/click picker, AJAX
+  toggling, and a normal POST fallback.
 
 ### Incomplete or not implemented yet
 
@@ -244,7 +247,7 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] Basic public profile pages with recent activity.
 - [x] Create threads and reply to threads.
 - [ ] Edit and delete threads/posts.
-- [ ] Likes for threads and posts (there is already a TODO in `ThreadPage`).
+- [x] Reactions for threads and posts.
 - [ ] Admin CRUD for categories, forums, subforums, prefixes, users, and ranks.
 - [x] Thread and post search with forum/author/date filters.
 - [x] Online members list with an index preview.

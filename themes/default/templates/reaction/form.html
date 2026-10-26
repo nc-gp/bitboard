@@ -1,0 +1,11 @@
+<form class="reaction-form" action="{server_url}like" method="post">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
+    <input type="hidden" name="type" value="{type}">
+    <input type="hidden" name="id" value="{id}">
+    <input type="hidden" name="page" value="{page}">
+
+    <span class="reaction-menu">
+        <span class="reaction-menu-title">React</span>
+        {options}
+    </span>
+</form>

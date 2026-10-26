@@ -241,8 +241,12 @@ Items marked **good first issue** are small and self-contained.
   Thread pages also include an inline fast-reply form, and replies render oldest to newest.
 - [ ] Edit and delete with `EDITING_*`/`DELETING_*` permissions, edit history, and
   soft-delete/restore.
-- [ ] Likes for threads and posts (existing TODO in `ThreadPage.php:87`), with one-like-per-
-  user constraints and counter caching.
+- [x] Likes for threads and posts with one-like-per-user constraints and cached counters.
+  Thread and post like buttons toggle through `/like`, with AJAX updates and a normal POST
+  fallback.
+- [x] Reactions for threads and posts: heart, sad, funny, what?, and angry. One reaction
+  per user per target, counted as one like, with a combined total indicator,
+  reaction-specific icons/colors, right-aligned controls, and a vertical hover/click picker.
 - [ ] Quote, multi-quote, mentions, and notifications.
 - [ ] Rich editor with preview, drafts, and a Markdown/HTML policy.
 - [ ] Attachments/uploads with extension/MIME/size validation and private storage.

@@ -206,3 +206,202 @@
 .thread-closed-notice i {
     font-size: 1.05rem;
 }
+
+#thread-footer,
+.post-footer {
+    grid-column: 2;
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding-bottom: 15px;
+}
+
+.reaction-picker {
+    position: relative;
+    z-index: 1;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.reaction-picker:hover,
+.reaction-picker:focus-within,
+.reaction-picker.is-open {
+    z-index: 40;
+}
+
+.reaction-static {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 9px;
+    border: 1px solid var(--opposite-x2);
+    border-radius: 999px;
+    color: gray;
+    font-size: 0.8rem;
+    line-height: 1;
+    cursor: default;
+}
+
+.reaction-static:hover {
+    border-color: var(--primary);
+}
+
+.reaction-static i {
+    font-size: 1rem;
+}
+
+.reaction-static[role="tooltip"]::after {
+    width: max-content;
+    max-width: 220px;
+    white-space: normal;
+}
+
+.reaction-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    width: auto;
+    margin: 0;
+    padding: 4px 9px;
+    border: 1px solid var(--opposite-x2);
+    border-radius: 999px;
+    background: transparent;
+    color: gray;
+    font-size: 0.8rem;
+    line-height: 1;
+    cursor: pointer;
+    transition: background 0.15s ease-out, border-color 0.15s ease-out;
+}
+
+.reaction-picker:hover .reaction-trigger,
+.reaction-picker:focus-within .reaction-trigger,
+.reaction-picker.is-open .reaction-trigger {
+    border-color: var(--primary);
+    background: var(--opposite-x2);
+}
+
+.reaction-trigger i {
+    font-size: 1rem;
+}
+
+.reaction-trigger.is-active {
+    background: var(--primary-focus);
+}
+
+.reaction-total {
+    color: gray;
+    font-size: 0.75rem;
+}
+
+.reaction-form {
+    position: absolute;
+    right: 0;
+    bottom: calc(100% + 8px);
+    z-index: 30;
+    margin: 0;
+    padding: 0 !important;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(4px);
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s;
+    pointer-events: none;
+}
+
+.reaction-picker:hover .reaction-form,
+.reaction-picker:focus-within .reaction-form,
+.reaction-picker.is-open .reaction-form {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+    pointer-events: auto;
+}
+
+.reaction-menu {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 170px;
+    padding: 6px;
+    border: 1px solid var(--opposite-x2);
+    border-radius: var(--border-radius);
+    background: var(--background-color, #141e26);
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.45);
+}
+
+.reaction-menu-title {
+    padding: 4px 8px 5px;
+    color: gray;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.reaction-option {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin: 0;
+    padding: 7px 9px;
+    border: 0;
+    border-radius: var(--border-radius);
+    background: transparent;
+    color: inherit;
+    font-size: 0.88rem;
+    text-align: left;
+    cursor: pointer;
+}
+
+.reaction-option:hover {
+    background: var(--opposite-x2);
+}
+
+.reaction-option.is-active {
+    background: var(--primary-focus);
+}
+
+.reaction-option[disabled] {
+    opacity: 0.65;
+    cursor: wait;
+}
+
+.reaction-option i {
+    font-size: 1.05rem;
+}
+
+.reaction-option .reaction-label {
+    flex: 1;
+}
+
+.reaction-option .reaction-count {
+    color: gray;
+    font-size: 0.78rem;
+}
+
+.reaction-trigger.reaction-heart i,
+.reaction-option.reaction-heart i {
+    color: #ff4d6d;
+}
+
+.reaction-trigger.reaction-sad i,
+.reaction-option.reaction-sad i {
+    color: #4dabf7;
+}
+
+.reaction-trigger.reaction-funny i,
+.reaction-option.reaction-funny i {
+    color: #fcc419;
+}
+
+.reaction-trigger.reaction-what i,
+.reaction-option.reaction-what i {
+    color: #ffa94d;
+}
+
+.reaction-trigger.reaction-angry i,
+.reaction-option.reaction-angry i {
+    color: #fa5252;
+}

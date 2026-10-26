@@ -173,6 +173,30 @@ class Database
     }
 
     /**
+     * Start a transaction.
+     */
+    public function BeginTransaction(): bool
+    {
+        return $this->connection->begin_transaction();
+    }
+
+    /**
+     * Commit the active transaction.
+     */
+    public function Commit(): bool
+    {
+        return $this->connection->commit();
+    }
+
+    /**
+     * Roll back the active transaction.
+     */
+    public function RollBack(): bool
+    {
+        return $this->connection->rollback();
+    }
+
+    /**
      * Close the database connection.
      *
      * @return bool True if the connection was successfully closed; false otherwise.
