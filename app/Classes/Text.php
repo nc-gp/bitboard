@@ -26,6 +26,38 @@ class Text
 
         return $text;
     }
+
+    /**
+     * Convert plain text from a posting form into safe HTML paragraphs.
+     *
+     * @param string $text The submitted text.
+     *
+     * @return string Safe HTML.
+     */
+    public static function ToHtml(string $text): string
+    {
+        $text = str_replace(["\r\n", "\r"], "\n", $text);
+        $text = trim($text);
+
+        if ($text === '')
+            return '';
+
+        $paragraphs = preg_split('/\n{2,}/', $text) ?: [];
+        $html = '';
+
+        foreach ($paragraphs as $paragraph)
+        {
+            $paragraph = trim($paragraph);
+
+            if ($paragraph === '')
+                continue;
+
+            $paragraph = htmlspecialchars($paragraph, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+            $html .= '<p>' . nl2br($paragraph, false) . '</p>';
+        }
+
+        return $html;
+    }
 }
 
 ?>

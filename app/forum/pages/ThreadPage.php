@@ -22,14 +22,19 @@ use App\Forum\Widgets\PaginationWidget;
 
 class ThreadPage extends PageBase implements PageInterface
 {
+    public const POSTS_PER_PAGE = 7;
+
     private string $thread = '';
     private string $posts = '';
+    private string $replyArea = '';
 
     private int $threadID;
     private int $threadPage;
     private string $threadSlug = '';
+    private bool $threadClosed = false;
+    private bool $threadLocked = false;
 
-    private int $maximumResults = 7;
+    private int $maximumResults = self::POSTS_PER_PAGE;
     private int $postsCount = 0;
 
     public function __construct(Database $db, object $data)
@@ -76,7 +81,7 @@ class ThreadPage extends PageBase implements PageInterface
         $this->threadID = $threadID;
         $this->threadPage = $threadPage;
 
-        $thread = $this->database->Query('SELECT t.id, t.thread_title, t.thread_content,
+        $thread = $this->database->Query('SELECT t.id, t.thread_title, t.thread_content, t.is_closed,
                 u.username AS author_name, u.avatar AS author_avatar,
                 f.is_locked AS forum_locked, sf.is_locked AS subforum_locked
             FROM bit_threads AS t
@@ -90,6 +95,9 @@ class ThreadPage extends PageBase implements PageInterface
         $isLocked = (int) $thread['forum_locked'] === 1 || (int) ($thread['subforum_locked'] ?? 0) === 1;
         if ($isLocked && !SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED))
             UrlManager::Redirect($this->serverPath);
+
+        $this->threadClosed = (int) $thread['is_closed'] === 1;
+        $this->threadLocked = $isLocked;
 
         $this->threadSlug = Slug::FromTitle($thread['thread_title']);
         $this->forumDesc = $thread['thread_title'];
@@ -159,6 +167,7 @@ class ThreadPage extends PageBase implements PageInterface
             JOIN bit_accounts AS a ON p.user_id = a.id
             JOIN bit_ranks AS r ON a.rank_id = r.id
             WHERE p.thread_id = ?
+            ORDER BY p.post_timestamp ASC, p.id ASC
             LIMIT ?, ?', $this->threadID, (($this->threadPage - 1) * $this->maximumResults), $this->maximumResults)->FetchAll();
 
         if (count($posts) <= 0)
@@ -231,11 +240,34 @@ class ThreadPage extends PageBase implements PageInterface
         $this->fetchThread();
         $this->fetchPosts();
 
+        $canReply = !$this->threadClosed && SessionManager::HasPermission(Permissions::CREATING_POSTS);
+
+        if ($canReply && $this->threadLocked)
+        {
+            $canReply = SessionManager::HasPermission(Permissions::CREATING_POSTS_LOCKED)
+                && SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED);
+        }
+
+        if ($this->threadClosed)
+        {
+            $closedTemplate = new Template('thread', 'closed_notice');
+            $this->replyArea = $closedTemplate->template;
+        }
+        elseif ($canReply)
+        {
+            $replyTemplate = new Template('thread', 'fast_reply');
+            $replyTemplate->AddEscapedEntry('{thread_id}', $this->threadID);
+            $replyTemplate->AddEscapedEntry('{return_page}', $this->threadPage);
+            $replyTemplate->Replace();
+            $this->replyArea = $replyTemplate->template;
+        }
+
         $paginationTemplate = new PaginationWidget($this->threadPage, $this->postsCount, $this->maximumResults, 'thread/' . $this->threadID . '/' . $this->threadSlug . '/page/');
     
         $this->template = new Template('thread', 'thread');
         $this->template->AddEntry('{thread}', $this->thread);
         $this->template->AddEntry('{posts}', $this->posts);
+        $this->template->AddEntry('{reply_area}', $this->replyArea);
         $this->template->AddEntry('{pagination}', $this->postsCount > $this->maximumResults ? $paginationTemplate->Template->template : '');
         
         parent::RenderPage('thread');

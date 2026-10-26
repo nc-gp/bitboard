@@ -1,0 +1,19 @@
+<section id="fast-reply">
+    <div class="fast-reply-header">
+        <h2><i class="ti ti-message-plus" aria-hidden="true"></i> Fast reply</h2>
+        <span>Post a reply without leaving this thread.</span>
+    </div>
+
+    <form action="{server_url}post" method="post">
+        <input type="hidden" name="csrf_token" value="{csrf_token}">
+        <input type="hidden" name="thread" value="{thread_id}">
+        <input type="hidden" name="page" value="{return_page}">
+
+        <textarea id="fast-reply-content" name="content" maxlength="4000" required
+            aria-label="Reply message" placeholder="Write a reply..."></textarea>
+
+        <div class="fast-reply-actions">
+            <button type="submit">Post reply</button>
+        </div>
+    </form>
+</section>

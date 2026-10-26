@@ -29,6 +29,9 @@ class SubforumPage extends PageBase implements PageInterface
 
     private int $maximumResults = 5;
     private int $threadsCount = 0;
+    private int $parentForumID = 0;
+    private bool $forumLocked = false;
+    private bool $subforumLocked = false;
 
     public function __construct(Database $db, object $data)
     {
@@ -59,8 +62,11 @@ class SubforumPage extends PageBase implements PageInterface
         if (empty($subforum))
             throw new PageNotFoundException();
 
-        $isLocked = (int) $subforum['is_locked'] === 1 || (int) $subforum['forum_locked'] === 1;
-        if ($isLocked && !SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED))
+        $this->parentForumID = (int) $subforum['forum_id'];
+        $this->subforumLocked = (int) $subforum['is_locked'] === 1;
+        $this->forumLocked = (int) $subforum['forum_locked'] === 1;
+
+        if (($this->subforumLocked || $this->forumLocked) && !SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED))
             UrlManager::Redirect($this->serverPath);
     }
 
@@ -168,7 +174,25 @@ class SubforumPage extends PageBase implements PageInterface
 
         $paginationTemplate = new PaginationWidget($this->subforumPage, $this->threadsCount, $this->maximumResults, 'subforum/' . $this->subforumID . '/page/');
 
+        $newThreadButton = '';
+        $canCreateThread = SessionManager::HasPermission(Permissions::CREATING_THREADS);
+
+        if ($canCreateThread && ($this->subforumLocked || $this->forumLocked))
+        {
+            $canCreateThread = SessionManager::HasPermission(Permissions::CREATING_THREADS_LOCKED)
+                && SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED);
+        }
+
+        if ($canCreateThread)
+        {
+            $buttonTemplate = new Template('forum', 'new_thread_button');
+            $buttonTemplate->AddEscapedEntry('{new_thread_url}', $this->serverPath . 'post?forum=' . $this->parentForumID . '&subforum=' . $this->subforumID);
+            $buttonTemplate->Replace();
+            $newThreadButton = $buttonTemplate->template;
+        }
+
         $this->template = new Template('subforum', 'subforum');
+        $this->template->AddEntry('{new_thread_button}', $newThreadButton);
         $this->template->AddEntry('{threads}', $this->threads);
         $this->template->AddEntry('{pagination}', $this->threadsCount > $this->maximumResults ? $paginationTemplate->Template->template : '');
 

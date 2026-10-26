@@ -53,13 +53,16 @@
 - Theme system with the bundled `default` theme and light/dark/auto switcher.
 - Offline mode, force-login mode, banned page, and a 404 page with a real 404 status.
 - Output escaping for user-controlled text and allowlist sanitization for rich thread/post HTML.
+- Creating threads and replying to threads with permission checks, CSRF protection,
+  plain-text-to-HTML formatting, and an inline fast-reply form. Replies render oldest to
+  newest.
 
 ### Incomplete or not implemented yet
 
 - **Admin JSON API** — session auth, CSRF, route allowlisting, granular permission checks,
   and the settings and prefix edit/delete endpoints work. There is no prefix creation UI yet.
 - **Registration** — basic registration works; terms acceptance, anti-bot protection, email-domain policy, rate limiting, and email verification are still pending.
-- **Creating, replying to, editing, or deleting threads/posts** — no write UI yet.
+- **Editing or deleting threads/posts** — creating threads and replies works; editing, deleting, and moderation are still pending.
 - **Profiles** — basic public profiles show avatar, rank, reputation, join date, online state, and recent threads/posts; bio and customization are still pending.
 - **Account settings** — email/password settings work; avatar, bio, signature, timezone, and notification preferences are still pending.
 - **Admin CRUD** — categories, forums, subforums, users, and ranks are not manageable yet.
@@ -239,7 +242,8 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 
 - [x] Basic registration and email/password account settings.
 - [x] Basic public profile pages with recent activity.
-- [ ] Create/reply/edit/delete threads and posts.
+- [x] Create threads and reply to threads.
+- [ ] Edit and delete threads/posts.
 - [ ] Likes for threads and posts (there is already a TODO in `ThreadPage`).
 - [ ] Admin CRUD for categories, forums, subforums, prefixes, users, and ranks.
 - [x] Thread and post search with forum/author/date filters.

@@ -142,11 +142,13 @@ class ThreadController
      * @param int       forumID The ID of the forum where the thread belongs (default is -1).
      * @param int       subForumID The ID of the subforum where the thread belongs (default is -1).
      *
-     * @return void
+     * @return int The new thread ID.
      */
-    static public function Create(Database $db, int $authorID, string $threadTitle, string $threadContent, bool $isClosed = false, bool $isPinned = false, int $prefixID = 0, int $forumID = -1, int $subForumID = -1)
+    static public function Create(Database $db, int $authorID, string $threadTitle, string $threadContent, bool $isClosed = false, bool $isPinned = false, int $prefixID = 0, int $forumID = -1, int $subForumID = -1): int
     {
         $db->Query('INSERT INTO bit_threads (id,user_id,thread_title,thread_content,thread_likes,thread_timestamp,thread_edited_timestamp,forum_id,subforum_id,is_closed,is_pinned,prefix_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)', [0, $authorID, $threadTitle, $threadContent, 0, date("Y-m-d H:i:s"), date("Y-m-d H:i:s"), $forumID, $subForumID, $isClosed ? 1 : 0, $isPinned ? 1 : 0, $prefixID]);
+
+        return (int) $db->LastInsertID();
     }
 }
 

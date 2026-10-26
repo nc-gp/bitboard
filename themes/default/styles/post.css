@@ -1,0 +1,123 @@
+#content {
+    display: block;
+    max-width: 760px;
+    margin: 30px auto;
+    padding: 0 20px;
+}
+
+#post-form,
+#post-denied {
+    padding: 30px;
+    border-radius: var(--border-radius);
+    background: var(--opposite);
+    box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
+}
+
+#post-form header {
+    margin-bottom: 22px;
+}
+
+#post-form header h1 {
+    margin: 0 0 6px;
+}
+
+#post-form header p {
+    margin: 0;
+    color: gray;
+}
+
+#post-form form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 0 !important;
+}
+
+#post-form label {
+    font-weight: 600;
+}
+
+#post-form input[type="text"],
+#post-form textarea {
+    width: 100%;
+    margin: 0;
+}
+
+#post-form textarea {
+    min-height: 240px;
+    resize: vertical;
+}
+
+.post-hint {
+    margin: 2px 0 8px;
+    color: gray;
+    font-size: 0.85rem;
+}
+
+.post-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 16px;
+    margin-top: 6px;
+}
+
+.post-actions button {
+    width: auto;
+    margin: 0;
+}
+
+.post-cancel {
+    color: var(--primary-hover);
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.post-cancel:hover {
+    text-decoration: underline;
+}
+
+.post-error {
+    margin-bottom: 18px;
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 53, 53, 0.35);
+    border-radius: var(--border-radius);
+    background: rgba(255, 53, 53, 0.16);
+    color: #ff8a8a;
+}
+
+#post-denied {
+    text-align: center;
+}
+
+#post-denied i {
+    margin: 0 auto 10px;
+    color: var(--primary);
+    font-size: 2.2rem;
+}
+
+#post-denied h1 {
+    margin: 0 0 8px;
+}
+
+#post-denied p {
+    max-width: 480px;
+    margin: 0 auto 18px;
+    color: gray;
+    line-height: 1.5;
+}
+
+#post-denied .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    text-decoration: none;
+}
+
+@media (max-width: 620px) {
+    #post-form,
+    #post-denied {
+        padding: 20px;
+    }
+}

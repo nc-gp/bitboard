@@ -96,16 +96,36 @@
 
 .info {
   display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 }
 
-.info i {
+.info-title {
+  display: flex;
+  align-items: center;
+}
+
+.info-title i {
   font-size: 2rem;
   margin-right: 10px;
   line-height: 1.25;
   color: var(--primary);
 }
 
-.info h1 {
+.info-title h1 {
+  margin: 0;
+}
+
+.new-thread-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+}
+
+.new-thread-button i {
+  font-size: 1.05rem;
   margin: 0;
 }
 

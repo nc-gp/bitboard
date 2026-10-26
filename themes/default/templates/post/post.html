@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+{head}
+<body>
+	<div class="bit-container">
+		{header}
+
+		<div id="content">
+			<section id="post-form">
+				<header>
+					<h1>{heading}</h1>
+					<p>{subheading}</p>
+				</header>
+
+				{error}
+
+				<form action="{server_url}post" method="post">
+					<input type="hidden" name="csrf_token" value="{csrf_token}">
+					{context_fields}
+
+					{title_field}
+
+					<label for="post-content">Message</label>
+					<textarea id="post-content" name="content" maxlength="4000" required>{content}</textarea>
+					<p class="post-hint">Line breaks are preserved. HTML is displayed as text.</p>
+
+					<div class="post-actions">
+						<button type="submit">{submit_label}</button>
+						<a href="{cancel_url}" class="post-cancel">Cancel</a>
+					</div>
+				</form>
+			</section>
+		</div>
+
+		{footer}
+	</div>
+	{scripts}
+</body>
+</html>

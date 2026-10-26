@@ -33,6 +33,7 @@ class ForumPage extends PageBase implements PageInterface
 
     private int $maximumResults = 5;
     private int $threadsCount = 0;
+    private bool $forumLocked = false;
 
     public function __construct(Database $db, object $data)
     {
@@ -60,7 +61,9 @@ class ForumPage extends PageBase implements PageInterface
         if (empty($forum))
             throw new PageNotFoundException();
 
-        if ((int) $forum['is_locked'] === 1 && !SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED))
+        $this->forumLocked = (int) $forum['is_locked'] === 1;
+
+        if ($this->forumLocked && !SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED))
             UrlManager::Redirect($this->serverPath);
     }
 
@@ -219,7 +222,25 @@ class ForumPage extends PageBase implements PageInterface
 
         $paginationTemplate = new PaginationWidget($this->forumPage, $this->threadsCount, $this->maximumResults, 'forum/' . $this->forumID . '/page/');
 
+        $newThreadButton = '';
+        $canCreateThread = SessionManager::HasPermission(Permissions::CREATING_THREADS);
+
+        if ($canCreateThread && $this->forumLocked)
+        {
+            $canCreateThread = SessionManager::HasPermission(Permissions::CREATING_THREADS_LOCKED)
+                && SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED);
+        }
+
+        if ($canCreateThread)
+        {
+            $buttonTemplate = new Template('forum', 'new_thread_button');
+            $buttonTemplate->AddEscapedEntry('{new_thread_url}', $this->serverPath . 'post?forum=' . $this->forumID);
+            $buttonTemplate->Replace();
+            $newThreadButton = $buttonTemplate->template;
+        }
+
         $this->template = new Template('forum', 'forum');
+        $this->template->AddEntry('{new_thread_button}', $newThreadButton);
         $this->template->AddEntry('{subforums}', $this->subforums);
         $this->template->AddEntry('{threads}', $this->threads);
         $this->template->AddEntry('{pagination}', $this->threadsCount > $this->maximumResults ? $paginationTemplate->Template->template : '');

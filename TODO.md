@@ -199,8 +199,8 @@ Items marked **good first issue** are small and self-contained.
   SpellAlert `toast()` wrapper.
 - [x] **Align requirement with the client validator.** Client and server now both require
   at least 8 characters, one digit, one lowercase letter, and one uppercase letter.
-- [x] **Keep the theme element demo link.** The default theme intentionally links to
-  `/ELEMENTS.html`; custom themes can remove or replace it.
+- [x] **Replace the theme element demo link.** The default theme's header now links to
+  search instead of the old `/ELEMENTS.html` placeholder.
 - [x] **Fix dead links.** Added `/register` and `/settings` pages with CSRF protection,
   validation, password policy, auto-login after registration, and email/password updates.
 - [x] **Finish the footer.** Replaced the placeholder links with a responsive brand, Explore,
@@ -235,8 +235,10 @@ Items marked **good first issue** are small and self-contained.
 
 ### Threads and posts
 
-- [ ] Create thread/reply forms using the existing controllers; enforce
-  `CREATING_THREADS`, `CREATING_POSTS`, and locked variants.
+- [x] Create thread/reply forms using the existing controllers; enforce
+  `CREATING_THREADS`, `CREATING_POSTS`, and locked variants. A shared `/post` form creates
+  threads in forums/subforums or replies to threads, with CSRF, validation, and redirects.
+  Thread pages also include an inline fast-reply form, and replies render oldest to newest.
 - [ ] Edit and delete with `EDITING_*`/`DELETING_*` permissions, edit history, and
   soft-delete/restore.
 - [ ] Likes for threads and posts (existing TODO in `ThreadPage.php:87`), with one-like-per-

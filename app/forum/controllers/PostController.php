@@ -28,11 +28,13 @@ class PostController
      * @param int       threadID The ID of the thread to which the post belongs.
      * @param string    postContent The content of the post.
      *
-     * @return void
+     * @return int The new post ID.
      */
-    static public function Create(Database $db, int $authorID, int $threadID, string $postContent)
+    static public function Create(Database $db, int $authorID, int $threadID, string $postContent): int
     {
         $db->Query('INSERT INTO bit_posts (id,user_id,thread_id,post_content,post_likes,post_timestamp,post_edited_timestamp) VALUES (?,?,?,?,?,?,?)', array(0, $authorID, $threadID, $postContent, 0, date("Y-m-d H:i:s"), date("Y-m-d H:i:s")));
+
+        return (int) $db->LastInsertID();
     }
 }
 
