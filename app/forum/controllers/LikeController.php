@@ -140,6 +140,7 @@ class LikeController
         {
             $existing = $db->Query('SELECT id, reaction FROM bit_threads_likes
                 WHERE user_id = ? AND thread_id = ? FOR UPDATE', $userId, $threadID)->FetchArray();
+            $added = false;
 
             if (!empty($existing))
             {
@@ -158,6 +159,7 @@ class LikeController
             {
                 $db->Query('INSERT INTO bit_threads_likes (user_id, thread_id, reaction) VALUES (?, ?, ?)', $userId, $threadID, $reaction);
                 $liked = true;
+                $added = true;
             }
 
             $rows = $db->Query('SELECT reaction FROM bit_threads_likes WHERE thread_id = ?', $threadID)->FetchAll();
@@ -175,6 +177,7 @@ class LikeController
 
             return [
                 'liked' => $liked,
+                'added' => $added,
                 'reaction' => $liked ? $reaction : null,
                 'count' => $total,
                 'counts' => $counts,
@@ -201,6 +204,7 @@ class LikeController
         {
             $existing = $db->Query('SELECT id, reaction FROM bit_posts_likes
                 WHERE user_id = ? AND post_id = ? FOR UPDATE', $userId, $postID)->FetchArray();
+            $added = false;
 
             if (!empty($existing))
             {
@@ -219,6 +223,7 @@ class LikeController
             {
                 $db->Query('INSERT INTO bit_posts_likes (user_id, post_id, reaction) VALUES (?, ?, ?)', $userId, $postID, $reaction);
                 $liked = true;
+                $added = true;
             }
 
             $rows = $db->Query('SELECT reaction FROM bit_posts_likes WHERE post_id = ?', $postID)->FetchAll();
@@ -236,6 +241,7 @@ class LikeController
 
             return [
                 'liked' => $liked,
+                'added' => $added,
                 'reaction' => $liked ? $reaction : null,
                 'count' => $total,
                 'counts' => $counts,

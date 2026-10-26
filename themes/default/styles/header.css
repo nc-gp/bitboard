@@ -93,3 +93,380 @@ header nav a {
     justify-content: end;
     align-items: center;
 }
+
+.notification-center {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+}
+
+.notification-bell {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 42px;
+    height: 42px;
+    margin: 0 6px;
+    padding: 9px !important;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: inherit;
+    cursor: pointer;
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.notification-bell:hover {
+    background: var(--opposite-x2);
+    color: var(--primary-hover);
+}
+
+.notification-bell[aria-expanded="true"] {
+    background: var(--primary-focus);
+    color: var(--primary-hover);
+}
+
+.notification-bell i {
+    font-size: 1.35rem;
+}
+
+.notification-badge {
+    position: absolute;
+    top: 1px;
+    right: 0;
+    min-width: 19px;
+    padding: 1px 5px;
+    border: 2px solid var(--background-color, #141e26);
+    border-radius: 999px;
+    background: linear-gradient(180deg, #ff5c5c, #d9363e);
+    color: #fff;
+    font-size: 0.64rem;
+    font-weight: 700;
+    line-height: 1.35;
+    text-align: center;
+    box-shadow: 0 2px 6px rgba(217, 54, 62, 0.35);
+}
+
+.notification-badge[hidden] {
+    display: none;
+}
+
+.notification-badge.is-new {
+    animation: notification-pop 0.4s ease;
+}
+
+@keyframes notification-pop {
+    0% { transform: scale(1); }
+    40% { transform: scale(1.35); }
+    100% { transform: scale(1); }
+}
+
+.notification-panel {
+    position: absolute;
+    top: calc(100% + 10px);
+    right: 0;
+    z-index: 200;
+    display: flex;
+    flex-direction: column;
+    width: 380px;
+    max-width: calc(100vw - 24px);
+    max-height: min(560px, calc(100vh - 32px));
+    border: 1px solid var(--opposite-x2);
+    border-radius: 16px;
+    background: var(--background-color, #141e26);
+    box-shadow:
+        0 24px 60px rgba(0, 0, 0, 0.5),
+        0 4px 14px rgba(0, 0, 0, 0.22);
+}
+
+.notification-panel::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    right: 22px;
+    width: 11px;
+    height: 11px;
+    border-top: 1px solid var(--opposite-x2);
+    border-left: 1px solid var(--opposite-x2);
+    background: var(--background-color, #141e26);
+    transform: rotate(45deg);
+}
+
+.notification-panel:not([hidden]) {
+    animation: notification-panel-in 0.16s ease-out;
+}
+
+@keyframes notification-panel-in {
+    from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+    to { opacity: 1; transform: none; }
+}
+
+.notification-panel[hidden] {
+    display: none;
+}
+
+.notification-panel-header {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--opposite-x2);
+    border-radius: 16px 16px 0 0;
+    background: linear-gradient(180deg, var(--opposite-x2), transparent);
+}
+
+.notification-panel-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.notification-panel-title > i {
+    color: var(--primary);
+    font-size: 1rem;
+}
+
+.notification-panel-title strong {
+    font-size: 0.92rem;
+    letter-spacing: 0.01em;
+}
+
+.notification-panel-count {
+    padding: 1px 7px;
+    border-radius: 999px;
+    background: var(--primary);
+    color: var(--primary-inverse, #fff);
+    font-size: 0.64rem;
+    font-weight: 700;
+    line-height: 1.5;
+    white-space: nowrap;
+}
+
+.notification-panel-count[hidden] {
+    display: none;
+}
+
+.notification-panel-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.notification-sound-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    margin: 0;
+    padding: 4px !important;
+    border: 0;
+    border-radius: 50%;
+    background: transparent;
+    color: gray;
+    cursor: pointer;
+}
+
+.notification-sound-toggle:hover {
+    background: var(--opposite-x2);
+    color: var(--primary-hover);
+}
+
+.notification-sound-toggle[aria-pressed="true"] {
+    color: var(--primary-hover);
+}
+
+.notification-sound-toggle i {
+    font-size: 0.95rem;
+}
+
+.notification-mark-all {
+    width: auto;
+    margin: 0;
+    padding: 3px 0 !important;
+    border: 0;
+    background: transparent;
+    color: var(--primary-hover);
+    font-size: 0.74rem;
+    white-space: nowrap;
+}
+
+.notification-mark-all:hover {
+    text-decoration: underline;
+}
+
+.notification-mark-all[hidden] {
+    display: none;
+}
+
+.notification-panel-list {
+    display: flex;
+    flex: 1 1 auto;
+    flex-direction: column;
+    min-height: 0;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+}
+
+.notification-item {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 11px;
+    margin: 0;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--opposite-x2);
+    border-radius: 0;
+    color: inherit;
+    text-decoration: none;
+    transition: background 0.15s ease;
+}
+
+.notification-item:last-child {
+    border-bottom: 0;
+}
+
+.notification-item:hover {
+    background: var(--opposite);
+}
+
+.notification-item.is-unread {
+    background: var(--primary-focus);
+    box-shadow: inset 3px 0 0 var(--primary);
+}
+
+.notification-item.is-unread:hover {
+    background: var(--opposite-x2);
+}
+
+.notification-item-dot {
+    flex: 0 0 7px;
+    width: 7px;
+    height: 7px;
+    margin-top: 12px;
+    border-radius: 50%;
+    background: transparent;
+}
+
+.notification-item.is-unread .notification-item-dot {
+    background: var(--primary);
+    box-shadow: 0 0 0 3px var(--primary-focus);
+}
+
+.notification-item-icon {
+    display: flex;
+    flex: 0 0 34px;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 12px;
+    background: var(--opposite-x2);
+    color: var(--primary-hover);
+    transition: background 0.15s ease, color 0.15s ease;
+}
+
+.notification-item.is-unread .notification-item-icon {
+    background: var(--primary);
+    color: var(--primary-inverse, #fff);
+}
+
+.notification-item.type-post_like .notification-item-icon,
+.notification-item.type-thread_like .notification-item-icon {
+    color: #ff5c7a;
+}
+
+.notification-item.type-post_like.is-unread .notification-item-icon,
+.notification-item.type-thread_like.is-unread .notification-item-icon {
+    background: #e5484d;
+    color: #fff;
+}
+
+.notification-item-icon i {
+    font-size: 1.05rem;
+}
+
+.notification-item-body {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 0;
+    padding-top: 1px;
+}
+
+.notification-item-message {
+    overflow-wrap: anywhere;
+    font-size: 0.86rem;
+    line-height: 1.45;
+}
+
+.notification-item.is-unread .notification-item-message {
+    font-weight: 500;
+}
+
+.notification-item-time {
+    color: gray;
+    font-size: 0.74rem;
+}
+
+.notification-item::after {
+    align-self: center;
+    margin-left: auto;
+    color: gray;
+    content: "›";
+    opacity: 0;
+    font-size: 1.1rem;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+}
+
+.notification-item:hover::after {
+    opacity: 1;
+    transform: translateX(2px);
+}
+
+.notification-panel-empty {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+    padding: 34px 20px;
+    color: gray;
+    text-align: center;
+}
+
+.notification-panel-empty i {
+    margin-bottom: 3px;
+    color: var(--primary);
+    font-size: 1.9rem;
+}
+
+.notification-panel-empty strong {
+    color: inherit;
+    font-size: 0.9rem;
+}
+
+.notification-panel-empty span {
+    max-width: 260px;
+    font-size: 0.8rem;
+    line-height: 1.45;
+}
+
+.notification-panel-empty.is-loading i {
+    animation: notification-spin 0.8s linear infinite;
+}
+
+@keyframes notification-spin {
+    to { transform: rotate(360deg); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .notification-panel:not([hidden]),
+    .notification-badge.is-new,
+    .notification-panel-empty.is-loading i {
+        animation: none;
+    }
+}

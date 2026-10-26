@@ -16,6 +16,7 @@ use App\Classes\Text;
 use App\Classes\UrlManager;
 
 use App\Forum\Controllers\PostController;
+use App\Forum\Controllers\MentionController;
 use App\Forum\Controllers\ThreadController;
 
 use App\Interfaces\PageInterface;
@@ -318,7 +319,20 @@ class PostPage extends PageBase implements PageInterface
                 if ($newThreadID <= 0)
                     throw new Exception('The new thread ID could not be determined.');
 
-                UrlManager::Redirect(UrlManager::ThreadUrl($newThreadID, Slug::FromTitle($this->titleValue), 1));
+                $threadUrl = UrlManager::ThreadUrl($newThreadID, Slug::FromTitle($this->titleValue), 1);
+
+                MentionController::NotifyMentions(
+                    $this->database,
+                    $userId,
+                    (string) $_SESSION['bitboard_user']->username,
+                    $content,
+                    $newThreadID,
+                    0,
+                    $this->titleValue,
+                    $threadUrl
+                );
+
+                UrlManager::Redirect($threadUrl);
             }
 
             $newPostID = PostController::Create($this->database, $userId, $this->threadID, $html);
@@ -329,11 +343,24 @@ class PostPage extends PageBase implements PageInterface
             $count = $this->database->Query('SELECT COUNT(*) AS post_count FROM bit_posts WHERE thread_id = ?', $this->threadID)->FetchArray();
             $totalPages = max(1, (int) ceil(((int) ($count['post_count'] ?? 0)) / PostController::POSTS_PER_PAGE));
 
-            UrlManager::Redirect(UrlManager::ThreadUrl(
+            $postUrl = UrlManager::ThreadUrl(
                 $this->threadID,
                 Slug::FromTitle($this->thread['thread_title']),
                 $totalPages
-            ));
+            ) . '#post-' . $newPostID;
+
+            MentionController::NotifyMentions(
+                $this->database,
+                $userId,
+                (string) $_SESSION['bitboard_user']->username,
+                $content,
+                $this->threadID,
+                $newPostID,
+                $this->thread['thread_title'],
+                $postUrl
+            );
+
+            UrlManager::Redirect($postUrl);
         }
         catch (Exception $e)
         {

@@ -2,10 +2,15 @@
 
 namespace App\Forum\Widgets;
 
+use App\Classes\Database;
 use App\Classes\Template;
 use App\Classes\SessionManager;
 use App\Classes\AvatarUtils;
 use App\Classes\Permissions;
+
+use App\Forum\Controllers\NotificationController;
+
+use Throwable;
 
 /**
  * HeaderWidget represents a widget for rendering the header section of a forum page.
@@ -22,13 +27,17 @@ class HeaderWidget
      */
     private string $offlineNotice = '';
 
+    private Database $database;
+
     /**
      * Constructs a new HeaderWidget instance.
      *
-     * @param string offlineNotice Optional staff-only offline notice.
+     * @param Database database       The database instance.
+     * @param string   offlineNotice  Optional staff-only offline notice.
      */
-    public function __construct(string $offlineNotice = '')
+    public function __construct(Database $database, string $offlineNotice = '')
     {
+        $this->database = $database;
         $this->offlineNotice = $offlineNotice;
         $this->template = new Template('header', 'header');
         $this->Do();
@@ -72,6 +81,7 @@ class HeaderWidget
         $userTemplate = new Template('header/nav', 'user');
         $userTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($_SESSION['bitboard_user']->avatar));
         $userTemplate->AddEscapedEntry('{username}', $_SESSION['bitboard_user']->username);
+        $userTemplate->AddEntry('{notification_bell}', $this->BuildNotificationBell());
         $userTemplate->Replace();
 
         $userMenuTemplate = new Template('header/nav', 'user_menu');
@@ -89,6 +99,34 @@ class HeaderWidget
     }
 
     /**
+     * Render the notification bell with the unread count.
+     */
+    private function BuildNotificationBell(): string
+    {
+        try
+        {
+            $userID = (int) $_SESSION['bitboard_user']->id;
+            $unread = NotificationController::CountUnread($this->database, $userID);
+        }
+        catch (Throwable $e)
+        {
+            // A notification failure must not take down every forum page.
+            error_log('BitBoard notification count failed: ' . $e->getMessage());
+            $unread = 0;
+        }
+
+        $template = new Template('header/nav', 'notifications');
+        $template->AddEscapedEntry('{label}', $unread > 0
+            ? 'Notifications (' . $unread . ' unread)'
+            : 'Notifications');
+        $template->AddEscapedEntry('{badge_count}', $unread > 99 ? '99+' : $unread);
+        $template->AddEntry('{badge_hidden}', $unread > 0 ? '' : ' hidden');
+        $template->Replace();
+
+        return $template->template;
+    }
+
+    /**
      * Render the content for a guest user.
      */
     private function RenderGuest()
@@ -96,6 +134,7 @@ class HeaderWidget
         $loginRegisterTemplate = new Template('header/nav', 'login_register');
             
         $this->template->AddEntry('{user}', '');
+        $this->template->AddEntry('{notification_bell}', '');
         $this->template->AddEntry('{login_register}', $loginRegisterTemplate->template);
     }
 }

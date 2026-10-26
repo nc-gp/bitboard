@@ -63,6 +63,9 @@
 - Quote and multi-quote replies. Quote buttons insert a `> author wrote:` block into the
   inline fast reply or prefill the full reply page; multi-quote selections persist per
   thread in the browser session.
+- `@username` mentions with profile links, plus reaction notifications. A header bell shows
+  the unread count and opens an AJAX panel with read tracking, "mark all as read", periodic
+  refresh, and an optional notification chime.
 - Thread/post editing with revision history and permission-based permanent deletion.
   Deleting a thread also removes every post inside it.
 
@@ -254,6 +257,7 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] Edit and delete threads/posts with history and cascade deletion.
 - [x] Reactions for threads and posts.
 - [x] Quote and multi-quote replies.
+- [x] Mentions and live notifications.
 - [x] Staff can reply to closed threads and see an offline-mode banner.
 - [ ] Admin CRUD for categories, forums, subforums, prefixes, users, and ranks.
 - [x] Thread and post search with forum/author/date filters.

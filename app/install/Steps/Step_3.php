@@ -20,6 +20,7 @@ use App\Classes\LoginThrottle;
 use App\Forum\Controllers\PostController;
 use App\Forum\Controllers\SubForumController;
 use App\Forum\Controllers\PrefixController;
+use App\Forum\Controllers\NotificationController;
 
 use Exception;
 
@@ -136,6 +137,7 @@ class Step_3 extends StepBase implements StepInterface
 			ThreadController::Create($InstallDatabase, 1, 'Hi!', '<h2>Welcome to Bitboard!</h2><br><p>Bitboard has been successfully installed.</p><br><p>If you have any questions or need assistance, feel free to explore our issues section on github. We\'re here to make your experience with BitBoard as smooth as possible.</p><br><br><p>Thank you for choosing BitBoard. We hope you enjoy using our app to its fullest!</p>', true, false, 0, 1);
 
 			PostController::CreateTable($InstallDatabase);
+			NotificationController::CreateTable($InstallDatabase);
 
 			RankController::CreateTable($InstallDatabase);
 			RankController::Create($InstallDatabase, 'Admin', '<span style="color: #B22222">{username}</span>', Permissions::$All);

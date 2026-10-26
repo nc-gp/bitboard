@@ -239,3 +239,13 @@ blockquote p {
 blockquote strong {
     color: var(--primary-hover);
 }
+
+a.mention {
+    color: var(--primary-hover);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+a.mention:hover {
+    text-decoration: underline;
+}

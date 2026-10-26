@@ -252,14 +252,21 @@ Items marked **good first issue** are small and self-contained.
 - [x] Reactions for threads and posts: heart, sad, funny, what?, and angry. One reaction
   per user per target, counted as one like, with a combined total indicator,
   reaction-specific icons/colors, right-aligned controls, and a vertical hover/click picker.
+  New reactions also notify the thread/post author (except self-reactions); changing a
+  reaction does not notify again, and withdrawing it removes the notification.
 - [x] Quote and multi-quote. Quote buttons insert a plain-text `> author wrote:` block into
   the inline fast reply or prefill the full reply page without JavaScript; multi-quote
   selections persist per thread in the browser session. Quotes render as `<blockquote>` and
   survive a round trip through the plain-text editor.
-- [ ] Mentions and notifications.
+- [x] Mentions and notifications. `@username` mentions and new thread/post reactions create
+  persistent notifications. A header bell shows the unread count and opens an AJAX panel
+  with the latest items, unread highlighting, per-item read tracking, "mark all as read",
+  and 15-second polling. New items play a soft chime, with a per-browser sound
+  toggle. Mentions inside quotes are ignored, and deleting content removes its
+  notifications.
 - [ ] Rich editor with preview, drafts, and a Markdown/HTML policy.
 - [ ] Attachments/uploads with extension/MIME/size validation and private storage.
-- [ ] Polls, thread subscriptions, and "watch forum" notifications.
+- [ ] Thread subscriptions and "watch forum" notifications.
 - [ ] Pagination-preserving anchors and "jump to last unread".
 
 ### Moderation and admin
@@ -299,11 +306,14 @@ Items marked **good first issue** are small and self-contained.
   documentation.
 - [ ] Read endpoints for forums, threads, posts, members, and stats.
 - [ ] Write endpoints for posting/editing with the same permission checks as the UI.
-- [ ] Webhooks or an event/hook system for plugins.
+- [ ] Webhooks or an event/hook system for plugins. Optional features such as polls should
+  live here rather than in the core.
 - [ ] Web push/email notification channel.
 
 ### Themes and UX
 
+- [ ] Redesign the forum offline page to match the default theme layout and styling.
+- [ ] Redesign the installation wizard to match the default theme layout and styling.
 - [ ] Theme manager (install, activate, preview, delete).
 - [ ] Child themes and a documented template variable reference.
 - [ ] Consistent dark/light/auto handling (some layouts hardcode `data-theme="dark"`).

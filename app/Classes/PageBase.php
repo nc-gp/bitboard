@@ -78,7 +78,7 @@ class PageBase
                 $offlineNotice .= ' ' . $offlineMessage;
         }
 
-        $headerTemplate = new HeaderWidget($offlineNotice);
+        $headerTemplate = new HeaderWidget($this->database, $offlineNotice);
         $footerTemplate = new FooterWidget($this->forumData->forum_credits ?? true);
 
         /**

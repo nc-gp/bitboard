@@ -20,6 +20,7 @@ use App\Interfaces\PageInterface;
 
 use App\Forum\Controllers\ContentController;
 use App\Forum\Controllers\LikeController;
+use App\Forum\Controllers\MentionController;
 use App\Forum\Controllers\PostController;
 use App\Forum\Widgets\PaginationWidget;
 use App\Forum\Widgets\ReactionWidget;
@@ -150,7 +151,10 @@ class ThreadPage extends PageBase implements PageInterface
         $threadContentTemplate->AddEscapedEntry('{thread_title}', $thread['thread_title']);
         $threadContentTemplate->AddEscapedEntry('{thread_timestamp}', 'Published ' . RelativeTime::Format($thread['thread_timestamp']));
         $threadContentTemplate->AddEscapedEntry('{thread_edited}', $this->EditedLabel($thread['thread_timestamp'], $thread['thread_edited_timestamp']));
-        $threadContentTemplate->AddEntry('{thread_content}', HtmlSanitizer::Sanitize($thread['thread_content']));
+        $threadContentTemplate->AddEntry('{thread_content}', MentionController::Link(
+            $this->database,
+            HtmlSanitizer::Sanitize($thread['thread_content'])
+        ));
 
         $threadQuote = '';
         if ($this->CanReply())
@@ -254,7 +258,10 @@ class ThreadPage extends PageBase implements PageInterface
             $postTemplate->AddEntry('{user_stats}', $userStatsTemplate->template);
             $postTemplate->AddEscapedEntry('{post_timestamp}', 'Published ' . RelativeTime::Format($post['post_timestamp']));
             $postTemplate->AddEscapedEntry('{post_edited}', $this->EditedLabel($post['post_timestamp'], $post['post_edited_timestamp']));
-            $postTemplate->AddEntry('{post_content}', HtmlSanitizer::Sanitize($post['post_content']));
+            $postTemplate->AddEntry('{post_content}', MentionController::Link(
+                $this->database,
+                HtmlSanitizer::Sanitize($post['post_content'])
+            ));
 
             $postQuote = '';
             if ($this->CanReply())

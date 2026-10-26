@@ -14,6 +14,7 @@ use App\Classes\Slug;
 use App\Classes\UrlManager;
 
 use App\Forum\Controllers\LikeController;
+use App\Forum\Controllers\NotificationController;
 
 use App\Interfaces\PageInterface;
 
@@ -77,7 +78,7 @@ class LikePage extends PageBase implements PageInterface
 
         if ($type === 'thread')
         {
-            $target = $this->database->Query('SELECT t.id, t.thread_title, t.forum_id, t.subforum_id,
+            $target = $this->database->Query('SELECT t.id, t.thread_title, t.user_id AS author_id, t.forum_id, t.subforum_id,
                     f.is_locked AS forum_locked, sf.is_locked AS subforum_locked
                 FROM bit_threads AS t
                 JOIN bit_forums AS f ON f.id = t.forum_id
@@ -88,7 +89,7 @@ class LikePage extends PageBase implements PageInterface
         }
         else
         {
-            $target = $this->database->Query('SELECT p.id, p.thread_id, t.thread_title, t.forum_id, t.subforum_id,
+            $target = $this->database->Query('SELECT p.id, p.thread_id, p.user_id AS author_id, t.thread_title, t.forum_id, t.subforum_id,
                     f.is_locked AS forum_locked, sf.is_locked AS subforum_locked
                 FROM bit_posts AS p
                 JOIN bit_threads AS t ON t.id = p.thread_id
@@ -149,6 +150,35 @@ class LikePage extends PageBase implements PageInterface
                 $this->Json(['error' => 'like_failed'], 500);
 
             UrlManager::Redirect($threadUrl);
+        }
+
+        $notificationType = $type === 'thread' ? 'thread_like' : 'post_like';
+        $notificationPostID = $type === 'post' ? $id : 0;
+        $targetUrl = $threadUrl . ($type === 'post' ? '#post-' . $id : '');
+
+        if (!empty($result['added']))
+        {
+            NotificationController::NotifyReaction(
+                $this->database,
+                $userId,
+                (string) $_SESSION['bitboard_user']->username,
+                (int) $target['author_id'],
+                $notificationType,
+                $threadID,
+                $notificationPostID,
+                $target['thread_title'],
+                $targetUrl
+            );
+        }
+        elseif (empty($result['liked']))
+        {
+            NotificationController::DeleteReaction(
+                $this->database,
+                $userId,
+                $notificationType,
+                $threadID,
+                $notificationPostID
+            );
         }
 
         if ($this->isAjax)

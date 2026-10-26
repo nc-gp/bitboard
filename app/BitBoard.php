@@ -11,6 +11,7 @@ use App\Classes\Permissions;
 use App\Classes\SessionManager;
 use App\Forum\Controllers\AccountController;
 use App\Forum\Controllers\ContentController;
+use App\Forum\Controllers\NotificationController;
 
 use App\Forum\Structs\ForumDataStruct;
 
@@ -42,6 +43,7 @@ class BitBoard
 		$this->database = new Database($config['host'], $config['user'], $config['pass']);
 		$this->database->SelectDatabase($config['name']);
 		ContentController::EnsureSchema($this->database);
+		NotificationController::EnsureSchema($this->database);
 		$this->data = new ForumDataStruct($this->database->Query('SELECT * FROM bit_settings')->FetchArray());
 
 		define('BB_THEME', $this->data->forum_theme);

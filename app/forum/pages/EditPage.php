@@ -18,6 +18,7 @@ use App\Classes\UrlManager;
 use App\Classes\UsernameUtils;
 
 use App\Forum\Controllers\ContentController;
+use App\Forum\Controllers\MentionController;
 
 use App\Interfaces\PageInterface;
 
@@ -369,7 +370,10 @@ class EditPage extends PageBase implements PageInterface
 
             $item = new Template('edit', 'history_item');
             $item->AddEntry('{title}', $title);
-            $item->AddEntry('{content}', HtmlSanitizer::Sanitize($content));
+            $item->AddEntry('{content}', MentionController::Link(
+                $this->database,
+                HtmlSanitizer::Sanitize($content)
+            ));
             $item->AddEntry('{username}', UsernameUtils::Format($row['rank_format'], $row['username']));
             $item->AddEscapedEntry('{date}', RelativeTime::Format($row['edited_at']));
             $item->Replace();

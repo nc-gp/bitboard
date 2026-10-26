@@ -169,6 +169,7 @@ class ContentController
 
             $db->Query('DELETE FROM bit_threads_likes WHERE thread_id = ?', $threadID);
             $db->Query('DELETE FROM bit_thread_edits WHERE thread_id = ?', $threadID);
+            $db->Query('DELETE FROM bit_notifications WHERE thread_id = ?', $threadID);
             $db->Query('DELETE FROM bit_threads WHERE id = ?', $threadID);
 
             $db->Commit();
@@ -191,6 +192,7 @@ class ContentController
         {
             $db->Query('DELETE FROM bit_posts_likes WHERE post_id = ?', $postID);
             $db->Query('DELETE FROM bit_post_edits WHERE post_id = ?', $postID);
+            $db->Query('DELETE FROM bit_notifications WHERE post_id = ?', $postID);
             $db->Query('DELETE FROM bit_posts WHERE id = ?', $postID);
             $db->Commit();
         }
