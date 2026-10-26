@@ -11,11 +11,16 @@
     content: attr(aria-label);
     position: absolute;
     z-index: 1000;
+    width: max-content;
+    max-width: min(320px, calc(100vw - 16px));
     padding: 0.45em 0.75em;
     border-radius: 4px;
     background: rgba(17, 17, 17, 0.95);
     color: #fff;
-    white-space: nowrap;
+    white-space: normal;
+    overflow-wrap: anywhere;
+    text-align: center;
+    line-height: 1.35;
     opacity: 0;
     pointer-events: none;
     transition: opacity 0.15s ease;

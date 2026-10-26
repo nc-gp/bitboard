@@ -68,8 +68,8 @@
   refresh, and an optional notification chime.
 - Staff can pin and lock threads from the thread page. Pinned threads sort first, locked
   threads show the closed prefix, and staff keep their posting exceptions.
-- Custom thread prefixes/tags are visible on thread pages and can be changed from the thread
-  edit form; pin and lock remain separate staff controls.
+- Custom thread prefixes/tags are visible on thread pages and can be chosen when creating or
+  editing a thread; pin and lock remain separate staff controls.
 - Thread/post editing with revision history and permission-based permanent deletion.
   Deleting a thread also removes every post inside it.
 

@@ -329,7 +329,7 @@ class EditPage extends PageBase implements PageInterface
 
     private function BuildPrefixField(): string
     {
-        if ($this->type !== 'thread' || !$this->canEdit)
+        if ($this->type !== 'thread' || !$this->canEdit || count($this->customPrefixes) <= 0)
             return '';
 
         $options = '<option value="0"' . ($this->prefixID === 0 ? ' selected' : '') . '>No prefix</option>';

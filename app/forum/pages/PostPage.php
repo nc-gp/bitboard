@@ -17,6 +17,7 @@ use App\Classes\UrlManager;
 
 use App\Forum\Controllers\PostController;
 use App\Forum\Controllers\MentionController;
+use App\Forum\Controllers\PrefixController;
 use App\Forum\Controllers\ThreadController;
 
 use App\Interfaces\PageInterface;
@@ -44,6 +45,8 @@ class PostPage extends PageBase implements PageInterface
     private string $contentValue = '';
     private string $error = '';
     private string $cancelUrl = '';
+    private int $prefixID = 0;
+    private array $customPrefixes = [];
 
     private bool $denied = false;
     private string $deniedMessage = '';
@@ -220,6 +223,7 @@ class PostPage extends PageBase implements PageInterface
         $this->subheading = 'Posting in ' . $this->targetForumName
             . ($this->subforumName !== '' ? ' / ' . $this->subforumName : '');
         $this->submitLabel = 'Create thread';
+        $this->customPrefixes = PrefixController::GetCustomPrefixes($this->database);
 
         if (!SessionManager::HasPermission(Permissions::CREATING_THREADS))
         {
@@ -258,6 +262,18 @@ class PostPage extends PageBase implements PageInterface
                 ? trim($_POST['thread_title'])
                 : '';
             $this->titleValue = $title;
+
+            $prefixID = isset($_POST['prefix_id']) && is_string($_POST['prefix_id']) && ctype_digit($_POST['prefix_id'])
+                ? (int) $_POST['prefix_id']
+                : 0;
+
+            if ($prefixID !== 0 && !$this->IsAllowedPrefix($prefixID))
+            {
+                $this->error = 'Please choose a valid prefix.';
+                return;
+            }
+
+            $this->prefixID = $prefixID;
 
             if (mb_strlen($title) < 3)
             {
@@ -311,7 +327,7 @@ class PostPage extends PageBase implements PageInterface
                     $html,
                     false,
                     false,
-                    0,
+                    $this->prefixID,
                     $this->forumID,
                     $this->subforumID
                 );
@@ -397,6 +413,42 @@ class PostPage extends PageBase implements PageInterface
         return $template->template;
     }
 
+    private function IsAllowedPrefix(int $prefixID): bool
+    {
+        if ($prefixID <= 2)
+            return $prefixID === 0;
+
+        foreach ($this->customPrefixes as $prefix)
+        {
+            if ((int) $prefix['id'] === $prefixID)
+                return true;
+        }
+
+        return false;
+    }
+
+    private function BuildPrefixField(): string
+    {
+        if ($this->mode !== 'thread' || count($this->customPrefixes) <= 0)
+            return '';
+
+        $options = '<option value="0"' . ($this->prefixID === 0 ? ' selected' : '') . '>No prefix</option>';
+
+        foreach ($this->customPrefixes as $prefix)
+        {
+            $id = (int) $prefix['id'];
+            $selected = $this->prefixID === $id ? ' selected' : '';
+            $options .= '<option value="' . $id . '"' . $selected . '>'
+                . Template::Escape($prefix['prefix_name']) . '</option>';
+        }
+
+        $template = new Template('post', 'prefix_field');
+        $template->AddEntry('{options}', $options);
+        $template->Replace();
+
+        return $template->template;
+    }
+
     private function BuildTitleField(): string
     {
         if ($this->mode !== 'thread')
@@ -432,6 +484,7 @@ class PostPage extends PageBase implements PageInterface
         $this->template->AddEscapedEntry('{cancel_url}', $this->cancelUrl);
         $this->template->AddEscapedEntry('{content}', $this->contentValue);
         $this->template->AddEntry('{title_field}', $this->BuildTitleField());
+        $this->template->AddEntry('{prefix_field}', $this->BuildPrefixField());
         $this->template->AddEntry('{context_fields}', $this->BuildContextFields());
         $this->template->AddEntry('{error}', $this->BuildError());
 

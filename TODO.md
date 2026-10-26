@@ -264,8 +264,8 @@ Items marked **good first issue** are small and self-contained.
   and 15-second polling. New items play a soft chime, with a per-browser sound
   toggle. Mentions inside quotes are ignored, and deleting content removes its
   notifications.
-- [x] Show custom thread prefixes on the thread page and let thread editors change them
-  without exposing the built-in pin/lock statuses.
+- [x] Show custom thread prefixes on the thread page and let thread editors choose them when
+  creating or editing a thread. Pin/lock statuses stay separate from custom prefixes.
 - [ ] Rich editor with preview, drafts, and a Markdown/HTML policy.
 - [ ] Attachments/uploads with extension/MIME/size validation and private storage.
 - [ ] Thread subscriptions and "watch forum" notifications.
@@ -341,6 +341,8 @@ Items marked **good first issue** are small and self-contained.
 - [ ] Add `composer.json` with PSR-4 autoloading, dev dependencies, and scripts.
 - [ ] Add PHPUnit tests for `PasswordUtils`, `EmailUtils`, `UsernameUtils`,
   `RelativeTime`, `Permissions`, `Template`, and `PaginationWidget`.
+- [ ] Add a template icon audit that verifies every `ti-*` class exists in the pinned Tabler
+  release.
 - [ ] Add integration tests for installer, login, permissions, routing, and API auth.
 - [ ] Add PHPStan/Psalm at a sensible level and PHP-CS-Fixer/PHP_CodeSniffer.
 - [ ] Add GitHub Actions: lint on PHP 8.0-8.3, static analysis, unit tests, and a smoke test
