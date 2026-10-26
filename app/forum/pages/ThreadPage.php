@@ -18,14 +18,14 @@ use App\Classes\SessionManager;
 
 use App\Interfaces\PageInterface;
 
+use App\Forum\Controllers\ContentController;
 use App\Forum\Controllers\LikeController;
+use App\Forum\Controllers\PostController;
 use App\Forum\Widgets\PaginationWidget;
 use App\Forum\Widgets\ReactionWidget;
 
 class ThreadPage extends PageBase implements PageInterface
 {
-    public const POSTS_PER_PAGE = 7;
-
     private string $thread = '';
     private string $posts = '';
     private string $replyArea = '';
@@ -37,7 +37,7 @@ class ThreadPage extends PageBase implements PageInterface
     private bool $threadLocked = false;
     private bool $canLike = false;
 
-    private int $maximumResults = self::POSTS_PER_PAGE;
+    private int $maximumResults = PostController::POSTS_PER_PAGE;
     private int $postsCount = 0;
 
     public function __construct(Database $db, object $data)
@@ -149,7 +149,23 @@ class ThreadPage extends PageBase implements PageInterface
         $threadContentTemplate = new Template('thread', 'thread_content');
         $threadContentTemplate->AddEscapedEntry('{thread_title}', $thread['thread_title']);
         $threadContentTemplate->AddEscapedEntry('{thread_timestamp}', 'Published ' . RelativeTime::Format($thread['thread_timestamp']));
+        $threadContentTemplate->AddEscapedEntry('{thread_edited}', $this->EditedLabel($thread['thread_timestamp'], $thread['thread_edited_timestamp']));
         $threadContentTemplate->AddEntry('{thread_content}', HtmlSanitizer::Sanitize($thread['thread_content']));
+
+        $threadEdit = '';
+        $canEditThread = ContentController::CanEditThread((int) $thread['user_id']);
+        $canDeleteThread = ContentController::CanDeleteThread((int) $thread['user_id']);
+
+        if ($canEditThread || $canDeleteThread)
+        {
+            $editTemplate = new Template('thread', 'edit_link');
+            $editTemplate->AddEscapedEntry('{edit_url}', $this->serverPath . 'edit?type=thread&id=' . $this->threadID);
+            $editTemplate->AddEscapedEntry('{label}', $canEditThread ? 'Edit' : 'Delete');
+            $editTemplate->AddEscapedEntry('{icon}', $canEditThread ? 'ti-pencil' : 'ti-trash');
+            $editTemplate->Replace();
+            $threadEdit = $editTemplate->template;
+        }
+        $threadContentTemplate->AddEntry('{thread_edit}', $threadEdit);
 
         LikeController::EnsureSchema($this->database);
         $userId = $this->canLike ? (int) $_SESSION['bitboard_user']->id : null;
@@ -226,7 +242,23 @@ class ThreadPage extends PageBase implements PageInterface
             $postTemplate->AddEscapedEntry('{user_rank}', $post['rank_name']);
             $postTemplate->AddEntry('{user_stats}', $userStatsTemplate->template);
             $postTemplate->AddEscapedEntry('{post_timestamp}', 'Published ' . RelativeTime::Format($post['post_timestamp']));
+            $postTemplate->AddEscapedEntry('{post_edited}', $this->EditedLabel($post['post_timestamp'], $post['post_edited_timestamp']));
             $postTemplate->AddEntry('{post_content}', HtmlSanitizer::Sanitize($post['post_content']));
+
+            $postEdit = '';
+            $canEditPost = ContentController::CanEditPost((int) $post['user_id']);
+            $canDeletePost = ContentController::CanDeletePost((int) $post['user_id']);
+
+            if ($canEditPost || $canDeletePost)
+            {
+                $editTemplate = new Template('thread', 'edit_link');
+                $editTemplate->AddEscapedEntry('{edit_url}', $this->serverPath . 'edit?type=post&id=' . $post['id']);
+                $editTemplate->AddEscapedEntry('{label}', $canEditPost ? 'Edit' : 'Delete');
+                $editTemplate->AddEscapedEntry('{icon}', $canEditPost ? 'ti-pencil' : 'ti-trash');
+                $editTemplate->Replace();
+                $postEdit = $editTemplate->template;
+            }
+            $postTemplate->AddEntry('{post_edit}', $postEdit);
 
             $reactionWidget = new ReactionWidget(
                 'post',
@@ -242,6 +274,14 @@ class ThreadPage extends PageBase implements PageInterface
 
             $this->posts .= $postTemplate->template;
         }
+    }
+
+    private function EditedLabel(string $createdAt, string $editedAt): string
+    {
+        if (strtotime($editedAt) <= strtotime($createdAt))
+            return '';
+
+        return ' · Edited ' . RelativeTime::Convert($editedAt);
     }
 
     /**

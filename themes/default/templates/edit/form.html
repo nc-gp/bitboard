@@ -1,0 +1,17 @@
+<form action="{server_url}edit" method="post">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
+    <input type="hidden" name="type" value="{type}">
+    <input type="hidden" name="id" value="{id}">
+    <input type="hidden" name="action" value="save">
+
+    {title_field}
+
+    <label for="edit-content">Message</label>
+    <textarea id="edit-content" name="content" maxlength="4000" required>{content}</textarea>
+    <p class="post-hint">Line breaks are preserved. HTML is displayed as text.</p>
+
+    <div class="post-actions">
+        <button type="submit">Save changes</button>
+        <a href="{cancel_url}" class="post-cancel">Cancel</a>
+    </div>
+</form>

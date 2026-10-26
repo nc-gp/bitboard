@@ -1,0 +1,28 @@
+<!doctype html>
+<html>
+{head}
+<body>
+	<div class="bit-container">
+		{header}
+
+		<div id="content">
+			<section id="post-form">
+				<header>
+					<h1>{heading}</h1>
+					<p>{subheading}</p>
+				</header>
+
+				{error}
+				{edit_form}
+				{delete_form}
+			</section>
+
+			{history}
+		</div>
+
+		{footer}
+	</div>
+	<script src="{server_url}assets/javascripts/edit.js"></script>
+	{scripts}
+</body>
+</html>

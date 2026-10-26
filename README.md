@@ -60,13 +60,14 @@
 - Thread and post reactions (heart, sad, funny, what?, angry) with one reaction per user,
   a combined total indicator, cached counters, a vertical hover/click picker, AJAX
   toggling, and a normal POST fallback.
+- Thread/post editing with revision history and permission-based permanent deletion.
+  Deleting a thread also removes every post inside it.
 
 ### Incomplete or not implemented yet
 
 - **Admin JSON API** — session auth, CSRF, route allowlisting, granular permission checks,
   and the settings and prefix edit/delete endpoints work. There is no prefix creation UI yet.
 - **Registration** — basic registration works; terms acceptance, anti-bot protection, email-domain policy, rate limiting, and email verification are still pending.
-- **Editing or deleting threads/posts** — creating threads and replies works; editing, deleting, and moderation are still pending.
 - **Profiles** — basic public profiles show avatar, rank, reputation, join date, online state, and recent threads/posts; bio and customization are still pending.
 - **Account settings** — email/password settings work; avatar, bio, signature, timezone, and notification preferences are still pending.
 - **Admin CRUD** — categories, forums, subforums, users, and ranks are not manageable yet.
@@ -247,7 +248,7 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] Basic registration and email/password account settings.
 - [x] Basic public profile pages with recent activity.
 - [x] Create threads and reply to threads.
-- [ ] Edit and delete threads/posts.
+- [x] Edit and delete threads/posts with history and cascade deletion.
 - [x] Reactions for threads and posts.
 - [x] Staff can reply to closed threads and see an offline-mode banner.
 - [ ] Admin CRUD for categories, forums, subforums, prefixes, users, and ranks.

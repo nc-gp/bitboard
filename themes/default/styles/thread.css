@@ -217,6 +217,28 @@
     padding-bottom: 15px;
 }
 
+.content-edit-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 9px;
+    border: 1px solid var(--opposite-x2);
+    border-radius: 999px;
+    color: gray;
+    font-size: 0.8rem;
+    line-height: 1;
+    text-decoration: none;
+}
+
+.content-edit-link:hover {
+    border-color: var(--primary);
+    color: var(--primary-hover);
+}
+
+.content-edit-link i {
+    font-size: 0.95rem;
+}
+
 .reaction-picker {
     position: relative;
     z-index: 1;

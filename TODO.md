@@ -242,8 +242,10 @@ Items marked **good first issue** are small and self-contained.
 - [x] Allow moderators/administrators to create threads and replies in locked forums/subforums
   and closed threads. Locked forums still honor `CREATING_*_LOCKED`; staff can now reply in
   closed threads, with a clear staff-only hint in the fast-reply form.
-- [ ] Edit and delete with `EDITING_*`/`DELETING_*` permissions, edit history, and
-  soft-delete/restore.
+- [x] Edit and delete with `EDITING_*`/`DELETING_*` permissions and edit history. Authors can
+  manage their own content when permitted; staff can manage any content. Deletion is
+  permanent, and deleting a thread also removes all posts, reactions, and edit history
+  belonging to it.
 - [x] Likes for threads and posts with one-like-per-user constraints and cached counters.
   Thread and post like buttons toggle through `/like`, with AJAX updates and a normal POST
   fallback.

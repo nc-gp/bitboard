@@ -34,6 +34,22 @@ class Text
      *
      * @return string Safe HTML.
      */
+    /**
+     * Convert stored HTML back into editable plain text.
+     */
+    public static function FromHtml(string $html): string
+    {
+        $text = preg_replace('/<br\s*\/?>/i', "\n", $html) ?? '';
+        $text = preg_replace('/<\/p\s*>/i', "\n\n", $text) ?? '';
+        $text = preg_replace('/<\/h[1-6]\s*>/i', "\n\n", $text) ?? '';
+        $text = preg_replace('/<[^>]+>/', '', $text) ?? '';
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = preg_replace("/[ \t]+\n/", "\n", $text) ?? '';
+        $text = preg_replace("/\n{3,}/", "\n\n", $text) ?? '';
+
+        return trim($text);
+    }
+
     public static function ToHtml(string $text): string
     {
         $text = str_replace(["\r\n", "\r"], "\n", $text);

@@ -30,7 +30,6 @@ class Permissions
     self::ADMIN_PANEL_ACCESS |
     self::LOCKING_THREADS |
     self::PINNING_THREADS |
-    self::DELETING_THREADS |
     self::VIEWING_REPORTS |
     self::MANAGING_USERS |
     self::MANAGING_ROLES |

@@ -1,0 +1,13 @@
+<form id="delete-content-form" action="{server_url}edit" method="post" data-confirm="{confirm}">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
+    <input type="hidden" name="type" value="{type}">
+    <input type="hidden" name="id" value="{id}">
+    <input type="hidden" name="action" value="delete">
+
+    <div class="post-actions">
+        <button type="submit" class="danger-button">
+            <i class="ti ti-trash" aria-hidden="true"></i> Delete {label}
+        </button>
+        <a href="{cancel_url}" class="post-cancel">Cancel</a>
+    </div>
+</form>

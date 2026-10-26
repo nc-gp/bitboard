@@ -299,7 +299,7 @@ class PostPage extends PageBase implements PageInterface
                 throw new Exception('The new post ID could not be determined.');
 
             $count = $this->database->Query('SELECT COUNT(*) AS post_count FROM bit_posts WHERE thread_id = ?', $this->threadID)->FetchArray();
-            $totalPages = max(1, (int) ceil(((int) ($count['post_count'] ?? 0)) / ThreadPage::POSTS_PER_PAGE));
+            $totalPages = max(1, (int) ceil(((int) ($count['post_count'] ?? 0)) / PostController::POSTS_PER_PAGE));
 
             UrlManager::Redirect(UrlManager::ThreadUrl(
                 $this->threadID,

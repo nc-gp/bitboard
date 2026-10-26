@@ -127,6 +127,16 @@ class ThreadController
 			id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, user_id INT(6) NOT NULL, thread_title VARCHAR(128) NOT NULL, thread_content VARCHAR(4096) NOT NULL, thread_likes INT(6) NOT NULL, thread_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, thread_edited_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP, forum_id INT(6) NOT NULL, subforum_id INT(6) NOT NULL, is_closed TINYINT(1) NOT NULL, is_pinned TINYINT(1) NOT NULL, prefix_id INT(6) NOT NULL, FULLTEXT KEY ft_thread_search (thread_title, thread_content))');
 
         $db->Query("CREATE TABLE IF NOT EXISTS bit_threads_likes (id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, user_id INT(6) NOT NULL, thread_id INT(6) NOT NULL, reaction VARCHAR(16) NOT NULL DEFAULT 'heart', UNIQUE KEY uniq_thread_like (user_id, thread_id))");
+
+        $db->Query('CREATE TABLE IF NOT EXISTS bit_thread_edits (
+            id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+            thread_id INT(6) NOT NULL,
+            user_id INT(6) NOT NULL,
+            thread_title VARCHAR(128) NOT NULL,
+            thread_content VARCHAR(4096) NOT NULL,
+            edited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            KEY thread_edits_thread (thread_id)
+        )');
     }
 
     /**
