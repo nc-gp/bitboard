@@ -15,6 +15,7 @@ use App\Forum\Structs\CategoryStruct;
 use App\Forum\Structs\ForumStruct;
 use App\Forum\Structs\SubForumStruct;
 
+use App\Forum\Controllers\AccountController;
 use App\Forum\Controllers\ForumController;
 
 class IndexPage extends PageBase implements PageInterface
@@ -23,8 +24,10 @@ class IndexPage extends PageBase implements PageInterface
     private int $totalPosts;
     private int $totalThreads;
     private int $totalUsers;
+    private int $onlineCount = 0;
 
     private string $cats = '';
+    private string $onlineUsers = '';
 
     public function __construct(Database $db, object $data)
     {
@@ -49,6 +52,28 @@ class IndexPage extends PageBase implements PageInterface
         $this->totalPosts = (int) $stats['total_posts'];
         $this->totalThreads = (int) $stats['total_threads'];
         $this->totalUsers = (int) $stats['total_users'];
+    }
+
+    private function FetchOnline(): void
+    {
+        $this->onlineCount = AccountController::CountOnline($this->database);
+
+        if ($this->onlineCount <= 0)
+            return;
+
+        $online = AccountController::GetOnline($this->database, 0, 6);
+
+        foreach ($online as $user)
+        {
+            $userTemplate = new Template('index', 'online_user');
+            $userTemplate->AddEscapedEntry('{id}', $user['id']);
+            $userTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($user['avatar']));
+            $userTemplate->AddEscapedEntry('{username_plain}', $user['username']);
+            $userTemplate->AddEntry('{username}', UsernameUtils::Format($user['rank_format'], $user['username']));
+            $userTemplate->Replace();
+
+            $this->onlineUsers .= $userTemplate->template;
+        }
     }
 
     private function FetchCategories()
@@ -184,6 +209,7 @@ class IndexPage extends PageBase implements PageInterface
         $this->FetchCategories();
         $this->FetchLastAccount();
         $this->FetchStats();
+        $this->FetchOnline();
 
         $lastRegistered = new Template('index/stats', 'last_registered');
         $lastRegistered->AddEscapedEntry('{id}', $this->lastAccount['id']);
@@ -199,8 +225,21 @@ class IndexPage extends PageBase implements PageInterface
         $statsTemplate->AddEntry('{lastRegistered}', $lastRegistered->template);
         $statsTemplate->Replace();
 
+        $onlineUsers = $this->onlineUsers;
+        if ($onlineUsers === '')
+        {
+            $emptyOnlineTemplate = new Template('index', 'online_empty');
+            $onlineUsers = $emptyOnlineTemplate->template;
+        }
+
+        $onlineTemplate = new Template('index', 'online');
+        $onlineTemplate->AddEscapedEntry('{online_count}', $this->onlineCount);
+        $onlineTemplate->AddEntry('{online_users}', $onlineUsers);
+        $onlineTemplate->Replace();
+
         $this->template = new Template('index', 'index');
         $this->template->AddEntry('{categories}', $this->cats);
+        $this->template->AddEntry('{online}', $onlineTemplate->template);
         $this->template->AddEntry('{stats}', $statsTemplate->template);
         
         parent::RenderPage('index');

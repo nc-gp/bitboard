@@ -6,6 +6,8 @@ use App\Classes\Database;
 
 class AccountController
 {
+	private const ONLINE_WINDOW_SECONDS = 900;
+
 	/**
      * GetAccountByLogin retrieves account information by username or email.
      *
@@ -17,6 +19,44 @@ class AccountController
 	static public function GetAccountByLogin(Database $db, string $login): array
 	{
 		return $db->Query('SELECT * FROM bit_accounts WHERE username = ? OR email = ? LIMIT 1', $login, $login)->FetchArray();
+	}
+
+	/**
+	 * Get the timestamp used to decide whether an account is online.
+	 */
+	private static function OnlineCutoff(): string
+	{
+		return date('Y-m-d H:i:s', time() - self::ONLINE_WINDOW_SECONDS);
+	}
+
+	/**
+	 * Count accounts active inside the online window.
+	 */
+	static public function CountOnline(Database $db): int
+	{
+		$count = $db->Query('SELECT COUNT(*) AS online_count FROM bit_accounts
+			WHERE id > 1 AND last_active >= ?', self::OnlineCutoff())->FetchArray();
+
+		return (int) ($count['online_count'] ?? 0);
+	}
+
+	/**
+	 * Get accounts active inside the online window.
+	 *
+	 * @param Database db The database instance.
+	 * @param int      offset The number of rows to skip.
+	 * @param int      limit The maximum number of rows.
+	 *
+	 * @return array The online account rows.
+	 */
+	static public function GetOnline(Database $db, int $offset, int $limit): array
+	{
+		return $db->Query('SELECT a.id, a.username, a.avatar, a.reg_date, a.reputation, a.last_active, r.rank_name, r.rank_format
+			FROM bit_accounts AS a
+			JOIN bit_ranks AS r ON r.id = a.rank_id
+			WHERE a.id > 1 AND a.last_active >= ?
+			ORDER BY a.last_active DESC, a.username ASC
+			LIMIT ?, ?', self::OnlineCutoff(), $offset, $limit)->FetchAll();
 	}
 
 	/**

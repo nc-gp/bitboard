@@ -267,7 +267,8 @@ Items marked **good first issue** are small and self-contained.
   and online state.
 - [x] Member directory filters/sorting. Search by username; sort by newest, oldest,
   username, reputation, posts, or threads; pagination preserves the filters.
-- [ ] Online users list and "who is viewing" (optional).
+- [x] Online members list with a 15-minute activity window and an index preview.
+- [ ] "Who is viewing" indicators (optional).
 - [ ] SEO-friendly thread slugs and canonical URLs.
 - [ ] OpenGraph/Twitter metadata, sitemap, RSS/Atom feeds.
 

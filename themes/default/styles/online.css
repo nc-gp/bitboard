@@ -1,0 +1,181 @@
+#content {
+    display: block;
+}
+
+#online-page {
+    max-width: 1000px;
+    margin: 24px auto;
+    padding: 0 20px;
+}
+
+#online-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px 20px;
+    margin-bottom: 16px;
+}
+
+#online-header h1 {
+    display: flex;
+    align-items: center;
+    gap: 9px;
+    margin: 0;
+    font-size: 1.5rem;
+}
+
+#online-header h1 i {
+    color: var(--primary);
+}
+
+#online-header p {
+    margin: 5px 0 0;
+    color: gray;
+    font-size: 0.9rem;
+}
+
+.online-members-link {
+    color: var(--primary-hover);
+    font-size: 0.9rem;
+    text-decoration: none;
+}
+
+.online-members-link:hover {
+    text-decoration: underline;
+}
+
+#online-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 14px;
+}
+
+.online-user {
+    display: flex;
+    align-items: center;
+    gap: 13px;
+    min-width: 0;
+    padding: 14px;
+    border-radius: var(--border-radius);
+    background: var(--opposite);
+    color: inherit;
+    text-decoration: none;
+    box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
+    transition: background 0.15s ease-out;
+}
+
+.online-user:hover {
+    background: var(--opposite-x2);
+}
+
+.online-user-avatar {
+    position: relative;
+    flex: 0 0 52px;
+    width: 52px;
+    height: 52px;
+}
+
+.online-user-avatar img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: var(--opposite);
+    object-fit: cover;
+}
+
+.online-user-avatar::after {
+    content: "";
+    position: absolute;
+    right: 1px;
+    bottom: 1px;
+    width: 12px;
+    height: 12px;
+    border: 2px solid var(--background-color, #000);
+    border-radius: 50%;
+    background: #2f9e44;
+}
+
+.online-user-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+
+.online-user-name {
+    overflow: hidden;
+    font-weight: 600;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.online-user-rank {
+    overflow: hidden;
+    color: gray;
+    font-size: 0.82rem;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.online-user-lastseen {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: gray;
+    font-size: 0.78rem;
+}
+
+.online-user-lastseen i {
+    font-size: 0.9rem;
+}
+
+.online-empty {
+    grid-column: 1 / -1;
+    padding: 42px 24px;
+    border-radius: var(--border-radius);
+    background: var(--opposite);
+    text-align: center;
+    box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
+}
+
+.online-empty i {
+    margin: 0 auto 10px;
+    color: var(--primary);
+    font-size: 2rem;
+}
+
+.online-empty h2 {
+    margin: 0 0 8px;
+    font-size: 1.1rem;
+}
+
+.online-empty p {
+    max-width: 500px;
+    margin: 0 auto;
+    color: gray;
+    font-size: 0.92rem;
+    line-height: 1.5;
+}
+
+.online-empty a {
+    color: var(--primary-hover);
+    text-decoration: none;
+}
+
+.online-empty a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+    #online-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 620px) {
+    #online-grid {
+        grid-template-columns: 1fr;
+    }
+}

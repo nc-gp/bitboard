@@ -44,6 +44,7 @@
 - Members list with online/offline state.
 - Thread and post search with forum/author/date filters, relevance/newest sorting, and
   pagination.
+- Online members list and an online preview on the forum index.
 - Admin panel shell with forum settings and prefix management (edit/delete).
 - Theme system with the bundled `default` theme and light/dark/auto switcher.
 - Offline mode, force-login mode, banned page, and a 404 page with a real 404 status.
@@ -238,6 +239,7 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [ ] Likes for threads and posts (there is already a TODO in `ThreadPage`).
 - [ ] Admin CRUD for categories, forums, subforums, prefixes, users, and ranks.
 - [x] Thread and post search with forum/author/date filters.
+- [x] Online members list with an index preview.
 - [ ] Moderation tools (pin/lock/delete) and reports.
 - [ ] Avatar uploads and profile customization.
 - [ ] Email verification and password reset.
