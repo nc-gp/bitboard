@@ -252,7 +252,11 @@ Items marked **good first issue** are small and self-contained.
 - [x] Reactions for threads and posts: heart, sad, funny, what?, and angry. One reaction
   per user per target, counted as one like, with a combined total indicator,
   reaction-specific icons/colors, right-aligned controls, and a vertical hover/click picker.
-- [ ] Quote, multi-quote, mentions, and notifications.
+- [x] Quote and multi-quote. Quote buttons insert a plain-text `> author wrote:` block into
+  the inline fast reply or prefill the full reply page without JavaScript; multi-quote
+  selections persist per thread in the browser session. Quotes render as `<blockquote>` and
+  survive a round trip through the plain-text editor.
+- [ ] Mentions and notifications.
 - [ ] Rich editor with preview, drafts, and a Markdown/HTML policy.
 - [ ] Attachments/uploads with extension/MIME/size validation and private storage.
 - [ ] Polls, thread subscriptions, and "watch forum" notifications.

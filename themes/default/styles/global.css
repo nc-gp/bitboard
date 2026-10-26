@@ -223,3 +223,19 @@ embedder #embed IFRAME {
     border-radius: 8px;
     box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
 }
+
+blockquote {
+    margin: 1rem 0;
+    padding: 8px 14px;
+    border-left: 3px solid var(--primary);
+    border-radius: 0 var(--border-radius) var(--border-radius) 0;
+    background: var(--opposite);
+}
+
+blockquote p {
+    margin: 0;
+}
+
+blockquote strong {
+    color: var(--primary-hover);
+}

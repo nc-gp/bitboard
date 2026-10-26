@@ -152,6 +152,17 @@ class ThreadPage extends PageBase implements PageInterface
         $threadContentTemplate->AddEscapedEntry('{thread_edited}', $this->EditedLabel($thread['thread_timestamp'], $thread['thread_edited_timestamp']));
         $threadContentTemplate->AddEntry('{thread_content}', HtmlSanitizer::Sanitize($thread['thread_content']));
 
+        $threadQuote = '';
+        if ($this->CanReply())
+        {
+            $threadQuote = $this->BuildQuoteControls(
+                'thread',
+                Text::Quote($thread['thread_content'], $thread['user_name']),
+                'thread'
+            );
+        }
+        $threadContentTemplate->AddEntry('{thread_quote}', $threadQuote);
+
         $threadEdit = '';
         $canEditThread = ContentController::CanEditThread((int) $thread['user_id']);
         $canDeleteThread = ContentController::CanDeleteThread((int) $thread['user_id']);
@@ -245,6 +256,17 @@ class ThreadPage extends PageBase implements PageInterface
             $postTemplate->AddEscapedEntry('{post_edited}', $this->EditedLabel($post['post_timestamp'], $post['post_edited_timestamp']));
             $postTemplate->AddEntry('{post_content}', HtmlSanitizer::Sanitize($post['post_content']));
 
+            $postQuote = '';
+            if ($this->CanReply())
+            {
+                $postQuote = $this->BuildQuoteControls(
+                    'post-' . $post['id'],
+                    Text::Quote($post['post_content'], $post['username']),
+                    (string) $post['id']
+                );
+            }
+            $postTemplate->AddEntry('{post_quote}', $postQuote);
+
             $postEdit = '';
             $canEditPost = ContentController::CanEditPost((int) $post['user_id']);
             $canDeletePost = ContentController::CanDeletePost((int) $post['user_id']);
@@ -285,6 +307,40 @@ class ThreadPage extends PageBase implements PageInterface
     }
 
     /**
+     * Build the quote and multi-quote controls for the thread or a reply.
+     */
+    private function BuildQuoteControls(string $key, string $quoteText, string $target): string
+    {
+        $template = new Template('thread', 'quote_controls');
+        $template->AddEscapedEntry('{quote_url}', $this->serverPath . 'post?thread=' . $this->threadID . '&quote=' . $target);
+        $template->AddEscapedEntry('{quote_text}', $quoteText);
+        $template->AddEscapedEntry('{quote_key}', $key);
+        $template->Replace();
+
+        return $template->template;
+    }
+
+    /**
+     * Check whether the current user can reply to this thread.
+     */
+    private function CanReply(): bool
+    {
+        if (!SessionManager::HasPermission(Permissions::CREATING_POSTS))
+            return false;
+
+        if ($this->threadClosed && !SessionManager::IsStaff())
+            return false;
+
+        if ($this->threadLocked)
+        {
+            return SessionManager::HasPermission(Permissions::CREATING_POSTS_LOCKED)
+                && SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED);
+        }
+
+        return true;
+    }
+
+    /**
      * Fetch thread/post counters for several users in one query.
      */
     private function fetchUserStats(array $userIds): array
@@ -318,14 +374,7 @@ class ThreadPage extends PageBase implements PageInterface
         $this->fetchThread();
         $this->fetchPosts();
 
-        $canReply = SessionManager::HasPermission(Permissions::CREATING_POSTS)
-            && (!$this->threadClosed || SessionManager::IsStaff());
-
-        if ($canReply && $this->threadLocked)
-        {
-            $canReply = SessionManager::HasPermission(Permissions::CREATING_POSTS_LOCKED)
-                && SessionManager::HasPermission(Permissions::VIEWING_FORUM_LOCKED);
-        }
+        $canReply = $this->CanReply();
 
         if ($this->threadClosed && !$canReply)
         {
@@ -347,6 +396,7 @@ class ThreadPage extends PageBase implements PageInterface
         $paginationTemplate = new PaginationWidget($this->threadPage, $this->postsCount, $this->maximumResults, 'thread/' . $this->threadID . '/' . $this->threadSlug . '/page/');
     
         $this->template = new Template('thread', 'thread');
+        $this->template->AddEscapedEntry('{thread_id}', $this->threadID);
         $this->template->AddEntry('{thread}', $this->thread);
         $this->template->AddEntry('{posts}', $this->posts);
         $this->template->AddEntry('{reply_area}', $this->replyArea);

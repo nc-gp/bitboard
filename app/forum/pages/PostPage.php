@@ -74,6 +74,7 @@ class PostPage extends PageBase implements PageInterface
         $page = isset($source['page']) && is_string($source['page']) && ctype_digit($source['page'])
             ? (int) $source['page']
             : 1;
+        $quote = isset($source['quote']) && is_string($source['quote']) ? $source['quote'] : '';
 
         if ($threadID <= 0 && $forumID <= 0)
             throw new PageNotFoundException();
@@ -84,7 +85,7 @@ class PostPage extends PageBase implements PageInterface
         if ($threadID > 0)
         {
             $this->mode = 'reply';
-            $this->SetupReply($threadID, $page);
+            $this->SetupReply($threadID, $page, $quote);
         }
         else
         {
@@ -105,12 +106,14 @@ class PostPage extends PageBase implements PageInterface
         $this->HandleSubmission();
     }
 
-    private function SetupReply(int $threadID, int $page): void
+    private function SetupReply(int $threadID, int $page, string $quote = ''): void
     {
-        $thread = $this->database->Query('SELECT t.id, t.thread_title, t.is_closed, t.forum_id, t.subforum_id,
+        $thread = $this->database->Query('SELECT t.id, t.thread_title, t.thread_content, t.is_closed, t.forum_id, t.subforum_id,
+                u.username AS author_name,
                 f.forum_name, f.is_locked AS forum_locked,
                 sf.subforum_name, sf.is_locked AS subforum_locked
             FROM bit_threads AS t
+            JOIN bit_accounts AS u ON u.id = t.user_id
             JOIN bit_forums AS f ON f.id = t.forum_id
             LEFT JOIN bit_subforums AS sf ON sf.id = t.subforum_id
             WHERE t.id = ?', $threadID)->FetchArray();
@@ -138,6 +141,9 @@ class PostPage extends PageBase implements PageInterface
         $this->subheading = 'Replying to "' . $thread['thread_title'] . '"';
         $this->submitLabel = 'Post reply';
 
+        if ($quote !== '')
+            $this->contentValue = $this->BuildQuote($quote);
+
         if ((int) $thread['is_closed'] === 1 && !SessionManager::IsStaff())
         {
             $this->Deny('This thread is closed and no longer accepts replies.');
@@ -155,6 +161,28 @@ class PostPage extends PageBase implements PageInterface
             $this->Deny('You do not have permission to reply in this locked forum.');
             return;
         }
+    }
+
+    /**
+     * Load the requested post or thread opener as a plain-text quote.
+     */
+    private function BuildQuote(string $quote): string
+    {
+        if ($quote === 'thread')
+            return Text::Quote($this->thread['thread_content'], $this->thread['author_name']);
+
+        if (!ctype_digit($quote) || (int) $quote <= 0)
+            return '';
+
+        $post = $this->database->Query('SELECT p.post_content, a.username
+            FROM bit_posts AS p
+            JOIN bit_accounts AS a ON a.id = p.user_id
+            WHERE p.id = ? AND p.thread_id = ?', (int) $quote, $this->threadID)->FetchArray();
+
+        if (empty($post))
+            return '';
+
+        return Text::Quote($post['post_content'], $post['username']);
     }
 
     private function SetupNewThread(int $forumID, int $subforumID): void

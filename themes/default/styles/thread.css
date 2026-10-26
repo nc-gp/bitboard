@@ -194,6 +194,37 @@
     margin: 0;
 }
 
+.fast-reply-quote-bar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px dashed var(--opposite-x2);
+    border-radius: var(--border-radius);
+    color: gray;
+    font-size: 0.82rem;
+}
+
+.fast-reply-quote-bar[hidden] {
+    display: none;
+}
+
+.fast-reply-quote-bar button {
+    width: auto;
+    margin: 0;
+    padding: 4px 10px;
+    font-size: 0.78rem;
+    line-height: 1.2;
+}
+
+.fast-reply-quote-bar .quote-clear {
+    border-color: transparent;
+    background: transparent;
+    color: gray;
+}
+
 .thread-closed-notice {
     display: flex;
     align-items: center;
@@ -211,12 +242,14 @@
 .post-footer {
     grid-column: 2;
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     justify-content: flex-end;
     gap: 8px;
     padding-bottom: 15px;
 }
 
+.content-quote-link,
 .content-edit-link {
     display: inline-flex;
     align-items: center;
@@ -230,12 +263,45 @@
     text-decoration: none;
 }
 
+.content-quote-link:hover,
 .content-edit-link:hover {
     border-color: var(--primary);
     color: var(--primary-hover);
 }
 
+.content-quote-link i,
 .content-edit-link i {
+    font-size: 0.95rem;
+}
+
+.content-multiquote-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: auto;
+    margin: 0;
+    padding: 4px 8px;
+    border: 1px solid var(--opposite-x2);
+    border-radius: 999px;
+    background: transparent;
+    color: gray;
+    font-size: 0.8rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.content-multiquote-link:hover {
+    border-color: var(--primary);
+    color: var(--primary-hover);
+}
+
+.content-multiquote-link.is-selected {
+    border-color: var(--primary);
+    background: var(--primary-focus);
+    color: var(--primary-hover);
+}
+
+.content-multiquote-link i {
     font-size: 0.95rem;
 }
 

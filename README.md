@@ -60,6 +60,9 @@
 - Thread and post reactions (heart, sad, funny, what?, angry) with one reaction per user,
   a combined total indicator, cached counters, a vertical hover/click picker, AJAX
   toggling, and a normal POST fallback.
+- Quote and multi-quote replies. Quote buttons insert a `> author wrote:` block into the
+  inline fast reply or prefill the full reply page; multi-quote selections persist per
+  thread in the browser session.
 - Thread/post editing with revision history and permission-based permanent deletion.
   Deleting a thread also removes every post inside it.
 
@@ -250,13 +253,14 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] Create threads and reply to threads.
 - [x] Edit and delete threads/posts with history and cascade deletion.
 - [x] Reactions for threads and posts.
+- [x] Quote and multi-quote replies.
 - [x] Staff can reply to closed threads and see an offline-mode banner.
 - [ ] Admin CRUD for categories, forums, subforums, prefixes, users, and ranks.
 - [x] Thread and post search with forum/author/date filters.
 - [x] Online members list with an index preview.
 - [x] SEO-friendly thread slugs and canonical URLs.
 - [x] OpenGraph/Twitter metadata, sitemap, and Atom feed.
-- [ ] Moderation tools (pin/lock/delete) and reports.
+- [ ] Thread moderation (pin/lock/move/merge/split) and reports.
 - [ ] Avatar uploads and profile customization.
 - [ ] Email verification and password reset.
 - [ ] Stable, documented API (v1) with token auth.
