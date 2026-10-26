@@ -27,6 +27,8 @@ class OnlinePage extends PageBase implements PageInterface
         parent::__construct($db, $data);
         $this->UrlHandler();
         $this->forumDesc = 'Members online';
+        $this->ogTitle = 'Members online - ' . $this->forumName;
+        $this->ogDescription = 'See which members are currently online.';
     }
 
     private function UrlHandler(): void
@@ -42,6 +44,8 @@ class OnlinePage extends PageBase implements PageInterface
 
         if ($this->page <= 0)
             UrlManager::Redirect($this->serverPath . 'online/page/1');
+
+        $this->canonicalUrl = $this->serverPath . 'online/page/' . $this->page;
     }
 
     private function FetchOnline(): void

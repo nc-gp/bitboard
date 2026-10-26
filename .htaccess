@@ -10,7 +10,11 @@ DirectoryIndex index.php
   # Rewrite URLs containing 'api' to api.php
   RewriteCond %{REQUEST_URI} api
   RewriteRule ^(.*)$ api.php?data=$1 [QSA,L]
-  
+
+  # Public SEO endpoints
+  RewriteRule ^sitemap\.xml$ index.php?action=sitemap [QSA,L]
+  RewriteRule ^feed\.xml$ index.php?action=feed [QSA,L]
+
   # Rewrite all other URLs to index.php
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d

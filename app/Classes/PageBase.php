@@ -17,6 +17,10 @@ class PageBase
     protected string $forumDesc;
     protected string $serverPath;
     protected string $canonicalUrl = '';
+    protected string $ogTitle = '';
+    protected string $ogDescription = '';
+    protected string $ogType = 'website';
+    protected string $ogImage = '';
 
     protected object $forumData;
 
@@ -40,7 +44,29 @@ class PageBase
     private function CommonSetup(string $templateCategory): void
     {
         $stylesTemplate = new StylesWidget($templateCategory);
-        $headTemplate = new HeadWidget($this->forumName, $this->forumDesc, $stylesTemplate->Template->template, $this->canonicalUrl);
+
+        $ogTitle = $this->ogTitle !== '' ? $this->ogTitle : $this->forumName;
+        $ogDescription = Text::Excerpt(
+            $this->ogDescription !== '' ? $this->ogDescription : $this->forumDesc,
+            160
+        );
+        $ogImage = $this->ogImage !== ''
+            ? $this->ogImage
+            : $this->serverPath . 'themes/default/images/logo.webp';
+
+        $metadata = [
+            'description' => $ogDescription,
+            'canonical' => $this->canonicalUrl,
+            'site_name' => $this->forumName,
+            'og_title' => $ogTitle,
+            'og_description' => $ogDescription,
+            'og_type' => $this->ogType,
+            'og_url' => $this->canonicalUrl,
+            'og_image' => $ogImage,
+            'feed_url' => $this->serverPath . 'feed.xml',
+        ];
+
+        $headTemplate = new HeadWidget($this->forumName, $this->forumDesc, $stylesTemplate->Template->template, $metadata);
         $headerTemplate = new HeaderWidget();
         $footerTemplate = new FooterWidget($this->forumData->forum_credits ?? true);
 

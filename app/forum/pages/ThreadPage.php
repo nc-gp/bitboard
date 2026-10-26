@@ -10,6 +10,7 @@ use App\Classes\AvatarUtils;
 use App\Classes\UsernameUtils;
 use App\Classes\RelativeTime;
 use App\Classes\Slug;
+use App\Classes\Text;
 use App\Classes\UrlManager;
 use App\Classes\HtmlSanitizer;
 use App\Classes\Permissions;
@@ -75,8 +76,11 @@ class ThreadPage extends PageBase implements PageInterface
         $this->threadID = $threadID;
         $this->threadPage = $threadPage;
 
-        $thread = $this->database->Query('SELECT t.id, t.thread_title, f.is_locked AS forum_locked, sf.is_locked AS subforum_locked
+        $thread = $this->database->Query('SELECT t.id, t.thread_title, t.thread_content,
+                u.username AS author_name, u.avatar AS author_avatar,
+                f.is_locked AS forum_locked, sf.is_locked AS subforum_locked
             FROM bit_threads AS t
+            JOIN bit_accounts AS u ON u.id = t.user_id
             JOIN bit_forums AS f ON f.id = t.forum_id
             LEFT JOIN bit_subforums AS sf ON sf.id = t.subforum_id
             WHERE t.id = ?', $this->threadID)->FetchArray();
@@ -88,6 +92,14 @@ class ThreadPage extends PageBase implements PageInterface
             UrlManager::Redirect($this->serverPath);
 
         $this->threadSlug = Slug::FromTitle($thread['thread_title']);
+        $this->forumDesc = $thread['thread_title'];
+        $this->ogType = 'article';
+        $this->ogTitle = $thread['thread_title'];
+        $this->ogDescription = Text::Excerpt($thread['thread_content'], 160);
+        $this->ogImage = AvatarUtils::GetPath($thread['author_avatar']);
+
+        if ($this->ogDescription === '')
+            $this->ogDescription = 'Thread by ' . $thread['author_name'] . ' on ' . $this->forumName . '.';
 
         if ($requestedSlug !== $this->threadSlug)
             UrlManager::RedirectPermanent(UrlManager::ThreadUrl($this->threadID, $this->threadSlug, $this->threadPage));
@@ -138,8 +150,6 @@ class ThreadPage extends PageBase implements PageInterface
         $threadContentTemplate->Replace();
 
         $this->thread = $threadContentTemplate->template;
-
-        $this->forumDesc .= $thread['thread_title'];
     }
 
     private function fetchPosts()

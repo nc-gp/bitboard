@@ -47,6 +47,8 @@
 - Online members list and an online preview on the forum index.
 - SEO-friendly thread URLs with generated slugs and canonical links; legacy thread URLs
   redirect permanently to the current slug.
+- OpenGraph/Twitter metadata, a public sitemap at `/sitemap.xml`, and an Atom feed at
+  `/feed.xml`.
 - Admin panel shell with forum settings and prefix management (edit/delete).
 - Theme system with the bundled `default` theme and light/dark/auto switcher.
 - Offline mode, force-login mode, banned page, and a 404 page with a real 404 status.
@@ -243,6 +245,7 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] Thread and post search with forum/author/date filters.
 - [x] Online members list with an index preview.
 - [x] SEO-friendly thread slugs and canonical URLs.
+- [x] OpenGraph/Twitter metadata, sitemap, and Atom feed.
 - [ ] Moderation tools (pin/lock/delete) and reports.
 - [ ] Avatar uploads and profile customization.
 - [ ] Email verification and password reset.

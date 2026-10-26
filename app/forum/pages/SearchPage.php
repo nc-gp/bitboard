@@ -9,6 +9,7 @@ use App\Classes\Permissions;
 use App\Classes\RelativeTime;
 use App\Classes\SessionManager;
 use App\Classes\Slug;
+use App\Classes\Text;
 use App\Classes\UrlManager;
 use App\Classes\UsernameUtils;
 use App\Interfaces\PageInterface;
@@ -56,6 +57,8 @@ class SearchPage extends PageBase implements PageInterface
         parent::__construct($db, $data);
         $this->UrlHandler();
         $this->forumDesc = 'Search';
+        $this->ogTitle = 'Search - ' . $this->forumName;
+        $this->ogDescription = 'Search threads and posts.';
     }
 
     private function UrlHandler(): void
@@ -274,18 +277,6 @@ class SearchPage extends PageBase implements PageInterface
         return [$countSql, $resultSql, $countParameters];
     }
 
-    private function Excerpt(string $content): string
-    {
-        $text = preg_replace('/<[^>]+>/', ' ', $content) ?? '';
-        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        $text = trim(preg_replace('/\s+/u', ' ', $text) ?? '');
-
-        if (mb_strlen($text) > 220)
-            $text = mb_substr($text, 0, 217) . '...';
-
-        return $text;
-    }
-
     private function BuildLocation(array $result): string
     {
         $location = '<a href="' . $this->serverPath . 'forum/' . (int) $result['forum_id'] . '/page/1">'
@@ -348,7 +339,7 @@ class SearchPage extends PageBase implements PageInterface
                 Slug::FromTitle($result['title'])
             ));
             $resultTemplate->AddEscapedEntry('{title}', $result['title']);
-            $resultTemplate->AddEntry('{excerpt}', Template::Escape($this->Excerpt($result['content'])));
+            $resultTemplate->AddEntry('{excerpt}', Template::Escape(Text::Excerpt($result['content'], 220)));
             $resultTemplate->AddEntry('{location}', $this->BuildLocation($result));
             $resultTemplate->AddEscapedEntry('{date}', RelativeTime::Convert($result['created_at']));
             $resultTemplate->AddEscapedEntry('{type_label}', $result['result_type'] === 'thread' ? 'Thread' : 'Reply');

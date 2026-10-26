@@ -204,8 +204,11 @@ class ForumPage extends PageBase implements PageInterface
 
     private function SetupForumDesc()
     {
-        $forumName = $this->database->Query('SELECT forum_name FROM bit_forums WHERE id = ?', $this->forumID)->FetchArray();
-        $this->forumDesc = 'Forum ' . $forumName['forum_name'];
+        $forum = $this->database->Query('SELECT forum_name, forum_desc FROM bit_forums WHERE id = ?', $this->forumID)->FetchArray();
+        $this->forumDesc = 'Forum ' . $forum['forum_name'];
+        $this->canonicalUrl = $this->serverPath . 'forum/' . $this->forumID . '/page/' . $this->forumPage;
+        $this->ogTitle = $forum['forum_name'] . ' - ' . $this->forumName;
+        $this->ogDescription = $forum['forum_desc'];
     }
 
     public function Do()

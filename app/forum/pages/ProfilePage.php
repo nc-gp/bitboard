@@ -11,6 +11,7 @@ use App\Classes\RelativeTime;
 use App\Classes\SessionManager;
 use App\Classes\Slug;
 use App\Classes\Template;
+use App\Classes\Text;
 use App\Classes\UrlManager;
 use App\Classes\UsernameUtils;
 
@@ -55,6 +56,11 @@ class ProfilePage extends PageBase implements PageInterface
         $this->profile['thread_count'] = (int) ($counts['thread_count'] ?? 0);
         $this->profile['post_count'] = (int) ($counts['post_count'] ?? 0);
         $this->forumDesc = 'Profile of ' . $this->profile['username'];
+        $this->canonicalUrl = $this->serverPath . 'profile/' . $this->profileID;
+        $this->ogType = 'profile';
+        $this->ogTitle = $this->profile['username'] . ' - ' . $this->forumName;
+        $this->ogDescription = 'Profile of ' . $this->profile['username'] . ' on ' . $this->forumName . '.';
+        $this->ogImage = AvatarUtils::GetPath($this->profile['avatar']);
     }
 
     private function GetRecentThreads(): string
@@ -117,11 +123,7 @@ class ProfilePage extends PageBase implements PageInterface
         $html = '';
         foreach ($posts as $post)
         {
-            $excerpt = html_entity_decode(strip_tags($post['post_content']), ENT_QUOTES | ENT_HTML5, 'UTF-8');
-            $excerpt = trim(preg_replace('/\s+/', ' ', $excerpt));
-
-            if (mb_strlen($excerpt) > 180)
-                $excerpt = mb_substr($excerpt, 0, 177) . '...';
+            $excerpt = Text::Excerpt($post['post_content'], 180);
 
             $template = new Template('profile', 'post');
             $template->AddEscapedEntry('{thread_id}', $post['thread_id']);

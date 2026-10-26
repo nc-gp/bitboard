@@ -81,6 +81,24 @@ class RelativeTime
 
         return $timeDifference < 900;
     }
+
+    /**
+     * Format a timestamp as an ISO 8601 date for feeds and sitemaps.
+     *
+     * @param string $timestamp The timestamp to format.
+     * @return string The ISO 8601 value.
+     */
+    public static function Iso(string $timestamp): string
+    {
+        try
+        {
+            return (new DateTime($timestamp))->format(DATE_ATOM);
+        }
+        catch (\Exception $e)
+        {
+            return (new DateTime())->format(DATE_ATOM);
+        }
+    }
 }
 
 ?>

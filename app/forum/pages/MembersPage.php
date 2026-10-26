@@ -38,6 +38,8 @@ class MembersPage extends PageBase implements PageInterface
         parent::__construct($db, $data);
         $this->UrlHandler();
         $this->forumDesc = 'Members list';
+        $this->ogTitle = 'Members - ' . $this->forumName;
+        $this->ogDescription = 'Browse the member directory.';
     }
 
     private function UrlHandler(): void

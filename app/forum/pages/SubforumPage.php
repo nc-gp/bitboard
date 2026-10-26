@@ -154,8 +154,11 @@ class SubforumPage extends PageBase implements PageInterface
 
     private function SetupForumDesc()
     {
-        $subForumName = $this->database->Query('SELECT subforum_name FROM bit_subforums WHERE id = ?', $this->subforumID)->FetchArray();
-        $this->forumDesc = 'Subforum ' . $subForumName['subforum_name'];
+        $subforum = $this->database->Query('SELECT subforum_name, subforum_desc FROM bit_subforums WHERE id = ?', $this->subforumID)->FetchArray();
+        $this->forumDesc = 'Subforum ' . $subforum['subforum_name'];
+        $this->canonicalUrl = $this->serverPath . 'subforum/' . $this->subforumID . '/page/' . $this->subforumPage;
+        $this->ogTitle = $subforum['subforum_name'] . ' - ' . $this->forumName;
+        $this->ogDescription = $subforum['subforum_desc'];
     }
 
     public function Do()

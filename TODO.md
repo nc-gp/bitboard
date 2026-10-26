@@ -272,7 +272,9 @@ Items marked **good first issue** are small and self-contained.
 - [x] SEO-friendly thread slugs and canonical URLs. Thread URLs use
   `/thread/{id}/{slug}/page/{page}`, old URLs redirect with a 301, and thread pages
   expose a canonical link.
-- [ ] OpenGraph/Twitter metadata, sitemap, RSS/Atom feeds.
+- [x] OpenGraph/Twitter metadata, sitemap, RSS/Atom feeds. Pages expose social metadata,
+  `/sitemap.xml` lists public content, and `/feed.xml` provides an Atom feed of recent
+  threads.
 
 ### API and integrations
 
