@@ -1,0 +1,25 @@
+<form class="admin-category-create" method="post" action="{server_url}admin/ranks">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
+    <input type="hidden" name="action" value="create">
+
+    <div class="admin-category-fields admin-rank-fields">
+        <label>
+            <span>Name</span>
+            <input type="text" name="rank_name" maxlength="64" placeholder="Moderator" required>
+        </label>
+        <label>
+            <span>Username format</span>
+            <input type="text" name="rank_format" maxlength="256" placeholder="&lt;span&gt;{username}&lt;/span&gt;" required>
+        </label>
+    </div>
+
+    <p class="admin-field-hint">
+        Use <code>{username}</code> where the username should appear. HTML is allowed and is rendered for this rank.
+    </p>
+
+    {permissions}
+
+    <div class="admin-category-actions">
+        <button type="submit">Create rank</button>
+    </div>
+</form>

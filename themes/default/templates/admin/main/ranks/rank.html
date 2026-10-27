@@ -1,0 +1,43 @@
+<section class="admin-category admin-rank">
+    <div class="admin-category-head">
+        <span class="admin-category-icon"><i class="ti ti-shield" aria-hidden="true"></i></span>
+        <strong>{rank_name}</strong>
+        <span class="admin-category-count">{user_label}</span>
+        <span class="admin-category-count">{permission_label}</span>
+        {builtin_badge}
+    </div>
+
+    <form id="edit-rank-{rank_id}" class="admin-category-form" method="post" action="{server_url}admin/ranks">
+        <input type="hidden" name="csrf_token" value="{csrf_token}">
+        <input type="hidden" name="action" value="edit">
+        <input type="hidden" name="rank_id" value="{rank_id}">
+
+        <div class="admin-category-fields admin-rank-fields">
+            <label>
+                <span>Name</span>
+                <input type="text" name="rank_name" maxlength="64" required value="{rank_name}"{name_readonly}>
+            </label>
+            <label>
+                <span>Username format</span>
+                <input type="text" name="rank_format" maxlength="256" required value="{rank_format}">
+            </label>
+        </div>
+
+        <p class="admin-field-hint">
+            Use <code>{username}</code> where the username should appear. HTML is allowed and is rendered for this rank.
+        </p>
+
+        {permissions}
+    </form>
+
+    <form id="delete-rank-{rank_id}" class="admin-category-delete" method="post" action="{server_url}admin/ranks">
+        <input type="hidden" name="csrf_token" value="{csrf_token}">
+        <input type="hidden" name="action" value="delete">
+        <input type="hidden" name="rank_id" value="{rank_id}">
+    </form>
+
+    <div class="admin-category-actions">
+        <button type="submit" form="edit-rank-{rank_id}">Save</button>
+        {delete_button}
+    </div>
+</section>

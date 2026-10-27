@@ -51,6 +51,9 @@ class AdminPage extends PageBase implements PageInterface
 
         $option = isset($this->forumData->actionParameters[1]) ? $this->forumData->actionParameters[1] : 0;
 
+        if ($option === 'ranks' && !SessionManager::HasPermission(Permissions::MANAGING_ROLES))
+            UrlManager::Redirect($this->serverPath . 'admin');
+
         switch($option)
         {
             case 'settings':
@@ -107,11 +110,23 @@ class AdminPage extends PageBase implements PageInterface
                 $this->content = $this->BuildForums();
                 break;
             }
+            case 'ranks':
+            {
+                if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST')
+                    $this->HandleRankSubmission();
+
+                $this->content = $this->BuildRanks();
+                break;
+            }
             default:
             {
                 $this->content = new Template('admin/main', 'home');
                 $this->content->AddEscapedEntry('{username}', $_SESSION['bitboard_user']->username);
                 $this->content->AddEscapedEntry('{rankname}', RankController::GetRankNameByID($this->database, $_SESSION['bitboard_user']->rank_id));
+                $this->content->AddEntry('{ranks_link}', SessionManager::HasPermission(Permissions::MANAGING_ROLES)
+                    ? '<a class="admin-quick-link" href="' . $this->serverPath . 'admin/ranks">'
+                        . '<i class="ti ti-shield" aria-hidden="true"></i> Ranks</a>'
+                    : '');
                 $this->content->Replace();
                 break;
             }
@@ -566,6 +581,230 @@ class AdminPage extends PageBase implements PageInterface
         return $content->template;
     }
 
+    private function PostedPermissions(): int
+    {
+        $valid = [];
+        foreach (Permissions::GROUPS as $permissions)
+            foreach (array_keys($permissions) as $permission)
+                $valid[$permission] = true;
+
+        $flags = 0;
+
+        if (isset($_POST['permissions']) && is_array($_POST['permissions']))
+        {
+            foreach ($_POST['permissions'] as $value)
+            {
+                if (!is_string($value) || !ctype_digit($value))
+                    continue;
+
+                $permission = (int) $value;
+                if (isset($valid[$permission]))
+                    $flags |= $permission;
+            }
+        }
+
+        return $flags;
+    }
+
+    private function BuildPermissionMatrix(int $flags, string $prefix): string
+    {
+        $html = '<div class="admin-permissions">';
+
+        foreach (Permissions::GROUPS as $group => $permissions)
+        {
+            $html .= '<fieldset class="admin-permission-group">';
+            $html .= '<legend>' . Template::Escape($group) . '</legend>';
+            $html .= '<div class="admin-permission-list">';
+
+            foreach ($permissions as $permission => $label)
+            {
+                $id = $prefix . '-' . $permission;
+                $checked = (($flags & (int) $permission) !== 0) ? ' checked' : '';
+
+                $html .= '<label class="admin-permission" for="' . Template::Escape($id) . '">'
+                    . '<input type="checkbox" id="' . Template::Escape($id) . '" name="permissions[]" value="' . (int) $permission . '"' . $checked . '>'
+                    . '<span>' . Template::Escape($label) . '</span>'
+                    . '</label>';
+            }
+
+            $html .= '</div></fieldset>';
+        }
+
+        return $html . '</div>';
+    }
+
+    private function HandleRankSubmission(): void
+    {
+        if (!SessionManager::ValidateCsrfToken($_POST['csrf_token'] ?? ''))
+        {
+            $this->AdminError('Invalid request. Please try again.');
+            return;
+        }
+
+        $action = $this->PostedString('action');
+        $rankID = $this->PostedID('rank_id');
+
+        if (!in_array($action, ['create', 'edit', 'delete'], true))
+        {
+            $this->AdminError('Invalid rank action.');
+            return;
+        }
+
+        try
+        {
+            if ($action === 'delete')
+            {
+                if ($rankID <= 0 || empty(RankController::GetByID($this->database, $rankID)))
+                {
+                    $this->AdminError('That rank could not be found.');
+                    return;
+                }
+
+                if (RankController::IsBuiltIn($rankID))
+                {
+                    $this->AdminError('Built-in ranks cannot be deleted.');
+                    return;
+                }
+
+                if (RankController::CountUsers($this->database, $rankID) > 0)
+                {
+                    $this->AdminError('Move the users in this rank to another rank before deleting it.');
+                    return;
+                }
+
+                RankController::Delete($this->database, $rankID);
+                UrlManager::Redirect($this->serverPath . 'admin/ranks');
+            }
+
+            $existing = $rankID > 0 ? RankController::GetByID($this->database, $rankID) : [];
+
+            if ($action === 'edit' && empty($existing))
+            {
+                $this->AdminError('That rank could not be found.');
+                return;
+            }
+
+            $name = $this->PostedString('rank_name');
+
+            // Built-in rank names are fixed: registration and other pages look
+            // them up by name.
+            if ($action === 'edit' && RankController::IsBuiltIn($rankID))
+                $name = (string) $existing['rank_name'];
+
+            $format = $this->PostedString('rank_format');
+            $flags = $this->PostedPermissions();
+
+            if (mb_strlen($name) < 1 || mb_strlen($name) > 64)
+            {
+                $this->AdminError('Rank name must be between 1 and 64 characters.');
+                return;
+            }
+
+            if (mb_strlen($format) < 1 || mb_strlen($format) > 256)
+            {
+                $this->AdminError('Rank format must be between 1 and 256 characters.');
+                return;
+            }
+
+            $duplicate = RankController::GetByName($this->database, $name);
+            if (!empty($duplicate) && (int) $duplicate['id'] !== $rankID)
+            {
+                $this->AdminError('A rank with that name already exists.');
+                return;
+            }
+
+            if ($action === 'edit' && $rankID === (int) $_SESSION['bitboard_user']->rank_id)
+            {
+                $required = Permissions::ADMIN_PANEL_ACCESS | Permissions::MANAGING_ROLES;
+
+                if (($flags & $required) !== $required)
+                {
+                    $this->AdminError('You cannot remove admin panel or rank management access from your own rank.');
+                    return;
+                }
+            }
+
+            // Keep the built-in Admin rank as a recovery path even when another
+            // custom rank also has administrative permissions.
+            if ($action === 'edit' && $rankID === 1)
+            {
+                $required = Permissions::ADMIN_PANEL_ACCESS | Permissions::MANAGING_ROLES;
+
+                if (($flags & $required) !== $required)
+                {
+                    $this->AdminError('The built-in Admin rank must keep admin panel and rank management access.');
+                    return;
+                }
+            }
+
+            if ($action === 'edit')
+                RankController::Update($this->database, $rankID, $name, $format, $flags);
+            else
+                RankController::Create($this->database, $name, $format, $flags);
+
+            UrlManager::Redirect($this->serverPath . 'admin/ranks');
+        }
+        catch (Throwable $e)
+        {
+            error_log('BitBoard rank update failed: ' . $e->getMessage());
+            $this->AdminError('Unable to save this rank. Please try again.');
+        }
+    }
+
+    private function BuildRankRow(array $rank): string
+    {
+        $rankID = (int) $rank['id'];
+        $flags = (int) $rank['rank_flags'];
+        $builtIn = RankController::IsBuiltIn($rankID);
+
+        $permissionCount = 0;
+        foreach (Permissions::GROUPS as $permissions)
+            foreach ($permissions as $permission => $label)
+                if (($flags & (int) $permission) !== 0)
+                    $permissionCount++;
+
+        $deleteButton = $builtIn
+            ? ''
+            : '<button type="submit" form="delete-rank-' . $rankID . '" class="danger-button">Delete</button>';
+
+        $row = new Template('admin/main/ranks', 'rank');
+        $row->AddEscapedEntry('{rank_id}', $rankID);
+        $row->AddEscapedEntry('{rank_name}', $rank['rank_name']);
+        $row->AddEscapedEntry('{rank_format}', $rank['rank_format']);
+        $row->AddEntry('{name_readonly}', $builtIn ? ' readonly' : '');
+        $row->AddEscapedEntry('{user_label}', $this->CountLabel((int) $rank['user_count'], 'user'));
+        $row->AddEscapedEntry('{permission_label}', $this->CountLabel($permissionCount, 'permission'));
+        $row->AddEntry('{builtin_badge}', $builtIn ? '<span class="admin-rank-builtin">Built-in</span>' : '');
+        $row->AddEntry('{permissions}', $this->BuildPermissionMatrix($flags, 'rank-' . $rankID));
+        $row->AddEntry('{delete_button}', $deleteButton);
+        $row->Replace();
+
+        return $row->template;
+    }
+
+    private function BuildRanks(): string
+    {
+        $ranks = RankController::GetAll($this->database);
+        $rows = '';
+
+        foreach ($ranks as $rank)
+            $rows .= $this->BuildRankRow($rank);
+
+        if ($rows === '')
+            $rows = (new Template('admin/main/ranks', 'empty'))->template;
+
+        $create = new Template('admin/main/ranks', 'create');
+        $create->AddEntry('{permissions}', $this->BuildPermissionMatrix(0, 'rank-new'));
+        $create->Replace();
+
+        $content = new Template('admin/main', 'ranks');
+        $content->AddEntry('{create_rank}', $create->template);
+        $content->AddEntry('{ranks}', $rows);
+        $content->Replace();
+
+        return $content->template;
+    }
+
     private function BuildAdminNav(): string
     {
         $sections = [
@@ -574,7 +813,11 @@ class AdminPage extends PageBase implements PageInterface
             'categories' => ['Categories', 'ti-category', 'admin/categories'],
             'forums' => ['Forums', 'ti-messages', 'admin/forums'],
             'prefixes' => ['Prefixes', 'ti-tag', 'admin/prefixes'],
+            'ranks' => ['Ranks', 'ti-shield', 'admin/ranks'],
         ];
+
+        if (!SessionManager::HasPermission(Permissions::MANAGING_ROLES))
+            unset($sections['ranks']);
 
         $option = isset($this->forumData->actionParameters[1]) && is_string($this->forumData->actionParameters[1])
             ? $this->forumData->actionParameters[1]

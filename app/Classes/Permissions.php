@@ -35,6 +35,35 @@ class Permissions
     self::MANAGING_ROLES |
     self::MANAGING_SETTINGS;
 
+    // Human-readable permission groups used by the admin rank editor.
+    public const GROUPS = [
+        'Forum access' => [
+            self::VIEWING_FORUM => 'View forums',
+            self::VIEWING_FORUM_LOCKED => 'View locked forums',
+        ],
+        'Posting and editing' => [
+            self::CREATING_THREADS => 'Create threads',
+            self::CREATING_POSTS => 'Reply to threads',
+            self::CREATING_THREADS_LOCKED => 'Create threads in locked forums',
+            self::CREATING_POSTS_LOCKED => 'Reply in locked forums',
+            self::EDITING_THREADS => 'Edit threads',
+            self::EDITING_POSTS => 'Edit posts',
+            self::DELETING_THREADS => 'Delete threads',
+            self::DELETING_POSTS => 'Delete posts',
+        ],
+        'Moderation' => [
+            self::PINNING_THREADS => 'Pin threads',
+            self::LOCKING_THREADS => 'Lock threads',
+            self::VIEWING_REPORTS => 'View the report queue',
+        ],
+        'Administration' => [
+            self::ADMIN_PANEL_ACCESS => 'Access the admin panel',
+            self::MANAGING_USERS => 'Manage users',
+            self::MANAGING_ROLES => 'Manage ranks and permissions',
+            self::MANAGING_SETTINGS => 'Manage settings and prefixes',
+        ],
+    ];
+
     // All permisions in one
     public static int $All = 
     self::VIEWING_FORUM |
