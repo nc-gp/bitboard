@@ -1,0 +1,39 @@
+<!doctype html>
+<html>
+{head}
+<body>
+	<div class="bit-container">
+		{header}
+
+		<div id="content">
+			<section id="post-form">
+				<header>
+					<h1>{heading}</h1>
+					<p>{subheading}</p>
+				</header>
+
+				{error}
+
+				<form action="{server_url}move" method="post">
+					<input type="hidden" name="csrf_token" value="{csrf_token}">
+					<input type="hidden" name="thread" value="{thread_id}">
+
+					<label for="move-destination">Destination</label>
+					<select id="move-destination" name="destination" required>
+						{destinations}
+					</select>
+					<p class="post-hint">Moving keeps the thread, replies, reactions, subscriptions, and edit history intact.</p>
+
+					<div class="post-actions">
+						<button type="submit">Move thread</button>
+						<a href="{cancel_url}" class="post-cancel">Cancel</a>
+					</div>
+				</form>
+			</section>
+		</div>
+
+		{footer}
+	</div>
+	{scripts}
+</body>
+</html>

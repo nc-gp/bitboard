@@ -68,8 +68,9 @@
   refresh, and an optional notification chime.
 - Thread subscriptions: subscribe from the thread page and receive a notification for each
   new reply by another member.
-- Staff can pin and lock threads from the thread page. Pinned threads sort first, locked
-  threads show the closed prefix, and staff keep their posting exceptions.
+- Staff can pin, lock, and move threads. Moving uses a destination picker for forums and
+  subforums; pinned/locked statuses, replies, reactions, subscriptions, and edit history stay
+  attached.
 - Custom thread prefixes/tags are visible on thread pages and can be chosen when creating or
   editing a thread; pin and lock remain separate staff controls.
 - Thread/post editing with revision history and permission-based permanent deletion.
@@ -272,8 +273,9 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] SEO-friendly thread slugs and canonical URLs.
 - [x] OpenGraph/Twitter metadata, sitemap, and Atom feed.
 - [x] Pin and lock threads.
+- [x] Move threads between forums and subforums.
 - [x] Thread prefix display and editing.
-- [ ] Move, merge, and split threads, plus reports.
+- [ ] Merge and split threads, plus reports.
 - [ ] Avatar uploads and profile customization.
 - [ ] Email verification and password reset.
 - [ ] Stable, documented API (v1) with token auth.

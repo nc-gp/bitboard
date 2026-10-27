@@ -345,6 +345,7 @@ class ThreadPage extends PageBase implements PageInterface
     {
         $canPin = SessionManager::HasPermission(Permissions::PINNING_THREADS);
         $canLock = SessionManager::HasPermission(Permissions::LOCKING_THREADS);
+        $canMove = $canPin || $canLock;
 
         if (!$canPin && !$canLock)
             return '';
@@ -367,6 +368,13 @@ class ThreadPage extends PageBase implements PageInterface
                 $this->threadClosed ? 'Unlock' : 'Lock',
                 $this->threadClosed ? 'ti-lock-open' : 'ti-lock'
             );
+        }
+
+        if ($canMove)
+        {
+            $actions .= '<a class="thread-moderation-button" href="'
+                . $this->serverPath . 'move?thread=' . $this->threadID . '">'
+                . '<i class="ti ti-arrows-move" aria-hidden="true"></i> Move</a>';
         }
 
         $status = '';

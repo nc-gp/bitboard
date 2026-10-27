@@ -131,6 +131,15 @@ class ThreadController
     }
 
     /**
+     * Move a thread to a top-level forum or a subforum.
+     */
+    public static function Move(Database $db, int $threadID, int $forumID, int $subforumID): void
+    {
+        $db->Query('UPDATE bit_threads SET forum_id = ?, subforum_id = ? WHERE id = ?',
+            $forumID, $subforumID, $threadID);
+    }
+
+    /**
      * CreateTable creates the 'bit_threads' and 'bit_threads_likes' tables in the database if they do not already exist.
      *
      * @param Database db The database instance.

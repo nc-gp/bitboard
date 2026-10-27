@@ -280,7 +280,8 @@ Items marked **good first issue** are small and self-contained.
 - [x] Pin and lock threads from the thread page with `PINNING_THREADS`/`LOCKING_THREADS`.
   Pinned threads sort first and show the pinned prefix; locked threads show the closed prefix
   and keep staff posting exceptions.
-- [ ] Move, merge, and split threads.
+- [x] Move threads between forums and subforums from the moderation actions.
+- [ ] Merge and split threads.
 - [ ] Report queue with statuses, notes, and `VIEWING_REPORTS`.
 - [ ] Admin CRUD for categories, forums, subforums, and prefixes, including drag-and-drop
   ordering and locked toggles. The admin nav links already exist.
