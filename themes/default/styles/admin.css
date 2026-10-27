@@ -180,6 +180,12 @@
     border-radius: var(--border-radius);
 }
 
+.admin-field-hint {
+    margin: 8px 0 0;
+    color: gray;
+    font-size: 0.78rem;
+}
+
 .admin-category {
     margin-bottom: 14px;
     padding: 14px;

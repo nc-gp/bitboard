@@ -19,8 +19,9 @@ class ApiMain
                 'class' => 'Settings',
                 'permission' => Permissions::MANAGING_SETTINGS,
             ],
-            // Prefix edit/delete requests arrive as api/prefixes/{edit|delete}/{id}.
-            // HandleURL() maps those paths to this entry and injects the route parameters.
+            // Prefix create/edit/delete requests use the base route. Edit and delete
+            // arrive as api/prefixes/{edit|delete}/{id}; HandleURL() maps those paths
+            // to this entry and injects the route parameters.
             'api/prefixes' => [
                 'class' => 'Prefixes',
                 'permission' => Permissions::MANAGING_SETTINGS,

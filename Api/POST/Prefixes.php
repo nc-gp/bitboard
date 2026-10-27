@@ -12,12 +12,19 @@ class Prefixes
     private int $code = ApiCodes::OK;
     private string $message = 'Prefix updated!';
     private array $errors = [];
+    private ?int $newPrefixId = null;
 
     public function __construct(Database $db, array $data)
     {
         $type = $this->ReadAction($data);
         if($type === null)
             return;
+
+        if($type === 'create')
+        {
+            $this->Create($db, $data);
+            return;
+        }
 
         $prefixId = $this->ReadPrefixId($data);
         if($prefixId === null)
@@ -61,9 +68,9 @@ class Prefixes
 
         $type = strtolower(trim($data['type']));
 
-        if(!in_array($type, array('edit', 'delete'), true))
+        if(!in_array($type, array('create', 'edit', 'delete'), true))
         {
-            $this->errors['type'] = 'Action must be "edit" or "delete".';
+            $this->errors['type'] = 'Action must be "create", "edit", or "delete".';
             $this->code = ApiCodes::BAD_REQUEST;
             $this->message = 'Invalid prefix data.';
             return null;
@@ -90,16 +97,40 @@ class Prefixes
         return $prefixId;
     }
 
+    private function Create(Database $db, array $data): void
+    {
+        $prefixName = $this->ReadString($data, 'prefixname', 'Prefix name');
+        $prefixClass = $this->ReadClass($data);
+
+        if(!empty($this->errors))
+        {
+            $this->code = ApiCodes::BAD_REQUEST;
+            $this->message = 'Invalid prefix data.';
+            return;
+        }
+
+        $duplicate = $db->Query('SELECT id FROM bit_prefixes WHERE prefix_name = ? LIMIT 1', $prefixName)->FetchArray();
+
+        if(!empty($duplicate))
+        {
+            $this->code = ApiCodes::CONFLICT;
+            $this->message = 'A prefix with that name already exists.';
+            return;
+        }
+
+        $db->Query(
+            'INSERT INTO bit_prefixes (id,prefix_name,prefix_class,is_removable) VALUES (?,?,?,?)',
+            [0, $prefixName, $prefixClass, 1]
+        );
+
+        $this->newPrefixId = (int) $db->LastInsertID();
+        $this->message = sprintf('Prefix "%s" created!', $prefixName);
+    }
+
     private function Edit(Database $db, array $prefix, array $data): void
     {
         $prefixName = $this->ReadString($data, 'prefixname', 'Prefix name');
-        $prefixClass = $this->ReadString($data, 'prefixclass', 'Prefix class');
-
-        if($prefixClass !== null && !preg_match('/^[A-Za-z0-9_-]+$/', $prefixClass))
-        {
-            $this->errors['prefixclass'] = 'Prefix class may only contain letters, numbers, hyphens, and underscores.';
-            $prefixClass = null;
-        }
+        $prefixClass = $this->ReadClass($data);
 
         if(!empty($this->errors))
         {
@@ -116,6 +147,19 @@ class Prefixes
         );
 
         $this->message = sprintf('Prefix "%s" updated!', $prefixName);
+    }
+
+    private function ReadClass(array $data): ?string
+    {
+        $prefixClass = $this->ReadString($data, 'prefixclass', 'Prefix class');
+
+        if($prefixClass !== null && !preg_match('/^[A-Za-z0-9_-]+$/', $prefixClass))
+        {
+            $this->errors['prefixclass'] = 'Prefix class may only contain letters, numbers, hyphens, and underscores.';
+            return null;
+        }
+
+        return $prefixClass;
     }
 
     private function Delete(Database $db, array $prefix): void
@@ -169,6 +213,9 @@ class Prefixes
     public function Response(): void
     {
         $response = ['message' => $this->message];
+
+        if($this->newPrefixId !== null)
+            $response['id'] = $this->newPrefixId;
 
         if(!empty($this->errors))
             $response['errors'] = $this->errors;

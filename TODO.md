@@ -292,7 +292,9 @@ Items marked **good first issue** are small and self-contained.
 - [x] Admin forum and subforum management: create, edit, delete, category assignment,
   manual ordering, and locked toggles. Forums cannot be deleted while they still contain
   threads; deleting an empty forum also removes its subforums.
-- [ ] Admin CRUD for prefixes (creation UI), users, and ranks, including drag-and-drop ordering.
+- [x] Admin custom prefix creation: name plus CSS class, duplicate-name protection, and
+  64-character limits; built-in prefixes are left untouched.
+- [ ] Admin CRUD for users and ranks, including drag-and-drop ordering.
 - [ ] User management: search, rank assignment, ban/unban, reputation adjustments.
 - [ ] Rank/permission matrix editor with readable labels for every bit flag.
 - [ ] Audit log for admin actions and moderator actions.

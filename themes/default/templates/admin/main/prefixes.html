@@ -7,6 +7,27 @@
         </div>
     </header>
 
+    <form id="prefixCreateForm" class="admin-category-create" method="post" action="{server_url}api/prefixes">
+        <input type="hidden" name="csrf_token" value="{csrf_token}">
+
+        <div class="admin-category-fields">
+            <label>
+                <span>Name</span>
+                <input type="text" name="prefixname" maxlength="64" placeholder="Question" required>
+            </label>
+            <label>
+                <span>CSS class</span>
+                <input type="text" name="prefixclass" maxlength="64" placeholder="prquestion" pattern="[A-Za-z0-9_-]+" required>
+            </label>
+        </div>
+
+        <p class="admin-field-hint">The CSS class is applied to the prefix badge. Define matching styles in the active theme.</p>
+
+        <div class="admin-category-actions">
+            <button type="submit">Create prefix</button>
+        </div>
+    </form>
+
     <div id="preprefixes">
         {prefixes}
     </div>
@@ -74,6 +95,66 @@
                 question.textContent = 'Do you want to delete prefix "' + prefixName + '"?';
         }
     };
+
+    const createPrefixForm = document.getElementById('prefixCreateForm');
+
+    if (createPrefixForm !== null) {
+        createPrefixForm.addEventListener('submit', event => {
+            event.preventDefault();
+
+            const submit = createPrefixForm.querySelector('button[type="submit"]');
+            const formData = new FormData(createPrefixForm);
+            const payload = {
+                type: 'create',
+                prefixname: (formData.get('prefixname') || '').toString().trim(),
+                prefixclass: (formData.get('prefixclass') || '').toString().trim(),
+                csrf_token: (formData.get('csrf_token') || '').toString()
+            };
+
+            if (payload.prefixname === '' || payload.prefixclass === '') {
+                toast('Name and CSS class are required.');
+                return;
+            }
+
+            if (submit !== null)
+                submit.disabled = true;
+
+            const reset = () => {
+                if (submit !== null)
+                    submit.disabled = false;
+            };
+
+            req('POST', '{server_url}api/prefixes', JSON.stringify(payload), (msg, data) => {
+                if (msg !== null) {
+                    toast(msg);
+                    reset();
+                    return;
+                }
+
+                if (data === null) {
+                    toast('Data is null');
+                    reset();
+                    return;
+                }
+
+                try {
+                    const response = JSON.parse(data);
+
+                    if (response === null || response.data === null || !response.data.message) {
+                        toast('Invalid API response');
+                        reset();
+                        return;
+                    }
+
+                    toast(response.data.message, 5, '53, 255, 53');
+                    setTimeout(() => window.location.reload(), 700);
+                } catch (error) {
+                    toast('Error parsing JSON data: ' + error.message);
+                    reset();
+                }
+            });
+        });
+    }
 
     // The modal is cloned by main.js when it is displayed, so listeners attached to the
     // original hidden modal would be lost. Delegate from the document instead.
