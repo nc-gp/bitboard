@@ -249,10 +249,44 @@ class AdminPage extends PageBase implements PageInterface
         return $content->template;
     }
 
+    private function BuildAdminNav(): string
+    {
+        $sections = [
+            'home' => ['Dashboard', 'ti-home', 'admin'],
+            'settings' => ['Settings', 'ti-settings', 'admin/settings'],
+            'categories' => ['Categories', 'ti-category', 'admin/categories'],
+            'prefixes' => ['Prefixes', 'ti-tag', 'admin/prefixes'],
+        ];
+
+        $option = isset($this->forumData->actionParameters[1]) && is_string($this->forumData->actionParameters[1])
+            ? $this->forumData->actionParameters[1]
+            : '';
+        $current = array_key_exists($option, $sections) ? $option : 'home';
+        $items = '';
+
+        foreach ($sections as $key => [$label, $icon, $route])
+        {
+            $item = new Template('admin', 'nav_item');
+            $item->AddEscapedEntry('{url}', $this->serverPath . $route);
+            $item->AddEscapedEntry('{label}', $label);
+            $item->AddEscapedEntry('{icon}', $icon);
+            $item->AddEscapedEntry('{active_class}', $key === $current ? ' is-active' : '');
+            $item->Replace();
+            $items .= $item->template;
+        }
+
+        $nav = new Template('admin', 'nav');
+        $nav->AddEntry('{items}', $items);
+        $nav->Replace();
+
+        return $nav->template;
+    }
+
     public function Do()
     {
         $this->CheckError();
         $this->template = new Template('admin', 'admin');
+        $this->template->AddEntry('{admin_nav}', $this->BuildAdminNav());
         $this->template->AddEntry('{content}', $this->content);
         $this->template->AddEntry('{error}', $this->error);
 

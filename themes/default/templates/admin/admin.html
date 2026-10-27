@@ -3,49 +3,21 @@
 {head}
 <body>
 	<div class="bit-container">
-        <header>
-            <div id="i">
-                <div class="bg_container">
-                    <div id="bg"></div>
-                </div>
-                <img src="{server_url}themes/default/images/bb.webp">
-            </div>
-            <nav>
-                <div class="nav-links">
-                    <a href="{server_url}admin">
-                        <button type="submit" aria-label="Home" data-tooltip-position="bottom" role="tooltip"><i
-                                class="ti ti-home"></i></button>
-                    </a>
-                    <li role="list" dir="rtl">
-                        <button aria-haspopup="listbox" aria-label="Settings" data-tooltip-position="top" role="tooltip"><i
-                            class="ti ti-settings"></i></button>
-                        <ul role="listbox">
-                          <li><a href="{server_url}admin/settings">Forum</a></li>
-                        </ul>
-                    </li>
-                    <li role="list" dir="rtl">
-                        <button aria-haspopup="listbox" aria-label="Index" data-tooltip-position="top" role="tooltip"><i
-                            class="ti ti-category"></i></button>
-                        <ul role="listbox">
-                            <li><a href="{server_url}admin/prefixes">Prefixes</a></li>
-                            <li><a href="{server_url}admin/categories">Categories</a></li>
-                            <li><a href="{server_url}admin/forums">Forums</a></li>
-                            <li><a href="{server_url}admin/subforums">Subforums</a></li>
-                        </ul>
-                    </li>
-                    <a href="{server_url}" target="_blank">
-                        <button type="submit" aria-label="View forum" data-tooltip-position="bottom" role="tooltip"><i
-                                class="ti ti-zoom"></i></button>
-                    </a>
-                </div>
-            </nav>
-        </header>
-		<div id="content" style="display: block">
-            {content}
-		</div>
-	</div>
+		{header}
 
-    {scripts}
-    {error}
+		<div id="content" style="display: block">
+			<div id="admin-shell">
+				{admin_nav}
+
+				<main id="admin-main">
+					{content}
+				</main>
+			</div>
+		</div>
+
+		{footer}
+	</div>
+	{scripts}
+	{error}
 </body>
 </html>

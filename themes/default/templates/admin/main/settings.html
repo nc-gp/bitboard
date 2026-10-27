@@ -1,29 +1,39 @@
-<form id="settingsForm" method="post" action="{server_url}admin/settings/process">
-    <input type="hidden" name="csrf_token" value="{csrf_token}">
-    <input type="text" name="forumname" placeholder="Forum name" aria-label="Forum name" required="" value="{forum_name}">
-    <input type="text" name="forumdesc" placeholder="Forum description" aria-label="Forum description" required="" value="{forum_desc}">
+<article class="admin-settings">
+    <header class="admin-section-header">
+        <span class="admin-section-icon"><i class="ti ti-settings" aria-hidden="true"></i></span>
+        <div>
+            <h2>Forum settings</h2>
+            <p>Update the public forum name, description, availability, and footer credit.</p>
+        </div>
+    </header>
 
-    <input type="text" name="forumonline" placeholder="Forum offline Message" aria-label="Forum offline Message" value="{forum_online_msg}">
-    <fieldset>
-        <label for="online">
-            <input type="checkbox" role="switch" id="online" name="online" {forum_online}>
-            Forum online
-        </label>
-    </fieldset>
-    <fieldset>
-        <label for="forum_force_login">
-            <input type="checkbox" role="switch" id="forum_force_login" name="forum_force_login" {forum_force_login}>
-            Force visitors to login
-        </label>
-    </fieldset>
-    <fieldset>
-        <label for="forum_credits">
-            <input type="checkbox" role="switch" id="forum_credits" name="forum_credits" {forum_credits}>
-            Show "Powered by BitBoard" credit
-        </label>
-    </fieldset>
-</form>
-<button id="settings">Update settings</button>
+    <form id="settingsForm" method="post" action="{server_url}admin/settings/process">
+        <input type="hidden" name="csrf_token" value="{csrf_token}">
+        <input type="text" name="forumname" placeholder="Forum name" aria-label="Forum name" required="" value="{forum_name}">
+        <input type="text" name="forumdesc" placeholder="Forum description" aria-label="Forum description" required="" value="{forum_desc}">
+
+        <input type="text" name="forumonline" placeholder="Forum offline Message" aria-label="Forum offline Message" value="{forum_online_msg}">
+        <fieldset>
+            <label for="online">
+                <input type="checkbox" role="switch" id="online" name="online" {forum_online}>
+                Forum online
+            </label>
+        </fieldset>
+        <fieldset>
+            <label for="forum_force_login">
+                <input type="checkbox" role="switch" id="forum_force_login" name="forum_force_login" {forum_force_login}>
+                Force visitors to login
+            </label>
+        </fieldset>
+        <fieldset>
+            <label for="forum_credits">
+                <input type="checkbox" role="switch" id="forum_credits" name="forum_credits" {forum_credits}>
+                Show "Powered by BitBoard" credit
+            </label>
+        </fieldset>
+    </form>
+    <button id="settings">Update settings</button>
+</article>
 
 <script>
     window.onload = () => {

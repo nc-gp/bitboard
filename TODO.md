@@ -81,6 +81,10 @@ Items marked **good first issue** are small and self-contained.
   `app/install/.htaccess` deny direct `/app/...` access; the Nginx guide does the same. The
   README now documents removing write access from `app/install` after setup and treating
   `lock` / `step` as sensitive control files.
+- [ ] **Allow a configurable admin panel path during installation.** Let the installer choose
+  the `/admin` route segment (for example `/aergrstgservrsdv/`), default it to `admin` for
+  existing installs, validate/store it in settings, and update all admin routing, links,
+  redirects, and web-server guidance to use the configured path.
 
 ### Output, input, and API
 
@@ -328,6 +332,8 @@ Items marked **good first issue** are small and self-contained.
 
 - [ ] Redesign the forum offline page to match the default theme layout and styling.
 - [ ] Redesign the installation wizard to match the default theme layout and styling.
+- [ ] Move the admin panel to a dedicated admin theme/layout, independent of forum themes, so
+  custom themes cannot break admin pages.
 - [ ] Theme manager (install, activate, preview, delete).
 - [ ] Child themes and a documented template variable reference.
 - [ ] Consistent dark/light/auto handling (some layouts hardcode `data-theme="dark"`).

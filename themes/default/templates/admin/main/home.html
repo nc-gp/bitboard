@@ -1,11 +1,27 @@
-<article>
-    <h2>
-        Welcome back {rankname}, {username}!
-    </h2>
-    <p>
-        There are nothing new in the panel note.
-    </p>
-    <footer>
-        However, you can check the stats here.
-    </footer>
+<article class="admin-home">
+    <header class="admin-section-header">
+        <span class="admin-section-icon"><i class="ti ti-home" aria-hidden="true"></i></span>
+        <div>
+            <h2>Dashboard</h2>
+            <p>
+                Welcome back, {username}. You are signed in as {rankname}. Use the admin tabs above
+                or the shortcuts below to manage the forum.
+            </p>
+        </div>
+    </header>
+
+    <div class="admin-quick-links">
+        <a class="admin-quick-link" href="{server_url}admin/settings">
+            <i class="ti ti-settings" aria-hidden="true"></i> Forum settings
+        </a>
+        <a class="admin-quick-link" href="{server_url}admin/categories">
+            <i class="ti ti-category" aria-hidden="true"></i> Categories
+        </a>
+        <a class="admin-quick-link" href="{server_url}admin/prefixes">
+            <i class="ti ti-tag" aria-hidden="true"></i> Prefixes
+        </a>
+        <a class="admin-quick-link" href="{server_url}">
+            <i class="ti ti-home" aria-hidden="true"></i> View forum
+        </a>
+    </div>
 </article>
