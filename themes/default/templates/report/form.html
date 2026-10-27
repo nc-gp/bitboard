@@ -1,0 +1,21 @@
+<form action="{server_url}report" method="post">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
+    <input type="hidden" name="type" value="{type}">
+    <input type="hidden" name="id" value="{id}">
+    <input type="hidden" name="page" value="{page}">
+
+    <label for="report-reason">Reason</label>
+    <select id="report-reason" name="reason" required>
+        {reason_options}
+    </select>
+
+    <label for="report-details">Details <span class="report-optional">(optional)</span></label>
+    <textarea id="report-details" name="details" maxlength="1000"
+        placeholder="Add any context that will help the staff review this report.">{details}</textarea>
+    <p class="post-hint">Reports are visible to forum staff only.</p>
+
+    <div class="post-actions">
+        <button type="submit">Submit report</button>
+        <a href="{cancel_url}" class="post-cancel">Cancel</a>
+    </div>
+</form>

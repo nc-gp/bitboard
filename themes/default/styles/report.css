@@ -1,0 +1,40 @@
+#post-form select {
+    width: 100%;
+    margin: 0;
+}
+
+.report-optional {
+    color: gray;
+    font-weight: normal;
+}
+
+.report-notice {
+    padding: 10px 0 4px;
+    text-align: center;
+}
+
+.report-notice > i {
+    margin: 0 auto 10px;
+    color: var(--primary);
+    font-size: 2.1rem;
+}
+
+.report-notice h2 {
+    margin: 0 0 8px;
+    font-size: 1.15rem;
+}
+
+.report-notice p {
+    max-width: 520px;
+    margin: 0 auto 18px;
+    color: gray;
+    line-height: 1.5;
+}
+
+.report-notice .button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    text-decoration: none;
+}

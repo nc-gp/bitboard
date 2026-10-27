@@ -1,0 +1,13 @@
+<form class="report-actions" action="{server_url}reports/page/{page}" method="post">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
+    <input type="hidden" name="report_id" value="{report_id}">
+    <input type="hidden" name="page" value="{page}">
+    <input type="hidden" name="status_filter" value="{status_filter}">
+
+    <textarea name="note" maxlength="1000" placeholder="Optional note for the report log"></textarea>
+
+    <div class="report-action-buttons">
+        <button type="submit" name="decision" value="resolved">Resolve</button>
+        <button type="submit" name="decision" value="dismissed" class="report-dismiss">Dismiss</button>
+    </div>
+</form>

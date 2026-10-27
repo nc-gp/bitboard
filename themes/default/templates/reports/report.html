@@ -1,0 +1,21 @@
+<article class="report-card{status_class}">
+    <div class="report-card-top">
+        <span class="report-status">{status_label}</span>
+        <span class="report-target-type">{target_type}</span>
+        <a class="report-target" href="{target_url}">{target_title}</a>
+        <span class="report-created">{created}</span>
+    </div>
+
+    <div class="report-meta">
+        <span class="report-reporter">Reported by {reporter}</span>
+        <span class="report-reason"><i class="ti ti-tag" aria-hidden="true"></i> {reason}</span>
+    </div>
+
+    <div class="report-excerpt">{target_excerpt}</div>
+    <p class="report-details">{details}</p>
+
+    {actions}
+
+    <div class="report-resolution">{resolution}</div>
+    <p class="report-note">{note}</p>
+</article>

@@ -281,8 +281,9 @@ Items marked **good first issue** are small and self-contained.
   Pinned threads sort first and show the pinned prefix; locked threads show the closed prefix
   and keep staff posting exceptions.
 - [x] Move threads between forums and subforums from the moderation actions.
-- [ ] Merge and split threads.
-- [ ] Report queue with statuses, notes, and `VIEWING_REPORTS`.
+- [x] Report queue with statuses, notes, and `VIEWING_REPORTS`. Users can report threads or
+  replies; staff get a filtered queue with resolve/dismiss actions and resolution notes.
+- [ ] Merge and split threads (deferred; candidate for a future moderation plugin).
 - [ ] Admin CRUD for categories, forums, subforums, and prefixes, including drag-and-drop
   ordering and locked toggles. The admin nav links already exist.
 - [ ] User management: search, rank assignment, ban/unban, reputation adjustments.

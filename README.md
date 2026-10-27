@@ -68,6 +68,8 @@
   refresh, and an optional notification chime.
 - Thread subscriptions: subscribe from the thread page and receive a notification for each
   new reply by another member.
+- Thread and reply reporting for members, plus a staff report queue with open/resolved/
+  dismissed filters, optional notes, and resolve/dismiss actions.
 - Staff can pin, lock, and move threads. Moving uses a destination picker for forums and
   subforums; pinned/locked statuses, replies, reactions, subscriptions, and edit history stay
   attached.
@@ -85,7 +87,7 @@
 - **Account settings** — email/password settings work; avatar, bio, signature, timezone, and notification preferences are still pending.
 - **Admin CRUD** — categories, forums, subforums, users, and ranks are not manageable yet.
 - **Prefix creation** — existing custom prefixes can be edited/deleted, but there is no create UI yet.
-- **Reports, thread moves/merges/splits, avatars/uploads, and notification preferences.**
+- **Thread merges/splits (future plugin), avatars/uploads, and notification preferences.**
 - **Email verification and password reset.**
 - **Tests, CI, Composer, migrations, and a documented public API.**
 
@@ -275,7 +277,8 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] Pin and lock threads.
 - [x] Move threads between forums and subforums.
 - [x] Thread prefix display and editing.
-- [ ] Merge and split threads, plus reports.
+- [x] Report queue with resolve/dismiss notes.
+- [ ] Merge and split threads (deferred to a future moderation plugin).
 - [ ] Avatar uploads and profile customization.
 - [ ] Email verification and password reset.
 - [ ] Stable, documented API (v1) with token auth.

@@ -214,6 +214,12 @@ class ThreadPage extends PageBase implements PageInterface
             $threadSubscribe = $subscribeTemplate->template;
         }
         $threadContentTemplate->AddEntry('{thread_subscribe}', $threadSubscribe);
+        $threadContentTemplate->AddEntry('{thread_report}', $this->BuildReportLink(
+            'thread',
+            $this->threadID,
+            $this->threadPage,
+            (int) $thread['user_id']
+        ));
 
         LikeController::EnsureSchema($this->database);
         $userId = $this->canLike ? (int) $_SESSION['bitboard_user']->id : null;
@@ -306,6 +312,12 @@ class ThreadPage extends PageBase implements PageInterface
                 );
             }
             $postTemplate->AddEntry('{post_quote}', $postQuote);
+            $postTemplate->AddEntry('{post_report}', $this->BuildReportLink(
+                'post',
+                (int) $post['id'],
+                $this->threadPage,
+                (int) $post['user_id']
+            ));
 
             $postEdit = '';
             $canEditPost = ContentController::CanEditPost((int) $post['user_id']);
@@ -336,6 +348,25 @@ class ThreadPage extends PageBase implements PageInterface
 
             $this->posts .= $postTemplate->template;
         }
+    }
+
+    /**
+     * Build a report link for the thread or a reply.
+     */
+    private function BuildReportLink(string $type, int $id, int $page, int $authorID): string
+    {
+        if (!SessionManager::IsLogged()
+            || !isset($_SESSION['bitboard_user']->id)
+            || (int) $_SESSION['bitboard_user']->id === $authorID)
+        {
+            return '';
+        }
+
+        $template = new Template('thread', 'report_link');
+        $template->AddEscapedEntry('{url}', $this->serverPath . 'report?type=' . $type . '&id=' . $id . '&page=' . $page);
+        $template->Replace();
+
+        return $template->template;
     }
 
     /**

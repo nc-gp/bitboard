@@ -446,6 +446,27 @@
     font-size: 0.95rem;
 }
 
+.content-report-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: 1px solid var(--opposite-x2);
+    border-radius: 50%;
+    color: gray;
+    text-decoration: none;
+}
+
+.content-report-link:hover {
+    border-color: var(--primary);
+    color: var(--primary-hover);
+}
+
+.content-report-link i {
+    font-size: 0.9rem;
+}
+
 .reaction-picker {
     position: relative;
     z-index: 1;

@@ -7,8 +7,10 @@ use App\Classes\Template;
 use App\Classes\SessionManager;
 use App\Classes\AvatarUtils;
 use App\Classes\Permissions;
+use App\Classes\UrlManager;
 
 use App\Forum\Controllers\NotificationController;
+use App\Forum\Controllers\ReportController;
 
 use Throwable;
 
@@ -86,6 +88,24 @@ class HeaderWidget
 
         $userMenuTemplate = new Template('header/nav', 'user_menu');
 
+        $reportsOption = '';
+        if ($_SESSION['bitboard_user']->HasPermission(Permissions::VIEWING_REPORTS))
+        {
+            try
+            {
+                $openReports = ReportController::CountOpen($this->database);
+            }
+            catch (Throwable $e)
+            {
+                error_log('BitBoard report count failed: ' . $e->getMessage());
+                $openReports = 0;
+            }
+
+            $label = 'Reports' . ($openReports > 0 ? ' (' . $openReports . ')' : '');
+            $reportsOption = '<li><a href="' . Template::Escape(UrlManager::GetPath() . 'reports/page/1') . '">'
+                . Template::Escape($label) . '</a></li>';
+        }
+
         if($_SESSION['bitboard_user']->HasPermission(Permissions::ADMIN_PANEL_ACCESS))
         {
             $userOptions = new Template('header/nav', 'user_menu_admin_panel');
@@ -95,6 +115,7 @@ class HeaderWidget
         $this->template->AddEntry('{user}', $userTemplate->template);
         $this->template->AddEntry('{login_register}', '');
         $this->template->AddEntry('{user_menu}', $userMenuTemplate->template);
+        $this->template->AddEntry('{reports_option}', $reportsOption);
         $this->template->AddEntry('{user_options}', $userOptions);
     }
 
