@@ -22,6 +22,7 @@ use App\Forum\Controllers\ContentController;
 use App\Forum\Controllers\LikeController;
 use App\Forum\Controllers\MentionController;
 use App\Forum\Controllers\PostController;
+use App\Forum\Controllers\SubscriptionController;
 use App\Forum\Widgets\PaginationWidget;
 use App\Forum\Widgets\PrefixWidget;
 use App\Forum\Widgets\ReactionWidget;
@@ -191,6 +192,28 @@ class ThreadPage extends PageBase implements PageInterface
             $threadEdit = $editTemplate->template;
         }
         $threadContentTemplate->AddEntry('{thread_edit}', $threadEdit);
+
+        $threadSubscribe = '';
+        if (SessionManager::IsLogged())
+        {
+            $subscribed = SubscriptionController::IsSubscribed(
+                $this->database,
+                (int) $_SESSION['bitboard_user']->id,
+                $this->threadID
+            );
+
+            $subscribeTemplate = new Template('thread', 'subscribe');
+            $subscribeTemplate->AddEscapedEntry('{thread_id}', $this->threadID);
+            $subscribeTemplate->AddEscapedEntry('{page}', $this->threadPage);
+            $subscribeTemplate->AddEscapedEntry('{action}', $subscribed ? 'unsubscribe' : 'subscribe');
+            $subscribeTemplate->AddEscapedEntry('{label}', $subscribed ? 'Subscribed' : 'Subscribe');
+            $subscribeTemplate->AddEscapedEntry('{icon}', $subscribed ? 'ti-bell-check' : 'ti-bell-plus');
+            $subscribeTemplate->AddEscapedEntry('{state_class}', $subscribed ? ' is-active' : '');
+            $subscribeTemplate->AddEscapedEntry('{csrf_token}', SessionManager::CsrfToken());
+            $subscribeTemplate->Replace();
+            $threadSubscribe = $subscribeTemplate->template;
+        }
+        $threadContentTemplate->AddEntry('{thread_subscribe}', $threadSubscribe);
 
         LikeController::EnsureSchema($this->database);
         $userId = $this->canLike ? (int) $_SESSION['bitboard_user']->id : null;

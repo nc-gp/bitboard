@@ -268,7 +268,9 @@ Items marked **good first issue** are small and self-contained.
   creating or editing a thread. Pin/lock statuses stay separate from custom prefixes.
 - [ ] Rich editor with preview, drafts, and a Markdown/HTML policy.
 - [ ] Attachments/uploads with extension/MIME/size validation and private storage.
-- [ ] Thread subscriptions and "watch forum" notifications.
+- [x] Thread subscriptions: subscribe/unsubscribe from the thread page, with a reply
+  notification (including a direct post anchor) for every new reply by another member.
+- [ ] "Watch forum" notifications.
 - [ ] Pagination-preserving anchors and "jump to last unread".
 - [ ] Submit replies from the inline fast reply via AJAX, append the new post in place, and
   scroll to it. Keep the normal POST fallback.

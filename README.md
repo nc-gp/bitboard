@@ -66,6 +66,8 @@
 - `@username` mentions with profile links, plus reaction notifications. A header bell shows
   the unread count and opens an AJAX panel with read tracking, "mark all as read", periodic
   refresh, and an optional notification chime.
+- Thread subscriptions: subscribe from the thread page and receive a notification for each
+  new reply by another member.
 - Staff can pin and lock threads from the thread page. Pinned threads sort first, locked
   threads show the closed prefix, and staff keep their posting exceptions.
 - Custom thread prefixes/tags are visible on thread pages and can be chosen when creating or
@@ -262,6 +264,7 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] Reactions for threads and posts.
 - [x] Quote and multi-quote replies.
 - [x] Mentions and live notifications.
+- [x] Thread subscriptions and reply notifications.
 - [x] Staff can reply to closed threads and see an offline-mode banner.
 - [ ] Admin CRUD for categories, forums, subforums, prefixes, users, and ranks.
 - [x] Thread and post search with forum/prefix/author/date filters.

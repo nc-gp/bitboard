@@ -21,6 +21,7 @@ use App\Forum\Controllers\PostController;
 use App\Forum\Controllers\SubForumController;
 use App\Forum\Controllers\PrefixController;
 use App\Forum\Controllers\NotificationController;
+use App\Forum\Controllers\SubscriptionController;
 
 use Exception;
 
@@ -138,6 +139,7 @@ class Step_3 extends StepBase implements StepInterface
 
 			PostController::CreateTable($InstallDatabase);
 			NotificationController::CreateTable($InstallDatabase);
+			SubscriptionController::CreateTable($InstallDatabase);
 
 			RankController::CreateTable($InstallDatabase);
 			RankController::Create($InstallDatabase, 'Admin', '<span style="color: #B22222">{username}</span>', Permissions::$All);

@@ -409,6 +409,42 @@
     font-size: 0.95rem;
 }
 
+.thread-subscribe-form {
+    margin: 0;
+    padding: 0 !important;
+}
+
+.content-subscribe-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    width: auto;
+    margin: 0;
+    padding: 4px 9px !important;
+    border: 1px solid var(--opposite-x2);
+    border-radius: 999px;
+    background: transparent;
+    color: gray;
+    font-size: 0.8rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.content-subscribe-link:hover {
+    border-color: var(--primary);
+    color: var(--primary-hover);
+}
+
+.content-subscribe-link.is-active {
+    border-color: var(--primary);
+    background: var(--primary-focus);
+    color: var(--primary-hover);
+}
+
+.content-subscribe-link i {
+    font-size: 0.95rem;
+}
+
 .reaction-picker {
     position: relative;
     z-index: 1;

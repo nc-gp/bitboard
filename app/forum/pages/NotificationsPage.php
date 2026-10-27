@@ -153,6 +153,8 @@ class NotificationsPage extends PageBase implements PageInterface
                 $icon = 'ti-at';
             elseif ($type === 'thread_like' || $type === 'post_like')
                 $icon = 'ti-heart';
+            elseif ($type === 'thread_reply')
+                $icon = 'ti-message-reply';
             else
                 $icon = 'ti-bell';
 

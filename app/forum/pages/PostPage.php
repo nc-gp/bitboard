@@ -18,6 +18,7 @@ use App\Classes\UrlManager;
 use App\Forum\Controllers\PostController;
 use App\Forum\Controllers\MentionController;
 use App\Forum\Controllers\PrefixController;
+use App\Forum\Controllers\SubscriptionController;
 use App\Forum\Controllers\ThreadController;
 
 use App\Interfaces\PageInterface;
@@ -372,6 +373,16 @@ class PostPage extends PageBase implements PageInterface
                 $content,
                 $this->threadID,
                 $newPostID,
+                $this->thread['thread_title'],
+                $postUrl
+            );
+
+            SubscriptionController::NotifySubscribers(
+                $this->database,
+                $this->threadID,
+                $newPostID,
+                $userId,
+                (string) $_SESSION['bitboard_user']->username,
                 $this->thread['thread_title'],
                 $postUrl
             );

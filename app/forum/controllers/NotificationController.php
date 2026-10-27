@@ -118,6 +118,42 @@ class NotificationController
     }
 
     /**
+     * Notify a subscribed user about a new reply.
+     */
+    public static function NotifyThreadReply(
+        Database $db,
+        int $userID,
+        int $actorID,
+        string $actorName,
+        int $threadID,
+        int $postID,
+        string $threadTitle,
+        string $url
+    ): void
+    {
+        if ($userID === $actorID)
+            return;
+
+        try
+        {
+            self::Create(
+                $db,
+                $userID,
+                $actorID,
+                'thread_reply',
+                $threadID,
+                $postID,
+                $actorName . ' replied to “' . $threadTitle . '”',
+                $url
+            );
+        }
+        catch (Throwable $e)
+        {
+            error_log('BitBoard reply notification failed: ' . $e->getMessage());
+        }
+    }
+
+    /**
      * Remove a reaction notification when the reaction is withdrawn.
      */
     public static function DeleteReaction(Database $db, int $actorID, string $type, int $threadID, int $postID): void
