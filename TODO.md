@@ -295,9 +295,11 @@ Items marked **good first issue** are small and self-contained.
 - [x] Admin custom prefix creation: name plus CSS class, duplicate-name protection, and
   64-character limits; built-in prefixes are left untouched.
 - [x] Admin rank management: create, edit, and delete ranks, with built-in rank protection,
-  user-count deletion guards, and a readable permission matrix.
-- [ ] Admin CRUD for users, including drag-and-drop ordering.
-- [ ] User management: search, rank assignment, ban/unban, reputation adjustments.
+  user-count deletion guards, a readable permission matrix, and rank positions for hierarchy.
+- [x] Admin user management: searchable and rank-filtered user list, pagination, rank
+  assignment, ban/unban, reputation adjustments, and rank-hierarchy enforcement so lower
+  ranks cannot modify users or ranks at or above their own position.
+- [ ] Account deletion with explicit content reassignment or removal rules.
 - [x] Rank/permission matrix editor with readable labels for every bit flag.
 - [ ] Audit log for admin actions and moderator actions.
 - [ ] Expand the admin dashboard with forum statistics, recent activity, and lightweight charts

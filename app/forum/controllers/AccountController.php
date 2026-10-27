@@ -3,10 +3,98 @@
 namespace App\Forum\Controllers;
 
 use App\Classes\Database;
+use App\Classes\Permissions;
 
 class AccountController
 {
 	private const ONLINE_WINDOW_SECONDS = 900;
+
+	/**
+	 * Get one account together with its rank name and flags.
+	 */
+	static public function GetWithRank(Database $db, int $userID): array
+	{
+		return $db->Query('SELECT a.*, r.rank_name, r.rank_flags, r.rank_position
+			FROM bit_accounts AS a
+			JOIN bit_ranks AS r ON r.id = a.rank_id
+			WHERE a.id = ? LIMIT 1', $userID)->FetchArray();
+	}
+
+	private static function AdminUserWhere(string $search, int $rankID, array &$parameters): string
+	{
+		$where = 'a.id > 1';
+
+		if ($search !== '')
+		{
+			$where .= ' AND (a.username LIKE ? OR a.email LIKE ?)';
+			$parameters[] = '%' . $search . '%';
+			$parameters[] = '%' . $search . '%';
+		}
+
+		if ($rankID > 0)
+		{
+			$where .= ' AND a.rank_id = ?';
+			$parameters[] = $rankID;
+		}
+
+		return $where;
+	}
+
+	static public function CountAdminUsers(Database $db, string $search, int $rankID): int
+	{
+		$parameters = [];
+		$where = self::AdminUserWhere($search, $rankID, $parameters);
+		$sql = 'SELECT COUNT(*) AS user_count FROM bit_accounts AS a WHERE ' . $where;
+
+		$row = count($parameters) > 0
+			? $db->Query($sql, $parameters)->FetchArray()
+			: $db->Query($sql)->FetchArray();
+
+		return (int) ($row['user_count'] ?? 0);
+	}
+
+	static public function GetAdminUsers(Database $db, string $search, int $rankID, int $offset, int $limit): array
+	{
+		$parameters = [];
+		$where = self::AdminUserWhere($search, $rankID, $parameters);
+		$parameters[] = $offset;
+		$parameters[] = $limit;
+
+		return $db->Query('SELECT a.id, a.username, a.email, a.reg_date, a.reputation, a.last_active, a.rank_id,
+				r.rank_name, r.rank_position,
+				(SELECT COUNT(*) FROM bit_posts AS p WHERE p.user_id = a.id) AS post_count,
+				(SELECT COUNT(*) FROM bit_threads AS t WHERE t.user_id = a.id) AS thread_count
+			FROM bit_accounts AS a
+			JOIN bit_ranks AS r ON r.id = a.rank_id
+			WHERE ' . $where . '
+			ORDER BY a.reg_date DESC, a.id DESC
+			LIMIT ?, ?', $parameters)->FetchAll();
+	}
+
+	static public function SetRank(Database $db, int $userID, int $rankID): void
+	{
+		$db->Query('UPDATE bit_accounts SET rank_id = ? WHERE id = ?', $rankID, $userID);
+	}
+
+	static public function SetReputation(Database $db, int $userID, int $reputation): void
+	{
+		$db->Query('UPDATE bit_accounts SET reputation = ? WHERE id = ?', $reputation, $userID);
+	}
+
+	/**
+	 * Count real accounts (excluding the system account and the target) whose
+	 * rank still grants admin panel access.
+	 */
+	static public function CountWithAdminAccessExcept(Database $db, int $excludeUserID): int
+	{
+		$row = $db->Query('SELECT COUNT(*) AS admin_count
+			FROM bit_accounts AS a
+			JOIN bit_ranks AS r ON r.id = a.rank_id
+			WHERE a.id > 1 AND a.id <> ? AND (r.rank_flags & ?) <> 0',
+			$excludeUserID, Permissions::ADMIN_PANEL_ACCESS)->FetchArray();
+
+		return (int) ($row['admin_count'] ?? 0);
+	}
 
 	/**
      * GetAccountByLogin retrieves account information by username or email.

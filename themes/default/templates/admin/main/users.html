@@ -1,0 +1,41 @@
+<article class="admin-users">
+    <header class="admin-section-header">
+        <span class="admin-section-icon"><i class="ti ti-users" aria-hidden="true"></i></span>
+        <div>
+            <h2>Users</h2>
+            <p>Search for members, adjust ranks and reputation, or ban and unban accounts.</p>
+        </div>
+    </header>
+
+    <p class="admin-user-authority">
+        Your rank position is <strong>{actor_position}</strong>. Higher positions have more authority.
+    </p>
+
+    <form class="admin-user-filter" method="get" action="{server_url}admin/users/page/1">
+        <div class="admin-category-fields admin-user-filter-fields">
+            <label>
+                <span>Search</span>
+                <input type="search" name="q" maxlength="64" placeholder="Username or email" value="{search}">
+            </label>
+            <label>
+                <span>Rank</span>
+                <select name="rank">
+                    {rank_filter_options}
+                </select>
+            </label>
+        </div>
+
+        <div class="admin-category-actions">
+            <a class="admin-user-reset" href="{server_url}admin/users/page/1">Reset</a>
+            <button type="submit">Apply filters</button>
+        </div>
+    </form>
+
+    <p class="admin-user-total">{total_label}</p>
+
+    {pagination}
+
+    <div class="admin-user-list">
+        {users}
+    </div>
+</article>

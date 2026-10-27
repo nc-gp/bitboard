@@ -144,9 +144,9 @@ class Step_3 extends StepBase implements StepInterface
 			ReportController::CreateTable($InstallDatabase);
 
 			RankController::CreateTable($InstallDatabase);
-			RankController::Create($InstallDatabase, 'Admin', '<span style="color: #B22222">{username}</span>', Permissions::$All);
-			RankController::Create($InstallDatabase, 'User', '<span style="font-weight: bold">{username}</span>', Permissions::VIEWING_FORUM | Permissions::CREATING_POSTS | Permissions::CREATING_THREADS);
-			RankController::Create($InstallDatabase, 'Banned', '<span style="text-decoration: line-through">{username}</span>', 0);
+			RankController::Create($InstallDatabase, 'Admin', '<span style="color: #B22222">{username}</span>', Permissions::$All, RankController::ADMIN_POSITION);
+			RankController::Create($InstallDatabase, 'User', '<span style="font-weight: bold">{username}</span>', Permissions::VIEWING_FORUM | Permissions::CREATING_POSTS | Permissions::CREATING_THREADS, RankController::USER_POSITION);
+			RankController::Create($InstallDatabase, 'Banned', '<span style="text-decoration: line-through">{username}</span>', 0, RankController::BANNED_POSITION);
 
 			PrefixController::CreateTable($InstallDatabase);
 			PrefixController::Create($InstallDatabase, 'Closed', 'prclose');

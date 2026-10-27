@@ -11,10 +11,15 @@
             <span>Username format</span>
             <input type="text" name="rank_format" maxlength="256" placeholder="&lt;span&gt;{username}&lt;/span&gt;" required>
         </label>
+        <label>
+            <span>Position</span>
+            <input type="number" name="rank_position" min="1" max="{max_position}" step="1" value="{default_position}" required>
+        </label>
     </div>
 
     <p class="admin-field-hint">
         Use <code>{username}</code> where the username should appear. HTML is allowed and is rendered for this rank.
+        Positions must be between 1 and {max_position}; higher values have more authority.
     </p>
 
     {permissions}

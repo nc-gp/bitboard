@@ -1,0 +1,41 @@
+<section class="admin-category admin-user">
+    <div class="admin-user-head">
+        <div class="admin-user-identity">
+            <strong>{username}</strong>{readonly_badge}
+            <span class="admin-user-email">{email}</span>
+        </div>
+        <span class="admin-category-count">{rank_name}</span>
+        <span class="admin-category-count">{reputation} rep</span>
+        <span class="admin-category-count">{post_label}</span>
+        <span class="admin-category-count">{thread_label}</span>
+    </div>
+
+    <div class="admin-user-meta">Joined {joined} · Last active {last_active}</div>
+
+    <form id="edit-user-{user_id}" class="admin-category-form" method="post" action="{server_url}admin/users">
+        <input type="hidden" name="csrf_token" value="{csrf_token}">
+        <input type="hidden" name="action" value="edit">
+        <input type="hidden" name="user_id" value="{user_id}">
+
+        <div class="admin-category-fields admin-user-fields">
+            <label>
+                <span>Rank</span>
+                {rank_control}
+            </label>
+            <label>
+                <span>Reputation</span>
+                <input type="number" name="reputation" min="-999999" max="999999" step="1" required value="{reputation}"{reputation_disabled}>
+            </label>
+        </div>
+    </form>
+
+    <form id="moderate-user-{user_id}" class="admin-category-delete" method="post" action="{server_url}admin/users">
+        <input type="hidden" name="csrf_token" value="{csrf_token}">
+        <input type="hidden" name="action" value="{moderation_action}">
+        <input type="hidden" name="user_id" value="{user_id}">
+    </form>
+
+    <div class="admin-category-actions">
+        {actions}
+    </div>
+</section>

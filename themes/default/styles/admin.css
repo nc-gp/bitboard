@@ -372,7 +372,37 @@
 }
 
 .admin-rank-fields {
-    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 2fr) 110px;
+}
+
+.admin-rank-authority,
+.admin-user-authority {
+    margin: 0 0 14px;
+    color: gray;
+    font-size: 0.82rem;
+}
+
+.admin-rank-authority strong,
+.admin-user-authority strong {
+    color: var(--primary-hover);
+}
+
+.admin-rank-readonly,
+.admin-user-readonly {
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--opposite-x2);
+    color: gray;
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.admin-user-rank-static {
+    margin: 0;
+    padding: 0.4rem 0.6rem;
+    border-radius: var(--border-radius);
+    background: var(--opposite-x2);
+    font-size: 0.88rem;
 }
 
 .admin-rank-builtin {
@@ -433,6 +463,83 @@
     line-height: 1.35;
 }
 
+.admin-user-filter {
+    margin: 0 0 16px;
+    padding: 14px;
+    border: 1px solid var(--opposite-x2);
+    border-radius: var(--border-radius);
+}
+
+.admin-user-filter-fields {
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+}
+
+.admin-user-reset {
+    align-self: center;
+    margin-right: auto;
+    color: gray;
+    font-size: 0.84rem;
+}
+
+.admin-user-total {
+    margin: 0 0 10px;
+    color: gray;
+    font-size: 0.82rem;
+}
+
+.admin-user-list {
+    margin-top: 4px;
+}
+
+.admin-user {
+    margin-bottom: 12px;
+}
+
+.admin-user-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 10px;
+    margin-bottom: 8px;
+}
+
+.admin-user-identity {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    min-width: 0;
+}
+
+.admin-user-identity strong {
+    font-size: 1.02rem;
+}
+
+.admin-user-email {
+    color: gray;
+    font-size: 0.8rem;
+    overflow-wrap: anywhere;
+}
+
+.admin-user-self {
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--primary-focus);
+    color: var(--primary-hover);
+    font-size: 0.7rem;
+    font-weight: 600;
+}
+
+.admin-user-meta {
+    margin: 0 0 10px;
+    color: gray;
+    font-size: 0.78rem;
+}
+
+.admin-user-fields {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+}
+
 .admin-category-actions {
     display: flex;
     flex-wrap: wrap;
@@ -487,6 +594,11 @@
     }
 
     .admin-rank-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-user-filter-fields,
+    .admin-user-fields {
         grid-template-columns: 1fr;
     }
 }

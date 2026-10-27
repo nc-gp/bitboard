@@ -3,9 +3,13 @@
         <span class="admin-section-icon"><i class="ti ti-shield" aria-hidden="true"></i></span>
         <div>
             <h2>Ranks</h2>
-            <p>Ranks control which actions a member can perform. Permissions apply to every user assigned to the rank.</p>
+            <p>Ranks control which actions a member can perform. Higher positions have more authority and can manage lower ranks.</p>
         </div>
     </header>
+
+    <p class="admin-rank-authority">
+        Your rank position is <strong>{actor_position}</strong>. Higher positions have more authority.
+    </p>
 
     {create_rank}
 

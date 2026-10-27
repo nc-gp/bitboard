@@ -6,16 +6,19 @@ use App\Classes\Console;
 use App\Classes\PageBase;
 use App\Classes\Database;
 use App\Classes\Permissions;
+use App\Classes\RelativeTime;
 use App\Classes\SessionManager;
 use App\Classes\UrlManager;
 use App\Interfaces\PageInterface;
 use App\Classes\Template;
+use App\Forum\Controllers\AccountController;
 use App\Forum\Controllers\CategoryController;
 use App\Forum\Controllers\ForumController;
 use App\Forum\Controllers\RankController;
 use App\Forum\Controllers\SubForumController;
 
 use App\Forum\Widgets\NotifyWidget;
+use App\Forum\Widgets\PaginationWidget;
 
 use Throwable;
 
@@ -52,6 +55,9 @@ class AdminPage extends PageBase implements PageInterface
         $option = isset($this->forumData->actionParameters[1]) ? $this->forumData->actionParameters[1] : 0;
 
         if ($option === 'ranks' && !SessionManager::HasPermission(Permissions::MANAGING_ROLES))
+            UrlManager::Redirect($this->serverPath . 'admin');
+
+        if ($option === 'users' && !SessionManager::HasPermission(Permissions::MANAGING_USERS))
             UrlManager::Redirect($this->serverPath . 'admin');
 
         switch($option)
@@ -118,6 +124,14 @@ class AdminPage extends PageBase implements PageInterface
                 $this->content = $this->BuildRanks();
                 break;
             }
+            case 'users':
+            {
+                if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST')
+                    $this->HandleUserSubmission();
+
+                $this->content = $this->BuildUsers();
+                break;
+            }
             default:
             {
                 $this->content = new Template('admin/main', 'home');
@@ -126,6 +140,10 @@ class AdminPage extends PageBase implements PageInterface
                 $this->content->AddEntry('{ranks_link}', SessionManager::HasPermission(Permissions::MANAGING_ROLES)
                     ? '<a class="admin-quick-link" href="' . $this->serverPath . 'admin/ranks">'
                         . '<i class="ti ti-shield" aria-hidden="true"></i> Ranks</a>'
+                    : '');
+                $this->content->AddEntry('{users_link}', SessionManager::HasPermission(Permissions::MANAGING_USERS)
+                    ? '<a class="admin-quick-link" href="' . $this->serverPath . 'admin/users">'
+                        . '<i class="ti ti-users" aria-hidden="true"></i> Users</a>'
                     : '');
                 $this->content->Replace();
                 break;
@@ -581,6 +599,25 @@ class AdminPage extends PageBase implements PageInterface
         return $content->template;
     }
 
+    private function ActorAuthority(): array
+    {
+        $rank = RankController::GetByID($this->database, (int) $_SESSION['bitboard_user']->rank_id);
+        $position = (int) ($rank['rank_position'] ?? 0);
+        $maximum = RankController::MaxPosition($this->database);
+
+        return [$position, $position >= $maximum];
+    }
+
+    private function CanManageRankPosition(int $actorPosition, int $targetPosition, bool $actorIsTop): bool
+    {
+        return $targetPosition < $actorPosition || ($actorIsTop && $targetPosition <= $actorPosition);
+    }
+
+    private function CanManageUserPosition(int $actorPosition, int $targetPosition): bool
+    {
+        return $targetPosition <= $actorPosition;
+    }
+
     private function PostedPermissions(): int
     {
         $valid = [];
@@ -606,9 +643,10 @@ class AdminPage extends PageBase implements PageInterface
         return $flags;
     }
 
-    private function BuildPermissionMatrix(int $flags, string $prefix): string
+    private function BuildPermissionMatrix(int $flags, string $prefix, bool $disabled = false): string
     {
         $html = '<div class="admin-permissions">';
+        $disabledAttribute = $disabled ? ' disabled' : '';
 
         foreach (Permissions::GROUPS as $group => $permissions)
         {
@@ -622,7 +660,7 @@ class AdminPage extends PageBase implements PageInterface
                 $checked = (($flags & (int) $permission) !== 0) ? ' checked' : '';
 
                 $html .= '<label class="admin-permission" for="' . Template::Escape($id) . '">'
-                    . '<input type="checkbox" id="' . Template::Escape($id) . '" name="permissions[]" value="' . (int) $permission . '"' . $checked . '>'
+                    . '<input type="checkbox" id="' . Template::Escape($id) . '" name="permissions[]" value="' . (int) $permission . '"' . $checked . $disabledAttribute . '>'
                     . '<span>' . Template::Escape($label) . '</span>'
                     . '</label>';
             }
@@ -652,11 +690,26 @@ class AdminPage extends PageBase implements PageInterface
 
         try
         {
+            [$actorPosition, $actorIsTop] = $this->ActorAuthority();
+            $existing = $rankID > 0 ? RankController::GetByID($this->database, $rankID) : [];
+
             if ($action === 'delete')
             {
-                if ($rankID <= 0 || empty(RankController::GetByID($this->database, $rankID)))
+                if ($rankID <= 0 || empty($existing))
                 {
                     $this->AdminError('That rank could not be found.');
+                    return;
+                }
+
+                if (!$this->CanManageRankPosition($actorPosition, (int) $existing['rank_position'], $actorIsTop))
+                {
+                    $this->AdminError('You cannot manage a rank at or above your own.');
+                    return;
+                }
+
+                if (RankController::IsBuiltIn($rankID) && !$actorIsTop)
+                {
+                    $this->AdminError('Built-in ranks can only be managed by the top rank.');
                     return;
                 }
 
@@ -676,23 +729,55 @@ class AdminPage extends PageBase implements PageInterface
                 UrlManager::Redirect($this->serverPath . 'admin/ranks');
             }
 
-            $existing = $rankID > 0 ? RankController::GetByID($this->database, $rankID) : [];
-
             if ($action === 'edit' && empty($existing))
             {
                 $this->AdminError('That rank could not be found.');
                 return;
             }
 
+            if ($action === 'edit' && !$this->CanManageRankPosition($actorPosition, (int) $existing['rank_position'], $actorIsTop))
+            {
+                $this->AdminError('You cannot manage a rank at or above your own.');
+                return;
+            }
+
+            if ($action === 'edit' && RankController::IsBuiltIn($rankID) && !$actorIsTop)
+            {
+                $this->AdminError('Built-in ranks can only be managed by the top rank.');
+                return;
+            }
+
+            $builtIn = $action === 'edit' && RankController::IsBuiltIn($rankID);
+
             $name = $this->PostedString('rank_name');
 
             // Built-in rank names are fixed: registration and other pages look
             // them up by name.
-            if ($action === 'edit' && RankController::IsBuiltIn($rankID))
+            if ($builtIn)
                 $name = (string) $existing['rank_name'];
 
             $format = $this->PostedString('rank_format');
             $flags = $this->PostedPermissions();
+            $rankPosition = $this->PostedID('rank_position');
+
+            if ($builtIn)
+            {
+                $rankPosition = (int) $existing['rank_position'];
+            }
+            else
+            {
+                if ($rankPosition < 1 || $rankPosition > RankController::MAX_CUSTOM_POSITION)
+                {
+                    $this->AdminError('Rank position must be between 1 and 99.');
+                    return;
+                }
+
+                if ($rankPosition >= $actorPosition)
+                {
+                    $this->AdminError('Rank position must be lower than your own rank.');
+                    return;
+                }
+            }
 
             if (mb_strlen($name) < 1 || mb_strlen($name) > 64)
             {
@@ -738,9 +823,9 @@ class AdminPage extends PageBase implements PageInterface
             }
 
             if ($action === 'edit')
-                RankController::Update($this->database, $rankID, $name, $format, $flags);
+                RankController::Update($this->database, $rankID, $name, $format, $flags, $rankPosition);
             else
-                RankController::Create($this->database, $name, $format, $flags);
+                RankController::Create($this->database, $name, $format, $flags, $rankPosition);
 
             UrlManager::Redirect($this->serverPath . 'admin/ranks');
         }
@@ -751,11 +836,14 @@ class AdminPage extends PageBase implements PageInterface
         }
     }
 
-    private function BuildRankRow(array $rank): string
+    private function BuildRankRow(array $rank, int $actorPosition, bool $actorIsTop): string
     {
         $rankID = (int) $rank['id'];
         $flags = (int) $rank['rank_flags'];
+        $position = (int) $rank['rank_position'];
         $builtIn = RankController::IsBuiltIn($rankID);
+        $canManage = $this->CanManageRankPosition($actorPosition, $position, $actorIsTop)
+            && (!$builtIn || $actorIsTop);
 
         $permissionCount = 0;
         foreach (Permissions::GROUPS as $permissions)
@@ -763,20 +851,32 @@ class AdminPage extends PageBase implements PageInterface
                 if (($flags & (int) $permission) !== 0)
                     $permissionCount++;
 
-        $deleteButton = $builtIn
-            ? ''
-            : '<button type="submit" form="delete-rank-' . $rankID . '" class="danger-button">Delete</button>';
+        $actions = '';
+
+        if ($canManage)
+        {
+            $actions .= '<button type="submit" form="edit-rank-' . $rankID . '">Save</button>';
+
+            if (!$builtIn)
+                $actions .= '<button type="submit" form="delete-rank-' . $rankID . '" class="danger-button">Delete</button>';
+        }
 
         $row = new Template('admin/main/ranks', 'rank');
         $row->AddEscapedEntry('{rank_id}', $rankID);
         $row->AddEscapedEntry('{rank_name}', $rank['rank_name']);
         $row->AddEscapedEntry('{rank_format}', $rank['rank_format']);
+        $row->AddEscapedEntry('{rank_position}', $position);
+        $row->AddEscapedEntry('{position_label}', 'Position ' . $position);
+        $row->AddEscapedEntry('{max_position}', max(1, min(RankController::MAX_CUSTOM_POSITION, $actorPosition - 1)));
+        $row->AddEntry('{disabled}', $canManage ? '' : ' disabled');
         $row->AddEntry('{name_readonly}', $builtIn ? ' readonly' : '');
+        $row->AddEntry('{position_readonly}', $builtIn ? ' readonly' : '');
         $row->AddEscapedEntry('{user_label}', $this->CountLabel((int) $rank['user_count'], 'user'));
         $row->AddEscapedEntry('{permission_label}', $this->CountLabel($permissionCount, 'permission'));
         $row->AddEntry('{builtin_badge}', $builtIn ? '<span class="admin-rank-builtin">Built-in</span>' : '');
-        $row->AddEntry('{permissions}', $this->BuildPermissionMatrix($flags, 'rank-' . $rankID));
-        $row->AddEntry('{delete_button}', $deleteButton);
+        $row->AddEntry('{readonly_badge}', $canManage ? '' : '<span class="admin-rank-readonly">Read only</span>');
+        $row->AddEntry('{permissions}', $this->BuildPermissionMatrix($flags, 'rank-' . $rankID, !$canManage));
+        $row->AddEntry('{actions}', $actions);
         $row->Replace();
 
         return $row->template;
@@ -784,22 +884,353 @@ class AdminPage extends PageBase implements PageInterface
 
     private function BuildRanks(): string
     {
+        [$actorPosition, $actorIsTop] = $this->ActorAuthority();
         $ranks = RankController::GetAll($this->database);
         $rows = '';
 
         foreach ($ranks as $rank)
-            $rows .= $this->BuildRankRow($rank);
+            $rows .= $this->BuildRankRow($rank, $actorPosition, $actorIsTop);
 
         if ($rows === '')
             $rows = (new Template('admin/main/ranks', 'empty'))->template;
 
-        $create = new Template('admin/main/ranks', 'create');
-        $create->AddEntry('{permissions}', $this->BuildPermissionMatrix(0, 'rank-new'));
-        $create->Replace();
+        $maxNewPosition = min(RankController::MAX_CUSTOM_POSITION, $actorPosition - 1);
+
+        if ($maxNewPosition >= 1)
+        {
+            $create = new Template('admin/main/ranks', 'create');
+            $create->AddEscapedEntry('{max_position}', $maxNewPosition);
+            $create->AddEscapedEntry('{default_position}', min(10, $maxNewPosition));
+            $create->AddEntry('{permissions}', $this->BuildPermissionMatrix(0, 'rank-new'));
+            $create->Replace();
+            $create = $create->template;
+        }
+        else
+        {
+            $create = (new Template('admin/main/ranks', 'no_create'))->template;
+        }
 
         $content = new Template('admin/main', 'ranks');
-        $content->AddEntry('{create_rank}', $create->template);
+        $content->AddEscapedEntry('{actor_position}', $actorPosition);
+        $content->AddEntry('{create_rank}', $create);
         $content->AddEntry('{ranks}', $rows);
+        $content->Replace();
+
+        return $content->template;
+    }
+
+    private function WouldRemoveLastAdmin(array $user): bool
+    {
+        if (((int) $user['rank_flags'] & Permissions::ADMIN_PANEL_ACCESS) === 0)
+            return false;
+
+        return AccountController::CountWithAdminAccessExcept($this->database, (int) $user['id']) === 0;
+    }
+
+    private function HandleUserSubmission(): void
+    {
+        if (!SessionManager::ValidateCsrfToken($_POST['csrf_token'] ?? ''))
+        {
+            $this->AdminError('Invalid request. Please try again.');
+            return;
+        }
+
+        $action = $this->PostedString('action');
+        $userID = $this->PostedID('user_id');
+
+        if (!in_array($action, ['edit', 'ban', 'unban'], true))
+        {
+            $this->AdminError('Invalid user action.');
+            return;
+        }
+
+        try
+        {
+            if ($userID <= 1)
+            {
+                $this->AdminError('That user could not be found.');
+                return;
+            }
+
+            $user = AccountController::GetWithRank($this->database, $userID);
+            if (empty($user))
+            {
+                $this->AdminError('That user could not be found.');
+                return;
+            }
+
+            $currentUserID = (int) $_SESSION['bitboard_user']->id;
+            [$actorPosition] = $this->ActorAuthority();
+
+            if (
+                $userID !== $currentUserID
+                && !$this->CanManageUserPosition($actorPosition, (int) $user['rank_position'])
+            )
+            {
+                $this->AdminError('You cannot manage a user at or above your own rank.');
+                return;
+            }
+
+            if ($action === 'ban' || $action === 'unban')
+            {
+                if ($userID === $currentUserID)
+                {
+                    $this->AdminError('You cannot ban your own account.');
+                    return;
+                }
+
+                $targetRankName = $action === 'ban' ? 'Banned' : 'User';
+                $targetRank = RankController::GetByName($this->database, $targetRankName);
+
+                if (empty($targetRank))
+                {
+                    $this->AdminError('The ' . $targetRankName . ' rank could not be found.');
+                    return;
+                }
+
+                if ((int) $targetRank['rank_position'] > $actorPosition)
+                {
+                    $this->AdminError('You cannot assign a rank higher than your own.');
+                    return;
+                }
+
+                if ($action === 'ban' && $this->WouldRemoveLastAdmin($user))
+                {
+                    $this->AdminError('At least one account must keep admin panel access.');
+                    return;
+                }
+
+                AccountController::SetRank($this->database, $userID, (int) $targetRank['id']);
+                UrlManager::Redirect($this->serverPath . 'admin/users');
+            }
+
+            $rankID = $this->PostedID('rank_id');
+            $rank = $rankID > 0 ? RankController::GetByID($this->database, $rankID) : [];
+
+            if (empty($rank))
+            {
+                $this->AdminError('Choose a valid rank.');
+                return;
+            }
+
+            if ((int) $rank['rank_position'] > $actorPosition)
+            {
+                $this->AdminError('You cannot assign a rank higher than your own.');
+                return;
+            }
+
+            if ($userID === $currentUserID && $rankID !== (int) $user['rank_id'])
+            {
+                $this->AdminError('You cannot change your own rank.');
+                return;
+            }
+
+            if (
+                $rankID !== (int) $user['rank_id']
+                && ((int) $rank['rank_flags'] & Permissions::ADMIN_PANEL_ACCESS) === 0
+                && $this->WouldRemoveLastAdmin($user)
+            )
+            {
+                $this->AdminError('At least one account must keep admin panel access.');
+                return;
+            }
+
+            $reputationValue = isset($_POST['reputation']) && is_string($_POST['reputation'])
+                ? trim($_POST['reputation'])
+                : '';
+
+            if ($reputationValue === '' || !preg_match('/^-?\d+$/', $reputationValue))
+            {
+                $this->AdminError('Reputation must be a whole number.');
+                return;
+            }
+
+            $reputation = (int) $reputationValue;
+
+            if ($reputation < -999999 || $reputation > 999999)
+            {
+                $this->AdminError('Reputation must be between -999999 and 999999.');
+                return;
+            }
+
+            AccountController::SetRank($this->database, $userID, $rankID);
+            AccountController::SetReputation($this->database, $userID, $reputation);
+
+            UrlManager::Redirect($this->serverPath . 'admin/users');
+        }
+        catch (Throwable $e)
+        {
+            error_log('BitBoard user update failed: ' . $e->getMessage());
+            $this->AdminError('Unable to save this user. Please try again.');
+        }
+    }
+
+    private function BuildRankOptions(array $ranks, int $selectedID, bool $includeAll = false, ?int $maxPosition = null): string
+    {
+        $options = $includeAll
+            ? '<option value="0"' . ($selectedID === 0 ? ' selected' : '') . '>All ranks</option>'
+            : '';
+
+        foreach ($ranks as $rank)
+        {
+            $rankID = (int) $rank['id'];
+            $rankPosition = (int) $rank['rank_position'];
+
+            if ($maxPosition !== null && $rankPosition > $maxPosition)
+                continue;
+
+            $options .= '<option value="' . $rankID . '"' . ($rankID === $selectedID ? ' selected' : '') . '>'
+                . Template::Escape($rank['rank_name']) . ' (position ' . $rankPosition . ')</option>';
+        }
+
+        return $options;
+    }
+
+    private function BuildUserRow(
+        array $user,
+        array $ranks,
+        int $bannedRankID,
+        int $currentUserID,
+        int $actorPosition
+    ): string
+    {
+        $userID = (int) $user['id'];
+        $isBanned = $bannedRankID > 0 && (int) $user['rank_id'] === $bannedRankID;
+        $isSelf = $userID === $currentUserID;
+        $canManage = $isSelf || $this->CanManageUserPosition($actorPosition, (int) $user['rank_position']);
+
+        $rankControl = '';
+        $reputationDisabled = '';
+        $actions = '';
+        $badge = '';
+
+        if (!$canManage)
+        {
+            $rankControl = '<select disabled aria-label="Rank">'
+                . $this->BuildRankOptions($ranks, (int) $user['rank_id'])
+                . '</select>';
+            $reputationDisabled = ' disabled';
+            $badge = '<span class="admin-user-readonly">Read only</span>';
+        }
+        elseif ($isSelf)
+        {
+            $rankControl = '<input type="hidden" name="rank_id" value="' . $userID . '">'
+                . '<p class="admin-user-rank-static">' . Template::Escape($user['rank_name']) . '</p>';
+            $actions = '<button type="submit" form="edit-user-' . $userID . '">Save</button>';
+            $badge = '<span class="admin-user-self">You</span>';
+        }
+        else
+        {
+            $rankControl = '<select name="rank_id">'
+                . $this->BuildRankOptions($ranks, (int) $user['rank_id'], false, $actorPosition)
+                . '</select>';
+            $actions = '<button type="submit" form="edit-user-' . $userID . '">Save</button>'
+                . '<button type="submit" form="moderate-user-' . $userID . '" class="'
+                . ($isBanned ? '' : 'danger-button') . '">' . ($isBanned ? 'Unban' : 'Ban') . '</button>';
+        }
+
+        $row = new Template('admin/main/users', 'user');
+        $row->AddEscapedEntry('{user_id}', $userID);
+        $row->AddEscapedEntry('{username}', $user['username']);
+        $row->AddEscapedEntry('{email}', $user['email']);
+        $row->AddEscapedEntry('{rank_name}', $user['rank_name']);
+        $row->AddEscapedEntry('{reputation}', $user['reputation']);
+        $row->AddEscapedEntry('{post_label}', $this->CountLabel((int) $user['post_count'], 'post'));
+        $row->AddEscapedEntry('{thread_label}', $this->CountLabel((int) $user['thread_count'], 'thread'));
+        $row->AddEscapedEntry('{joined}', RelativeTime::Format($user['reg_date'], false));
+        $row->AddEscapedEntry('{last_active}', RelativeTime::Convert($user['last_active']));
+        $row->AddEntry('{rank_control}', $rankControl);
+        $row->AddEntry('{reputation_disabled}', $reputationDisabled);
+        $row->AddEntry('{actions}', $actions);
+        $row->AddEntry('{readonly_badge}', $badge);
+        $row->AddEscapedEntry('{moderation_action}', $isBanned ? 'unban' : 'ban');
+        $row->Replace();
+
+        return $row->template;
+    }
+
+    private function BuildUsers(): string
+    {
+        $search = isset($_GET['q']) && is_string($_GET['q']) ? trim($_GET['q']) : '';
+        $search = mb_substr($search, 0, 64);
+
+        $rankFilter = isset($_GET['rank']) && is_string($_GET['rank']) && ctype_digit($_GET['rank'])
+            ? (int) $_GET['rank']
+            : 0;
+
+        $page = 1;
+        $parameters = $this->forumData->actionParameters;
+
+        if (
+            ($parameters[2] ?? '') === 'page'
+            && isset($parameters[3])
+            && is_string($parameters[3])
+            && ctype_digit($parameters[3])
+        )
+            $page = (int) $parameters[3];
+
+        if ($page <= 0)
+            $page = 1;
+
+        $ranks = RankController::GetAll($this->database);
+        $rankIDs = array_map(static fn(array $rank): int => (int) $rank['id'], $ranks);
+
+        if ($rankFilter > 0 && !in_array($rankFilter, $rankIDs, true))
+            $rankFilter = 0;
+
+        $bannedRankID = 0;
+        foreach ($ranks as $rank)
+            if ($rank['rank_name'] === 'Banned')
+                $bannedRankID = (int) $rank['id'];
+
+        [$actorPosition] = $this->ActorAuthority();
+
+        $perPage = 20;
+        $total = AccountController::CountAdminUsers($this->database, $search, $rankFilter);
+        $totalPages = max(1, (int) ceil($total / $perPage));
+
+        $filterParameters = [];
+        if ($search !== '')
+            $filterParameters['q'] = $search;
+        if ($rankFilter > 0)
+            $filterParameters['rank'] = $rankFilter;
+
+        $queryString = count($filterParameters) > 0 ? '?' . http_build_query($filterParameters) : '';
+
+        if ($total > 0 && $page > $totalPages)
+            UrlManager::Redirect($this->serverPath . 'admin/users/page/' . $totalPages . $queryString);
+
+        $users = $total > 0
+            ? AccountController::GetAdminUsers($this->database, $search, $rankFilter, ($page - 1) * $perPage, $perPage)
+            : [];
+
+        $rows = '';
+        foreach ($users as $user)
+            $rows .= $this->BuildUserRow(
+                $user,
+                $ranks,
+                $bannedRankID,
+                (int) $_SESSION['bitboard_user']->id,
+                $actorPosition
+            );
+
+        if ($rows === '')
+            $rows = (new Template('admin/main/users', 'empty'))->template;
+
+        $pagination = '';
+        if ($totalPages > 1)
+        {
+            $widget = new PaginationWidget($page, $total, $perPage, 'admin/users/page/', $filterParameters);
+            $pagination = $widget->Template->template;
+        }
+
+        $content = new Template('admin/main', 'users');
+        $content->AddEscapedEntry('{search}', $search);
+        $content->AddEntry('{rank_filter_options}', $this->BuildRankOptions($ranks, $rankFilter, true));
+        $content->AddEscapedEntry('{actor_position}', $actorPosition);
+        $content->AddEscapedEntry('{total_label}', $this->CountLabel($total, 'member'));
+        $content->AddEntry('{pagination}', $pagination);
+        $content->AddEntry('{users}', $rows);
         $content->Replace();
 
         return $content->template;
@@ -813,8 +1244,12 @@ class AdminPage extends PageBase implements PageInterface
             'categories' => ['Categories', 'ti-category', 'admin/categories'],
             'forums' => ['Forums', 'ti-messages', 'admin/forums'],
             'prefixes' => ['Prefixes', 'ti-tag', 'admin/prefixes'],
+            'users' => ['Users', 'ti-users', 'admin/users'],
             'ranks' => ['Ranks', 'ti-shield', 'admin/ranks'],
         ];
+
+        if (!SessionManager::HasPermission(Permissions::MANAGING_USERS))
+            unset($sections['users']);
 
         if (!SessionManager::HasPermission(Permissions::MANAGING_ROLES))
             unset($sections['ranks']);
