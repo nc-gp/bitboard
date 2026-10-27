@@ -294,9 +294,11 @@ Items marked **good first issue** are small and self-contained.
   threads; deleting an empty forum also removes its subforums.
 - [x] Admin custom prefix creation: name plus CSS class, duplicate-name protection, and
   64-character limits; built-in prefixes are left untouched.
-- [ ] Admin CRUD for users and ranks, including drag-and-drop ordering.
+- [x] Admin rank management: create, edit, and delete ranks, with built-in rank protection,
+  user-count deletion guards, and a readable permission matrix.
+- [ ] Admin CRUD for users, including drag-and-drop ordering.
 - [ ] User management: search, rank assignment, ban/unban, reputation adjustments.
-- [ ] Rank/permission matrix editor with readable labels for every bit flag.
+- [x] Rank/permission matrix editor with readable labels for every bit flag.
 - [ ] Audit log for admin actions and moderator actions.
 - [ ] Expand the admin dashboard with forum statistics, recent activity, and lightweight charts
   (for example new threads/posts/users over time and open reports) using local SVG/CSS rather
@@ -407,7 +409,7 @@ Items marked **good first issue** are small and self-contained.
 - [ ] Fix backslashes in `AvatarUtils`, `footer/end.html`, and `admin.html`.
 - [x] Fix `Template::AddEntries()` count comparison and initialize arrays.
 - [x] Fix `Step_5` `strlen($value <= 0)` validation.
-- [ ] Fix `RankController::Create()` default flags (`0000000000` is octal zero; use `0`).
+- [x] Fix `RankController::Create()` default flags (`0000000000` is octal zero; use `0`).
 - [x] Remove the leftover `{top_stats}` placeholder.
 - [ ] Add `config.example.php`.
 - [ ] Replace the four "Test" footer links.
