@@ -289,12 +289,16 @@ Items marked **good first issue** are small and self-contained.
   replies; staff get a filtered queue with resolve/dismiss actions and resolution notes.
 - [ ] Merge and split threads (deferred; candidate for a future moderation plugin).
 - [x] Admin category management: list, create, edit, delete, and manual ordering.
-- [ ] Admin CRUD for forums, subforums, prefixes (creation UI), users, and ranks, including
-  drag-and-drop ordering and locked toggles.
+- [x] Admin forum and subforum management: create, edit, delete, category assignment,
+  manual ordering, and locked toggles. Forums cannot be deleted while they still contain
+  threads; deleting an empty forum also removes its subforums.
+- [ ] Admin CRUD for prefixes (creation UI), users, and ranks, including drag-and-drop ordering.
 - [ ] User management: search, rank assignment, ban/unban, reputation adjustments.
 - [ ] Rank/permission matrix editor with readable labels for every bit flag.
 - [ ] Audit log for admin actions and moderator actions.
-- [ ] Admin dashboard statistics and recent activity.
+- [ ] Expand the admin dashboard with forum statistics, recent activity, and lightweight charts
+  (for example new threads/posts/users over time and open reports) using local SVG/CSS rather
+  than an external chart library.
 - [x] Offline-mode notice for moderators/administrators: staff see a persistent banner with the
   offline message while browsing; everyone else is redirected to the offline page.
 - [x] Finish the prefix edit/delete API and add validation.

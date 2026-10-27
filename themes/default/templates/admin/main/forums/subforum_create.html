@@ -1,0 +1,26 @@
+<form class="admin-subforum-create" method="post" action="{server_url}admin/forums">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
+    <input type="hidden" name="entity" value="subforum">
+    <input type="hidden" name="action" value="create">
+    <input type="hidden" name="forum_id" value="{forum_id}">
+
+    <div class="admin-category-fields admin-subforum-fields">
+        <label>
+            <span>New subforum</span>
+            <input type="text" name="subforum_name" maxlength="128" placeholder="Subforum name" required>
+        </label>
+        <label>
+            <span>Description</span>
+            <input type="text" name="subforum_desc" maxlength="256" placeholder="Short description">
+        </label>
+    </div>
+
+    <label class="admin-toggle">
+        <input type="checkbox" role="switch" name="is_locked">
+        <span>Locked</span>
+    </label>
+
+    <div class="admin-subforum-actions">
+        <button type="submit">Add subforum</button>
+    </div>
+</form>

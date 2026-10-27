@@ -1,0 +1,34 @@
+<form id="edit-subforum-{subforum_id}" class="admin-subforum-form" method="post" action="{server_url}admin/forums">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
+    <input type="hidden" name="entity" value="subforum">
+    <input type="hidden" name="action" value="edit">
+    <input type="hidden" name="subforum_id" value="{subforum_id}">
+
+    <div class="admin-category-fields admin-subforum-fields">
+        <label>
+            <span>Name</span>
+            <input type="text" name="subforum_name" maxlength="128" required value="{subforum_name}">
+        </label>
+        <label>
+            <span>Description</span>
+            <input type="text" name="subforum_desc" maxlength="256" value="{subforum_desc}">
+        </label>
+    </div>
+
+    <label class="admin-toggle">
+        <input type="checkbox" role="switch" name="is_locked" {locked_checked}>
+        <span>Locked</span>
+    </label>
+
+    <div class="admin-subforum-actions">
+        <button type="submit">Save</button>
+        <button type="submit" form="delete-subforum-{subforum_id}" class="danger-button">Delete</button>
+    </div>
+</form>
+
+<form id="delete-subforum-{subforum_id}" class="admin-category-delete" method="post" action="{server_url}admin/forums">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
+    <input type="hidden" name="entity" value="subforum">
+    <input type="hidden" name="action" value="delete">
+    <input type="hidden" name="subforum_id" value="{subforum_id}">
+</form>

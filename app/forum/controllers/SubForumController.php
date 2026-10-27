@@ -88,6 +88,40 @@ class SubForumController
     {
         $db->Query('INSERT INTO bit_subforums (id,forum_id,subforum_name,subforum_desc,is_locked) VALUES (?,?,?,?,?)', [0, $forumID, $subForumName, $subForumDesc, $isLocked ? 1 : 0]);
     }
+
+    /**
+     * Get every subforum ordered by its parent forum and ID.
+     */
+    public static function GetAll(Database $db): array
+    {
+        return $db->Query('SELECT * FROM bit_subforums ORDER BY forum_id ASC, id ASC')->FetchAll();
+    }
+
+    public static function GetByID(Database $db, int $subforumID): array
+    {
+        return $db->Query('SELECT * FROM bit_subforums WHERE id = ? LIMIT 1', $subforumID)->FetchArray();
+    }
+
+    public static function Update(Database $db, int $subforumID, string $subForumName, string $subForumDesc, bool $isLocked): void
+    {
+        $db->Query('UPDATE bit_subforums
+            SET subforum_name = ?, subforum_desc = ?, is_locked = ?
+            WHERE id = ?',
+            $subForumName, $subForumDesc, $isLocked ? 1 : 0, $subforumID);
+    }
+
+    public static function Delete(Database $db, int $subforumID): void
+    {
+        $db->Query('DELETE FROM bit_subforums WHERE id = ?', $subforumID);
+    }
+
+    public static function CountThreads(Database $db, int $subforumID): int
+    {
+        $row = $db->Query('SELECT COUNT(*) AS thread_count FROM bit_threads
+            WHERE subforum_id = ?', $subforumID)->FetchArray();
+
+        return (int) ($row['thread_count'] ?? 0);
+    }
 }
 
 ?>

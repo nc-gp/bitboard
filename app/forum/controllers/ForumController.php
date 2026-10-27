@@ -88,6 +88,59 @@ class ForumController
     {
         $db->Query('INSERT INTO bit_forums (id,category_id,forum_name,forum_desc,forum_icon,forum_position,is_locked) VALUES (?,?,?,?,?,?,?)', [0, $categoryID, $forumName, $forumDesc, $forumIcon, $forumPosition, $isLocked ? 1 : 0]);
     }
+
+    /**
+     * Get every forum with its category and content counts for the admin panel.
+     */
+    public static function GetAll(Database $db): array
+    {
+        return $db->Query('SELECT f.*, c.category_name, c.category_icon, c.category_position,
+                (SELECT COUNT(*) FROM bit_threads AS t WHERE t.forum_id = f.id) AS thread_count,
+                (SELECT COUNT(*) FROM bit_subforums AS s WHERE s.forum_id = f.id) AS subforum_count
+            FROM bit_forums AS f
+            JOIN bit_categories AS c ON c.id = f.category_id
+            ORDER BY c.category_position ASC, c.id ASC, f.forum_position ASC, f.id ASC')->FetchAll();
+    }
+
+    public static function GetByID(Database $db, int $forumID): array
+    {
+        return $db->Query('SELECT * FROM bit_forums WHERE id = ? LIMIT 1', $forumID)->FetchArray();
+    }
+
+    public static function Update(
+        Database $db,
+        int $forumID,
+        int $categoryID,
+        string $forumName,
+        string $forumDesc,
+        string $forumIcon,
+        int $forumPosition,
+        bool $isLocked
+    ): void
+    {
+        $db->Query('UPDATE bit_forums
+            SET category_id = ?, forum_name = ?, forum_desc = ?, forum_icon = ?, forum_position = ?, is_locked = ?
+            WHERE id = ?',
+            $categoryID, $forumName, $forumDesc, $forumIcon, $forumPosition, $isLocked ? 1 : 0, $forumID);
+    }
+
+    /**
+     * Delete a forum. Callers must ensure it no longer contains threads; its
+     * subforums are removed with it.
+     */
+    public static function Delete(Database $db, int $forumID): void
+    {
+        $db->Query('DELETE FROM bit_subforums WHERE forum_id = ?', $forumID);
+        $db->Query('DELETE FROM bit_forums WHERE id = ?', $forumID);
+    }
+
+    public static function CountThreads(Database $db, int $forumID): int
+    {
+        $row = $db->Query('SELECT COUNT(*) AS thread_count FROM bit_threads
+            WHERE forum_id = ?', $forumID)->FetchArray();
+
+        return (int) ($row['thread_count'] ?? 0);
+    }
 }
 
 ?>

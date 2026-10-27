@@ -1,0 +1,39 @@
+<form class="admin-category-create" method="post" action="{server_url}admin/forums">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
+    <input type="hidden" name="entity" value="forum">
+    <input type="hidden" name="action" value="create">
+
+    <div class="admin-category-fields">
+        <label>
+            <span>Name</span>
+            <input type="text" name="forum_name" maxlength="128" required>
+        </label>
+        <label>
+            <span>Description</span>
+            <input type="text" name="forum_desc" maxlength="1024">
+        </label>
+        <label>
+            <span>Icon</span>
+            <input type="text" name="forum_icon" maxlength="64" placeholder="messages">
+        </label>
+        <label>
+            <span>Position</span>
+            <input type="number" name="forum_position" min="0" step="1" value="0">
+        </label>
+        <label>
+            <span>Category</span>
+            <select name="category_id">
+                {category_options}
+            </select>
+        </label>
+    </div>
+
+    <label class="admin-toggle">
+        <input type="checkbox" role="switch" name="is_locked">
+        <span>Locked</span>
+    </label>
+
+    <div class="admin-category-actions">
+        <button type="submit">Create forum</button>
+    </div>
+</form>

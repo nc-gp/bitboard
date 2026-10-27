@@ -1,0 +1,64 @@
+<section class="admin-category admin-forum">
+    <div class="admin-category-head">
+        <span class="admin-category-icon">{icon_preview}</span>
+        <strong>{forum_name}</strong>
+        <span class="admin-category-count">{thread_label}</span>
+        <span class="admin-category-count">{subforum_label}</span>
+        {locked_badge}
+    </div>
+
+    <form id="edit-forum-{forum_id}" class="admin-category-form" method="post" action="{server_url}admin/forums">
+        <input type="hidden" name="csrf_token" value="{csrf_token}">
+        <input type="hidden" name="entity" value="forum">
+        <input type="hidden" name="action" value="edit">
+        <input type="hidden" name="forum_id" value="{forum_id}">
+
+        <div class="admin-category-fields">
+            <label>
+                <span>Name</span>
+                <input type="text" name="forum_name" maxlength="128" required value="{forum_name}">
+            </label>
+            <label>
+                <span>Description</span>
+                <input type="text" name="forum_desc" maxlength="1024" value="{forum_desc}">
+            </label>
+            <label>
+                <span>Icon</span>
+                <input type="text" name="forum_icon" maxlength="64" placeholder="messages" value="{forum_icon}">
+            </label>
+            <label>
+                <span>Position</span>
+                <input type="number" name="forum_position" min="0" step="1" value="{forum_position}">
+            </label>
+            <label>
+                <span>Category</span>
+                <select name="category_id">
+                    {category_options}
+                </select>
+            </label>
+        </div>
+
+        <label class="admin-toggle">
+            <input type="checkbox" role="switch" name="is_locked" {locked_checked}>
+            <span>Locked</span>
+        </label>
+    </form>
+
+    <form id="delete-forum-{forum_id}" class="admin-category-delete" method="post" action="{server_url}admin/forums">
+        <input type="hidden" name="csrf_token" value="{csrf_token}">
+        <input type="hidden" name="entity" value="forum">
+        <input type="hidden" name="action" value="delete">
+        <input type="hidden" name="forum_id" value="{forum_id}">
+    </form>
+
+    <div class="admin-category-actions">
+        <button type="submit" form="edit-forum-{forum_id}">Save</button>
+        <button type="submit" form="delete-forum-{forum_id}" class="danger-button">Delete</button>
+    </div>
+
+    <div class="admin-subforums">
+        <h4>Subforums</h4>
+        {subforums}
+        {subforum_create}
+    </div>
+</section>
