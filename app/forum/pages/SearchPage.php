@@ -14,6 +14,7 @@ use App\Classes\UrlManager;
 use App\Classes\UsernameUtils;
 use App\Interfaces\PageInterface;
 
+use App\Forum\Controllers\PrefixController;
 use App\Forum\Widgets\PaginationWidget;
 
 class SearchPage extends PageBase implements PageInterface
@@ -48,6 +49,7 @@ class SearchPage extends PageBase implements PageInterface
     private string $author = '';
     private string $date = 'any';
     private string $sort = 'relevance';
+    private ?int $prefixID = null;
     private bool $useFulltext = false;
 
     private string $results = '';
@@ -67,11 +69,20 @@ class SearchPage extends PageBase implements PageInterface
         $author = isset($_GET['author']) && is_string($_GET['author']) ? trim($_GET['author']) : '';
         $date = isset($_GET['date']) && is_string($_GET['date']) ? $_GET['date'] : 'any';
         $sort = isset($_GET['sort']) && is_string($_GET['sort']) ? $_GET['sort'] : 'relevance';
+        $prefix = isset($_GET['prefix']) && is_string($_GET['prefix']) ? $_GET['prefix'] : '';
 
         $this->query = mb_substr($query, 0, 128);
         $this->author = mb_substr($author, 0, 32);
         $this->date = array_key_exists($date, self::DATE_OPTIONS) ? $date : 'any';
         $this->sort = array_key_exists($sort, self::SORT_OPTIONS) ? $sort : 'relevance';
+
+        if (ctype_digit($prefix))
+        {
+            $prefixID = (int) $prefix;
+
+            if ($prefixID === 0 || $prefixID > 2)
+                $this->prefixID = $prefixID;
+        }
 
         if (isset($_GET['forum']) && is_string($_GET['forum']) && ctype_digit($_GET['forum']))
             $this->forumID = (int) $_GET['forum'];
@@ -104,6 +115,9 @@ class SearchPage extends PageBase implements PageInterface
 
         if ($this->date !== 'any')
             $parameters['date'] = $this->date;
+
+        if ($this->prefixID !== null)
+            $parameters['prefix'] = $this->prefixID;
 
         if ($this->sort !== 'relevance')
             $parameters['sort'] = $this->sort;
@@ -187,6 +201,23 @@ class SearchPage extends PageBase implements PageInterface
 
             $postConditions[] = 't.forum_id = ?';
             $postParameters[] = $this->forumID;
+        }
+
+        if ($this->prefixID !== null)
+        {
+            if ($this->prefixID === 0)
+            {
+                $threadConditions[] = 't.prefix_id <= 2';
+                $postConditions[] = 't.prefix_id <= 2';
+            }
+            else
+            {
+                $threadConditions[] = 't.prefix_id = ?';
+                $threadParameters[] = $this->prefixID;
+
+                $postConditions[] = 't.prefix_id = ?';
+                $postParameters[] = $this->prefixID;
+            }
         }
 
         if ($this->author !== '')
@@ -382,7 +413,18 @@ class SearchPage extends PageBase implements PageInterface
                 . Template::Escape($label) . '</option>';
         }
 
-        return [$forumOptions, $dateOptions, $sortOptions];
+        $prefixOptions = '<option value="">Any prefix</option>'
+            . '<option value="0"' . ($this->prefixID === 0 ? ' selected' : '') . '>No prefix</option>';
+
+        foreach (PrefixController::GetCustomPrefixes($this->database) as $prefix)
+        {
+            $id = (int) $prefix['id'];
+            $prefixOptions .= '<option value="' . $id . '"'
+                . ($this->prefixID === $id ? ' selected' : '') . '>'
+                . Template::Escape($prefix['prefix_name']) . '</option>';
+        }
+
+        return [$forumOptions, $prefixOptions, $dateOptions, $sortOptions];
     }
 
     private function BuildSummary(): string
@@ -400,7 +442,7 @@ class SearchPage extends PageBase implements PageInterface
     {
         $this->FetchResults();
 
-        [$forumOptions, $dateOptions, $sortOptions] = $this->BuildOptions();
+        [$forumOptions, $prefixOptions, $dateOptions, $sortOptions] = $this->BuildOptions();
 
         $paginationTemplate = new PaginationWidget(
             $this->page,
@@ -414,6 +456,7 @@ class SearchPage extends PageBase implements PageInterface
         $this->template->AddEscapedEntry('{query}', $this->query);
         $this->template->AddEscapedEntry('{author}', $this->author);
         $this->template->AddEntry('{forum_options}', $forumOptions);
+        $this->template->AddEntry('{prefix_options}', $prefixOptions);
         $this->template->AddEntry('{date_options}', $dateOptions);
         $this->template->AddEntry('{sort_options}', $sortOptions);
         $this->template->AddEntry('{summary}', $this->BuildSummary());

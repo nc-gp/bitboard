@@ -42,7 +42,7 @@
 - Login rate limiting (10 failures per IP or 5 per account in a 15-minute window) with
   failed-attempt logging.
 - Members list with online/offline state.
-- Thread and post search with forum/author/date filters, relevance/newest sorting, and
+- Thread and post search with forum/prefix/author/date filters, relevance/newest sorting, and
   pagination.
 - Online members list and an online preview on the forum index.
 - SEO-friendly thread URLs with generated slugs and canonical links; legacy thread URLs
@@ -264,7 +264,7 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] Mentions and live notifications.
 - [x] Staff can reply to closed threads and see an offline-mode banner.
 - [ ] Admin CRUD for categories, forums, subforums, prefixes, users, and ranks.
-- [x] Thread and post search with forum/author/date filters.
+- [x] Thread and post search with forum/prefix/author/date filters.
 - [x] Online members list with an index preview.
 - [x] SEO-friendly thread slugs and canonical URLs.
 - [x] OpenGraph/Twitter metadata, sitemap, and Atom feed.

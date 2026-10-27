@@ -294,7 +294,7 @@ Items marked **good first issue** are small and self-contained.
 
 - [x] Search threads/posts with MySQL `FULLTEXT`, filters (forum, author, date), and
   pagination. Falls back to `LIKE` when the database user cannot add the indexes.
-- [ ] Search by thread prefix/tag, preserving the selected prefix in the filter form and
+- [x] Search by thread prefix/tag, preserving the selected prefix in the filter form and
   pagination links.
 - [x] Public profile page with avatar, rank, reputation, join date, recent posts/threads,
   and online state.

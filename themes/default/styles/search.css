@@ -55,6 +55,7 @@
     flex-direction: column;
     gap: 5px;
     min-width: 0;
+    max-width: 220px;
     margin: 0;
     color: gray;
     font-size: 0.74rem;
@@ -238,6 +239,7 @@
 
     .search-field {
         flex-basis: 100%;
+        max-width: none;
     }
 
     .search-field select,
