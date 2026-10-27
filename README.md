@@ -49,7 +49,7 @@
   redirect permanently to the current slug.
 - OpenGraph/Twitter metadata, a public sitemap at `/sitemap.xml`, and an Atom feed at
   `/feed.xml`.
-- Admin panel shell with forum settings and prefix management (edit/delete).
+- Admin panel with forum settings, category management, and prefix management (edit/delete).
 - Theme system with the bundled `default` theme and light/dark/auto switcher.
 - Offline mode with a staff-only banner and browsing bypass, force-login mode, banned page, and
   a 404 page with a real 404 status.
@@ -85,7 +85,7 @@
 - **Registration** — basic registration works; terms acceptance, anti-bot protection, email-domain policy, rate limiting, and email verification are still pending.
 - **Profiles** — basic public profiles show avatar, rank, reputation, join date, online state, and recent threads/posts; bio and customization are still pending.
 - **Account settings** — email/password settings work; avatar, bio, signature, timezone, and notification preferences are still pending.
-- **Admin CRUD** — categories, forums, subforums, users, and ranks are not manageable yet.
+- **Admin CRUD** — categories are manageable; forums, subforums, users, and ranks are not yet, and prefix creation still needs a UI.
 - **Prefix creation** — existing custom prefixes can be edited/deleted, but there is no create UI yet.
 - **Thread merges/splits (future plugin), avatars/uploads, and notification preferences.**
 - **Email verification and password reset.**
@@ -269,7 +269,8 @@ The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
 - [x] Mentions and live notifications.
 - [x] Thread subscriptions and reply notifications.
 - [x] Staff can reply to closed threads and see an offline-mode banner.
-- [ ] Admin CRUD for categories, forums, subforums, prefixes, users, and ranks.
+- [x] Admin category management.
+- [ ] Admin CRUD for forums, subforums, prefix creation, users, and ranks.
 - [x] Thread and post search with forum/prefix/author/date filters.
 - [x] Online members list with an index preview.
 - [x] SEO-friendly thread slugs and canonical URLs.

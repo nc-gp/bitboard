@@ -1,0 +1,38 @@
+<article class="admin-categories">
+    <header>
+        <h2>Categories</h2>
+        <p>Categories group forums on the index page. Ordering is controlled by the position value.</p>
+    </header>
+
+    <form class="admin-category-create" method="post" action="{server_url}admin/categories">
+        <input type="hidden" name="csrf_token" value="{csrf_token}">
+        <input type="hidden" name="action" value="create">
+
+        <div class="admin-category-fields">
+            <label>
+                <span>Name</span>
+                <input type="text" name="category_name" maxlength="128" required>
+            </label>
+            <label>
+                <span>Description</span>
+                <input type="text" name="category_desc" maxlength="256">
+            </label>
+            <label>
+                <span>Icon</span>
+                <input type="text" name="category_icon" maxlength="64" placeholder="world">
+            </label>
+            <label>
+                <span>Position</span>
+                <input type="number" name="category_position" min="0" step="1" value="{next_position}">
+            </label>
+        </div>
+
+        <div class="admin-category-actions">
+            <button type="submit">Create category</button>
+        </div>
+    </form>
+
+    <div class="admin-category-list">
+        {categories}
+    </div>
+</article>

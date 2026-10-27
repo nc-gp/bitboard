@@ -42,3 +42,141 @@ nav li {
 #preprefixes {
     width: 100%;
 }
+
+.admin-categories > header {
+    margin-bottom: 14px;
+}
+
+.admin-categories > header h2 {
+    margin: 0 0 5px;
+}
+
+.admin-categories > header p {
+    margin: 0;
+    color: gray;
+    font-size: 0.9rem;
+}
+
+.admin-category-create {
+    margin: 0 0 18px;
+    padding: 14px !important;
+    border: 1px dashed var(--opposite-x2);
+    border-radius: var(--border-radius);
+}
+
+.admin-category {
+    margin-bottom: 14px;
+    padding: 14px;
+    border-radius: var(--border-radius);
+    background: var(--opposite);
+    box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
+}
+
+.admin-category-form {
+    margin: 0;
+    padding: 0 !important;
+}
+
+.admin-category-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 10px;
+    margin-bottom: 12px;
+}
+
+.admin-category-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background: var(--opposite-x2);
+    color: var(--primary-hover);
+}
+
+.admin-category-icon i {
+    font-size: 1rem;
+}
+
+.admin-category-head strong {
+    font-size: 1.02rem;
+}
+
+.admin-category-count {
+    padding: 1px 8px;
+    border-radius: 999px;
+    background: var(--opposite-x2);
+    color: gray;
+    font-size: 0.7rem;
+}
+
+.admin-category-fields {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 10px;
+}
+
+.admin-category-fields label {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+    color: gray;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.admin-category-fields input {
+    width: 100%;
+    margin: 0;
+    font-size: 0.88rem;
+    font-weight: normal;
+    letter-spacing: normal;
+    text-transform: none;
+}
+
+.admin-category-actions {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 10px;
+}
+
+.admin-category-actions button,
+.admin-category-delete button {
+    width: auto;
+    margin: 0;
+}
+
+.admin-category-delete {
+    display: flex;
+    justify-content: flex-end;
+    margin: 8px 0 0;
+    padding: 0 !important;
+}
+
+.admin-category-empty {
+    margin: 0;
+    color: gray;
+    font-size: 0.9rem;
+}
+
+.admin-category-delete .danger-button {
+    background: #c92a2a;
+    border-color: #c92a2a;
+    color: #fff;
+}
+
+.admin-category-delete .danger-button:hover {
+    background: #a61e1e;
+    border-color: #a61e1e;
+}
+
+@media (max-width: 620px) {
+    .admin-category {
+        padding: 12px;
+    }
+}

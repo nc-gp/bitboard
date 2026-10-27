@@ -284,8 +284,9 @@ Items marked **good first issue** are small and self-contained.
 - [x] Report queue with statuses, notes, and `VIEWING_REPORTS`. Users can report threads or
   replies; staff get a filtered queue with resolve/dismiss actions and resolution notes.
 - [ ] Merge and split threads (deferred; candidate for a future moderation plugin).
-- [ ] Admin CRUD for categories, forums, subforums, and prefixes, including drag-and-drop
-  ordering and locked toggles. The admin nav links already exist.
+- [x] Admin category management: list, create, edit, delete, and manual ordering.
+- [ ] Admin CRUD for forums, subforums, prefixes (creation UI), users, and ranks, including
+  drag-and-drop ordering and locked toggles.
 - [ ] User management: search, rank assignment, ban/unban, reputation adjustments.
 - [ ] Rank/permission matrix editor with readable labels for every bit flag.
 - [ ] Audit log for admin actions and moderator actions.

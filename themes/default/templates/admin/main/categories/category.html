@@ -1,0 +1,43 @@
+<section class="admin-category">
+    <div class="admin-category-head">
+        <span class="admin-category-icon">{icon_preview}</span>
+        <strong>{category_name}</strong>
+        <span class="admin-category-count">{forum_count} forums</span>
+    </div>
+
+    <form class="admin-category-form" method="post" action="{server_url}admin/categories">
+        <input type="hidden" name="csrf_token" value="{csrf_token}">
+        <input type="hidden" name="action" value="edit">
+        <input type="hidden" name="category_id" value="{category_id}">
+
+        <div class="admin-category-fields">
+            <label>
+                <span>Name</span>
+                <input type="text" name="category_name" maxlength="128" required value="{category_name}">
+            </label>
+            <label>
+                <span>Description</span>
+                <input type="text" name="category_desc" maxlength="256" value="{category_desc}">
+            </label>
+            <label>
+                <span>Icon</span>
+                <input type="text" name="category_icon" maxlength="64" placeholder="world" value="{category_icon}">
+            </label>
+            <label>
+                <span>Position</span>
+                <input type="number" name="category_position" min="0" step="1" value="{category_position}">
+            </label>
+        </div>
+
+        <div class="admin-category-actions">
+            <button type="submit">Save</button>
+        </div>
+    </form>
+
+    <form class="admin-category-delete" method="post" action="{server_url}admin/categories">
+        <input type="hidden" name="csrf_token" value="{csrf_token}">
+        <input type="hidden" name="action" value="delete">
+        <input type="hidden" name="category_id" value="{category_id}">
+        <button type="submit" class="danger-button">Delete</button>
+    </form>
+</section>

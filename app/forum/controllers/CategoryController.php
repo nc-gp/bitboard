@@ -33,6 +33,64 @@ class CategoryController
     {
         $db->Query('INSERT INTO bit_categories (id,category_name,category_desc,category_icon,category_position) VALUES (?,?,?,?,?)', array(0, $categoryName, $categoryDescription, $categoryIcon, $categoryPosition));
     }
+
+    public static function GetAll(Database $db): array
+    {
+        return $db->Query('SELECT * FROM bit_categories ORDER BY category_position ASC, id ASC')->FetchAll();
+    }
+
+    public static function GetByID(Database $db, int $categoryID): array
+    {
+        return $db->Query('SELECT * FROM bit_categories WHERE id = ? LIMIT 1', $categoryID)->FetchArray();
+    }
+
+    public static function GetForumCounts(Database $db): array
+    {
+        $rows = $db->Query('SELECT category_id, COUNT(*) AS forum_count
+            FROM bit_forums GROUP BY category_id')->FetchAll();
+
+        $counts = [];
+        foreach ($rows as $row)
+            $counts[(int) $row['category_id']] = (int) $row['forum_count'];
+
+        return $counts;
+    }
+
+    public static function CountForums(Database $db, int $categoryID): int
+    {
+        $row = $db->Query('SELECT COUNT(*) AS forum_count FROM bit_forums
+            WHERE category_id = ?', $categoryID)->FetchArray();
+
+        return (int) ($row['forum_count'] ?? 0);
+    }
+
+    public static function NextPosition(Database $db): int
+    {
+        $row = $db->Query('SELECT COALESCE(MAX(category_position), -1) + 1 AS next_position
+            FROM bit_categories')->FetchArray();
+
+        return (int) ($row['next_position'] ?? 0);
+    }
+
+    public static function Update(
+        Database $db,
+        int $categoryID,
+        string $categoryName,
+        string $categoryDescription,
+        string $categoryIcon,
+        int $categoryPosition
+    ): void
+    {
+        $db->Query('UPDATE bit_categories
+            SET category_name = ?, category_desc = ?, category_icon = ?, category_position = ?
+            WHERE id = ?',
+            $categoryName, $categoryDescription, $categoryIcon, $categoryPosition, $categoryID);
+    }
+
+    public static function Delete(Database $db, int $categoryID): void
+    {
+        $db->Query('DELETE FROM bit_categories WHERE id = ?', $categoryID);
+    }
 }
 
 ?>
