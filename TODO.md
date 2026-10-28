@@ -301,7 +301,11 @@ Items marked **good first issue** are small and self-contained.
   ranks cannot modify users or ranks at or above their own position.
 - [ ] Account deletion with explicit content reassignment or removal rules.
 - [x] Rank/permission matrix editor with readable labels for every bit flag.
-- [ ] Audit log for admin actions and moderator actions.
+- [x] Audit log for admin and moderator actions: persistent `bit_audit_log`, a permission-gated
+  admin page with actor/action filters and pagination, and entries for settings, categories,
+  forums, subforums, prefixes, ranks, users, thread pin/lock/move/edit/delete, post edits/deletes,
+  and report resolutions.
+- [ ] Audit log retention/pruning and CSV export.
 - [x] Expanded the admin dashboard with forum statistics, recent threads, newest members, and
   lightweight SVG activity charts for new threads/posts/members, with selectable 7/14/30-day
   periods and previous-period trend labels.

@@ -6,6 +6,7 @@ use Api\Classes\ApiResponse;
 use Api\Classes\ApiCodes;
 
 use App\Classes\Database;
+use App\Forum\Controllers\AuditController;
 
 class Settings
 {
@@ -38,6 +39,14 @@ class Settings
             $forumOnline,
             $forumForceLogin,
             $forumCredits
+        );
+
+        AuditController::Log(
+            $db,
+            'settings.update',
+            sprintf('Updated forum settings for "%s".', $forumName),
+            'settings',
+            0
         );
     }
 

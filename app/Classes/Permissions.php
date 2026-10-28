@@ -24,6 +24,7 @@ class Permissions
     const MANAGING_ROLES = 16384;
     const VIEWING_REPORTS = 32768;
     const MANAGING_SETTINGS = 65536;
+    const VIEWING_AUDIT_LOG = 131072;
 
     // Permissions that identify administrators and moderators.
     public const STAFF =
@@ -31,6 +32,7 @@ class Permissions
     self::LOCKING_THREADS |
     self::PINNING_THREADS |
     self::VIEWING_REPORTS |
+    self::VIEWING_AUDIT_LOG |
     self::MANAGING_USERS |
     self::MANAGING_ROLES |
     self::MANAGING_SETTINGS;
@@ -61,6 +63,7 @@ class Permissions
             self::MANAGING_USERS => 'Manage users',
             self::MANAGING_ROLES => 'Manage ranks and permissions',
             self::MANAGING_SETTINGS => 'Manage settings and prefixes',
+            self::VIEWING_AUDIT_LOG => 'View the audit log',
         ],
     ];
 
@@ -82,7 +85,8 @@ class Permissions
     self::MANAGING_USERS |
     self::MANAGING_ROLES |
     self::VIEWING_REPORTS |
-    self::MANAGING_SETTINGS;
+    self::MANAGING_SETTINGS |
+    self::VIEWING_AUDIT_LOG;
 
     /**
      * Check if a user has a specific permission.

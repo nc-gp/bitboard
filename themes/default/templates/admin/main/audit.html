@@ -1,0 +1,50 @@
+<article class="admin-audit">
+    <header class="admin-section-header">
+        <span class="admin-section-icon"><i class="ti ti-history" aria-hidden="true"></i></span>
+        <div>
+            <h2>Audit log</h2>
+            <p>Administrative and moderation actions, newest first.</p>
+        </div>
+    </header>
+
+    <form class="admin-audit-filter" method="get" action="{server_url}admin/audit/page/1">
+        <div class="admin-category-fields admin-audit-filter-fields">
+            <label>
+                <span>Actor</span>
+                <input type="search" name="actor" maxlength="64" placeholder="Username" value="{actor}">
+            </label>
+            <label>
+                <span>Action</span>
+                <select name="event">
+                    {action_options}
+                </select>
+            </label>
+        </div>
+
+        <div class="admin-category-actions">
+            <a class="admin-user-reset" href="{server_url}admin/audit/page/1">Reset</a>
+            <button type="submit">Apply filters</button>
+        </div>
+    </form>
+
+    <p class="admin-user-total">{total_label}</p>
+
+    {pagination}
+
+    <div class="admin-audit-table-wrap">
+        <table class="admin-audit-table">
+            <thead>
+                <tr>
+                    <th>When</th>
+                    <th>Actor</th>
+                    <th>Action</th>
+                    <th>Details</th>
+                    <th>IP</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows}
+            </tbody>
+        </table>
+    </div>
+</article>

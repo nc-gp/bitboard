@@ -20,6 +20,7 @@ use App\Classes\UsernameUtils;
 use App\Forum\Controllers\ContentController;
 use App\Forum\Controllers\MentionController;
 use App\Forum\Controllers\PrefixController;
+use App\Forum\Controllers\AuditController;
 
 use App\Interfaces\PageInterface;
 
@@ -194,6 +195,17 @@ class EditPage extends PageBase implements PageInterface
                 {
                     ContentController::DeleteThread($this->database, $this->id);
 
+                    if (SessionManager::IsStaff())
+                    {
+                        AuditController::Log(
+                            $this->database,
+                            'thread.delete',
+                            sprintf('Deleted thread "%s".', $this->content['thread_title']),
+                            'thread',
+                            $this->id
+                        );
+                    }
+
                     $redirect = (int) ($this->content['subforum_id'] ?? -1) > 0
                         ? $this->serverPath . 'subforum/' . (int) $this->content['subforum_id'] . '/page/1'
                         : $this->serverPath . 'forum/' . (int) $this->content['forum_id'] . '/page/1';
@@ -202,6 +214,18 @@ class EditPage extends PageBase implements PageInterface
                 }
 
                 ContentController::DeletePost($this->database, $this->id);
+
+                if (SessionManager::IsStaff())
+                {
+                    AuditController::Log(
+                        $this->database,
+                        'post.delete',
+                        sprintf('Deleted post #%d in "%s".', $this->id, $this->content['thread_title']),
+                        'post',
+                        $this->id
+                    );
+                }
+
                 UrlManager::Redirect(UrlManager::ThreadUrl(
                     $this->threadID,
                     Slug::FromTitle($this->content['thread_title']),
@@ -291,10 +315,33 @@ class EditPage extends PageBase implements PageInterface
             if ($this->type === 'thread')
             {
                 ContentController::UpdateThread($this->database, $this->id, $editorID, $this->titleValue, $html, $this->prefixID);
+
+                if (SessionManager::IsStaff())
+                {
+                    AuditController::Log(
+                        $this->database,
+                        'thread.edit',
+                        sprintf('Edited thread "%s".', $this->titleValue),
+                        'thread',
+                        $this->id
+                    );
+                }
+
                 UrlManager::Redirect(UrlManager::ThreadUrl($this->id, Slug::FromTitle($this->titleValue), 1));
             }
 
             ContentController::UpdatePost($this->database, $this->id, $editorID, $html);
+
+            if (SessionManager::IsStaff())
+            {
+                AuditController::Log(
+                    $this->database,
+                    'post.edit',
+                    sprintf('Edited post #%d in "%s".', $this->id, $this->content['thread_title']),
+                    'post',
+                    $this->id
+                );
+            }
 
             $page = ContentController::PostPageNumber($this->database, $this->content);
             UrlManager::Redirect(UrlManager::ThreadUrl(

@@ -18,6 +18,7 @@ use App\Classes\UsernameUtils;
 
 use App\Forum\Controllers\ContentController;
 use App\Forum\Controllers\ReportController;
+use App\Forum\Controllers\AuditController;
 use App\Forum\Widgets\PaginationWidget;
 
 use App\Interfaces\PageInterface;
@@ -131,6 +132,19 @@ class ReportsPage extends PageBase implements PageInterface
                 (int) $_SESSION['bitboard_user']->id,
                 $decision,
                 $note
+            );
+
+            AuditController::Log(
+                $this->database,
+                $decision === 'resolved' ? 'report.resolved' : 'report.dismissed',
+                sprintf(
+                    '%s report #%d (thread #%d).',
+                    ucfirst($decision),
+                    $reportID,
+                    (int) $report['thread_id']
+                ),
+                'report',
+                $reportID
             );
 
             UrlManager::Redirect($this->serverPath . 'reports/page/' . $page . '?status=' . $filter);

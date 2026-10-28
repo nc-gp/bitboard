@@ -15,6 +15,7 @@ use App\Classes\UsernameUtils;
 use App\Interfaces\PageInterface;
 use App\Classes\Template;
 use App\Forum\Controllers\AccountController;
+use App\Forum\Controllers\AuditController;
 use App\Forum\Controllers\CategoryController;
 use App\Forum\Controllers\ForumController;
 use App\Forum\Controllers\RankController;
@@ -61,6 +62,9 @@ class AdminPage extends PageBase implements PageInterface
             UrlManager::Redirect($this->serverPath . 'admin');
 
         if ($option === 'users' && !SessionManager::HasPermission(Permissions::MANAGING_USERS))
+            UrlManager::Redirect($this->serverPath . 'admin');
+
+        if ($option === 'audit' && !SessionManager::HasPermission(Permissions::VIEWING_AUDIT_LOG))
             UrlManager::Redirect($this->serverPath . 'admin');
 
         switch($option)
@@ -135,6 +139,11 @@ class AdminPage extends PageBase implements PageInterface
                 $this->content = $this->BuildUsers();
                 break;
             }
+            case 'audit':
+            {
+                $this->content = $this->BuildAudit();
+                break;
+            }
             default:
             {
                 $this->content = $this->BuildDashboard();
@@ -168,7 +177,9 @@ class AdminPage extends PageBase implements PageInterface
         {
             if ($action === 'delete')
             {
-                if ($categoryID <= 0 || empty(CategoryController::GetByID($this->database, $categoryID)))
+                $category = $categoryID > 0 ? CategoryController::GetByID($this->database, $categoryID) : [];
+
+                if (empty($category))
                 {
                     $this->AdminError('That category could not be found.');
                     return;
@@ -181,6 +192,13 @@ class AdminPage extends PageBase implements PageInterface
                 }
 
                 CategoryController::Delete($this->database, $categoryID);
+                AuditController::Log(
+                    $this->database,
+                    'category.delete',
+                    sprintf('Deleted category "%s".', $category['category_name']),
+                    'category',
+                    $categoryID
+                );
                 UrlManager::Redirect($this->serverPath . 'admin/categories');
             }
 
@@ -223,17 +241,33 @@ class AdminPage extends PageBase implements PageInterface
 
             if ($action === 'edit')
             {
-                if ($categoryID <= 0 || empty(CategoryController::GetByID($this->database, $categoryID)))
+                $category = $categoryID > 0 ? CategoryController::GetByID($this->database, $categoryID) : [];
+
+                if (empty($category))
                 {
                     $this->AdminError('That category could not be found.');
                     return;
                 }
 
                 CategoryController::Update($this->database, $categoryID, $name, $description, $icon, $position);
+                AuditController::Log(
+                    $this->database,
+                    'category.update',
+                    sprintf('Updated category "%s".', $name),
+                    'category',
+                    $categoryID
+                );
             }
             else
             {
                 CategoryController::Create($this->database, $name, $description, $icon, $position);
+                AuditController::Log(
+                    $this->database,
+                    'category.create',
+                    sprintf('Created category "%s".', $name),
+                    'category',
+                    (int) $this->database->LastInsertID()
+                );
             }
 
             UrlManager::Redirect($this->serverPath . 'admin/categories');
@@ -333,7 +367,9 @@ class AdminPage extends PageBase implements PageInterface
 
         if ($action === 'delete')
         {
-            if ($forumID <= 0 || empty(ForumController::GetByID($this->database, $forumID)))
+            $forum = $forumID > 0 ? ForumController::GetByID($this->database, $forumID) : [];
+
+            if (empty($forum))
             {
                 $this->AdminError('That forum could not be found.');
                 return;
@@ -346,6 +382,13 @@ class AdminPage extends PageBase implements PageInterface
             }
 
             ForumController::Delete($this->database, $forumID);
+            AuditController::Log(
+                $this->database,
+                'forum.delete',
+                sprintf('Deleted forum "%s".', $forum['forum_name']),
+                'forum',
+                $forumID
+            );
             UrlManager::Redirect($this->serverPath . 'admin/forums');
         }
 
@@ -388,17 +431,33 @@ class AdminPage extends PageBase implements PageInterface
 
         if ($action === 'edit')
         {
-            if ($forumID <= 0 || empty(ForumController::GetByID($this->database, $forumID)))
+            $forum = $forumID > 0 ? ForumController::GetByID($this->database, $forumID) : [];
+
+            if (empty($forum))
             {
                 $this->AdminError('That forum could not be found.');
                 return;
             }
 
             ForumController::Update($this->database, $forumID, $categoryID, $name, $description, $icon, $position, $isLocked);
+            AuditController::Log(
+                $this->database,
+                'forum.update',
+                sprintf('Updated forum "%s".', $name),
+                'forum',
+                $forumID
+            );
         }
         else
         {
             ForumController::Create($this->database, $categoryID, $name, $description, $icon, $position, $isLocked);
+            AuditController::Log(
+                $this->database,
+                'forum.create',
+                sprintf('Created forum "%s".', $name),
+                'forum',
+                (int) $this->database->LastInsertID()
+            );
         }
 
         UrlManager::Redirect($this->serverPath . 'admin/forums');
@@ -410,7 +469,9 @@ class AdminPage extends PageBase implements PageInterface
 
         if ($action === 'delete')
         {
-            if ($subforumID <= 0 || empty(SubForumController::GetByID($this->database, $subforumID)))
+            $subforum = $subforumID > 0 ? SubForumController::GetByID($this->database, $subforumID) : [];
+
+            if (empty($subforum))
             {
                 $this->AdminError('That subforum could not be found.');
                 return;
@@ -423,6 +484,13 @@ class AdminPage extends PageBase implements PageInterface
             }
 
             SubForumController::Delete($this->database, $subforumID);
+            AuditController::Log(
+                $this->database,
+                'subforum.delete',
+                sprintf('Deleted subforum "%s".', $subforum['subforum_name']),
+                'subforum',
+                $subforumID
+            );
             UrlManager::Redirect($this->serverPath . 'admin/forums');
         }
 
@@ -444,25 +512,42 @@ class AdminPage extends PageBase implements PageInterface
 
         if ($action === 'edit')
         {
-            if ($subforumID <= 0 || empty(SubForumController::GetByID($this->database, $subforumID)))
+            $subforum = $subforumID > 0 ? SubForumController::GetByID($this->database, $subforumID) : [];
+
+            if (empty($subforum))
             {
                 $this->AdminError('That subforum could not be found.');
                 return;
             }
 
             SubForumController::Update($this->database, $subforumID, $name, $description, $isLocked);
+            AuditController::Log(
+                $this->database,
+                'subforum.update',
+                sprintf('Updated subforum "%s".', $name),
+                'subforum',
+                $subforumID
+            );
         }
         else
         {
             $forumID = $this->PostedID('forum_id');
+            $forum = $forumID > 0 ? ForumController::GetByID($this->database, $forumID) : [];
 
-            if ($forumID <= 0 || empty(ForumController::GetByID($this->database, $forumID)))
+            if (empty($forum))
             {
                 $this->AdminError('Choose a valid forum for this subforum.');
                 return;
             }
 
             SubForumController::Create($this->database, $forumID, $name, $description, $isLocked);
+            AuditController::Log(
+                $this->database,
+                'subforum.create',
+                sprintf('Created subforum "%s" in "%s".', $name, $forum['forum_name']),
+                'subforum',
+                (int) $this->database->LastInsertID()
+            );
         }
 
         UrlManager::Redirect($this->serverPath . 'admin/forums');
@@ -722,6 +807,13 @@ class AdminPage extends PageBase implements PageInterface
                 }
 
                 RankController::Delete($this->database, $rankID);
+                AuditController::Log(
+                    $this->database,
+                    'rank.delete',
+                    sprintf('Deleted rank "%s" (position %d).', $existing['rank_name'], (int) $existing['rank_position']),
+                    'rank',
+                    $rankID
+                );
                 UrlManager::Redirect($this->serverPath . 'admin/ranks');
             }
 
@@ -819,9 +911,27 @@ class AdminPage extends PageBase implements PageInterface
             }
 
             if ($action === 'edit')
+            {
                 RankController::Update($this->database, $rankID, $name, $format, $flags, $rankPosition);
+                AuditController::Log(
+                    $this->database,
+                    'rank.update',
+                    sprintf('Updated rank "%s" (position %d).', $name, $rankPosition),
+                    'rank',
+                    $rankID
+                );
+            }
             else
+            {
                 RankController::Create($this->database, $name, $format, $flags, $rankPosition);
+                AuditController::Log(
+                    $this->database,
+                    'rank.create',
+                    sprintf('Created rank "%s" (position %d).', $name, $rankPosition),
+                    'rank',
+                    (int) $this->database->LastInsertID()
+                );
+            }
 
             UrlManager::Redirect($this->serverPath . 'admin/ranks');
         }
@@ -997,6 +1107,17 @@ class AdminPage extends PageBase implements PageInterface
                 }
 
                 AccountController::SetRank($this->database, $userID, (int) $targetRank['id']);
+                AuditController::Log(
+                    $this->database,
+                    $action === 'ban' ? 'user.ban' : 'user.unban',
+                    sprintf(
+                        '%s user "%s".',
+                        $action === 'ban' ? 'Banned' : 'Unbanned',
+                        $user['username']
+                    ),
+                    'user',
+                    $userID
+                );
                 UrlManager::Redirect($this->serverPath . 'admin/users');
             }
 
@@ -1051,6 +1172,18 @@ class AdminPage extends PageBase implements PageInterface
 
             AccountController::SetRank($this->database, $userID, $rankID);
             AccountController::SetReputation($this->database, $userID, $reputation);
+            AuditController::Log(
+                $this->database,
+                'user.update',
+                sprintf(
+                    'Updated user "%s" (rank: %s, reputation: %d).',
+                    $user['username'],
+                    $rank['rank_name'],
+                    $reputation
+                ),
+                'user',
+                $userID
+            );
 
             UrlManager::Redirect($this->serverPath . 'admin/users');
         }
@@ -1583,6 +1716,90 @@ class AdminPage extends PageBase implements PageInterface
         return $content->template;
     }
 
+    private function BuildAudit(): string
+    {
+        $event = isset($_GET['event']) && is_string($_GET['event']) ? trim($_GET['event']) : '';
+        $event = mb_substr($event, 0, 64);
+        $actor = isset($_GET['actor']) && is_string($_GET['actor']) ? trim($_GET['actor']) : '';
+        $actor = mb_substr($actor, 0, 64);
+
+        $page = 1;
+        $parameters = $this->forumData->actionParameters;
+
+        if (
+            ($parameters[2] ?? '') === 'page'
+            && isset($parameters[3])
+            && is_string($parameters[3])
+            && ctype_digit($parameters[3])
+        )
+            $page = (int) $parameters[3];
+
+        if ($page <= 0)
+            $page = 1;
+
+        $perPage = 30;
+        $total = AuditController::Count($this->database, $event, $actor);
+        $totalPages = max(1, (int) ceil($total / $perPage));
+
+        $filterParameters = [];
+        if ($event !== '')
+            $filterParameters['event'] = $event;
+        if ($actor !== '')
+            $filterParameters['actor'] = $actor;
+
+        $queryString = count($filterParameters) > 0 ? '?' . http_build_query($filterParameters) : '';
+
+        if ($total > 0 && $page > $totalPages)
+            UrlManager::Redirect($this->serverPath . 'admin/audit/page/' . $totalPages . $queryString);
+
+        $entries = $total > 0
+            ? AuditController::GetPage($this->database, $event, $actor, ($page - 1) * $perPage, $perPage)
+            : [];
+
+        $rows = '';
+
+        foreach ($entries as $entry)
+        {
+            $row = new Template('admin/main/audit', 'row');
+            $row->AddEscapedEntry('{created_at}', RelativeTime::Format($entry['created_at']));
+            $row->AddEscapedEntry('{actor}', !empty($entry['actor_name']) ? $entry['actor_name'] : 'System');
+            $row->AddEscapedEntry('{action}', AuditController::Label($entry['action']));
+            $row->AddEscapedEntry('{details}', $entry['details']);
+            $row->AddEscapedEntry('{ip}', $entry['ip_address'] !== '' ? $entry['ip_address'] : '—');
+            $row->Replace();
+            $rows .= $row->template;
+        }
+
+        if ($rows === '')
+            $rows = (new Template('admin/main/audit', 'empty'))->template;
+
+        $actionOptions = $this->BuildOption('0', 'All actions', $event === '');
+
+        foreach (AuditController::GetActions($this->database) as $entry)
+        {
+            $key = (string) $entry['action'];
+            $actionOptions .= $this->BuildOption($key, AuditController::Label($key), $key === $event);
+        }
+
+        $pagination = '';
+
+        if ($totalPages > 1)
+        {
+            $widget = new PaginationWidget($page, $total, $perPage, 'admin/audit/page/', $filterParameters);
+            $pagination = $widget->Template->template;
+        }
+
+        $content = new Template('admin/main', 'audit');
+        $content->AddEscapedEntry('{actor}', $actor);
+        $content->AddEntry('{action_options}', $actionOptions);
+        $content->AddEscapedEntry('{total_label}', $total . ' ' . ($total === 1 ? 'entry' : 'entries'));
+        $content->AddEntry('{pagination}', $pagination);
+        $content->AddEntry('{rows}', $rows);
+        $content->Replace();
+
+        return $content->template;
+    }
+
     private function BuildAdminNav(): string
     {
         $sections = [
@@ -1593,6 +1810,7 @@ class AdminPage extends PageBase implements PageInterface
             'prefixes' => ['Prefixes', 'ti-tag', 'admin/prefixes'],
             'users' => ['Users', 'ti-users', 'admin/users'],
             'ranks' => ['Ranks', 'ti-shield', 'admin/ranks'],
+            'audit' => ['Audit log', 'ti-history', 'admin/audit'],
         ];
 
         if (!SessionManager::HasPermission(Permissions::MANAGING_USERS))
@@ -1600,6 +1818,9 @@ class AdminPage extends PageBase implements PageInterface
 
         if (!SessionManager::HasPermission(Permissions::MANAGING_ROLES))
             unset($sections['ranks']);
+
+        if (!SessionManager::HasPermission(Permissions::VIEWING_AUDIT_LOG))
+            unset($sections['audit']);
 
         $option = isset($this->forumData->actionParameters[1]) && is_string($this->forumData->actionParameters[1])
             ? $this->forumData->actionParameters[1]

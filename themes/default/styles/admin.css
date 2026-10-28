@@ -755,7 +755,8 @@ a.admin-stat:hover {
     line-height: 1.35;
 }
 
-.admin-user-filter {
+.admin-user-filter,
+.admin-audit-filter {
     margin: 0 0 16px;
     padding: 14px;
     border: 1px solid var(--opposite-x2);
@@ -764,6 +765,10 @@ a.admin-stat:hover {
 
 .admin-user-filter-fields {
     grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+}
+
+.admin-audit-filter-fields {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
 }
 
 .admin-user-reset {
@@ -832,6 +837,51 @@ a.admin-stat:hover {
     grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
 }
 
+.admin-audit-table-wrap {
+    overflow-x: auto;
+    border-radius: var(--border-radius);
+    background: var(--opposite);
+    box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
+}
+
+.admin-audit-table {
+    width: 100%;
+    margin: 0;
+    border-collapse: collapse;
+    font-size: 0.82rem;
+}
+
+.admin-audit-table th {
+    padding: 8px 10px;
+    border-bottom: 1px solid var(--opposite-x2);
+    color: gray;
+    font-size: 0.7rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-align: left;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.admin-audit-table td {
+    padding: 9px 10px;
+    border-bottom: 1px solid var(--opposite-x2);
+    vertical-align: top;
+}
+
+.admin-audit-table tr:last-child td {
+    border-bottom: none;
+}
+
+.admin-audit-table td:nth-child(4) {
+    min-width: 260px;
+}
+
+.admin-audit-empty {
+    color: gray;
+    text-align: center;
+}
+
 .admin-category-actions {
     display: flex;
     flex-wrap: wrap;
@@ -890,7 +940,8 @@ a.admin-stat:hover {
     }
 
     .admin-user-filter-fields,
-    .admin-user-fields {
+    .admin-user-fields,
+    .admin-audit-filter-fields {
         grid-template-columns: 1fr;
     }
 

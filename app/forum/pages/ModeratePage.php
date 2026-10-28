@@ -11,6 +11,7 @@ use App\Classes\Slug;
 use App\Classes\UrlManager;
 
 use App\Forum\Controllers\ThreadController;
+use App\Forum\Controllers\AuditController;
 
 use App\Interfaces\PageInterface;
 
@@ -98,6 +99,21 @@ class ModeratePage extends PageBase implements PageInterface
             ThreadController::SetPinned($this->database, $this->threadID, $this->action === 'pin');
         else
             ThreadController::SetClosed($this->database, $this->threadID, $this->action === 'lock');
+
+        $labels = [
+            'pin' => 'Pinned',
+            'unpin' => 'Unpinned',
+            'lock' => 'Locked',
+            'unlock' => 'Unlocked',
+        ];
+
+        AuditController::Log(
+            $this->database,
+            'thread.' . $this->action,
+            sprintf('%s thread "%s".', $labels[$this->action], $this->thread['thread_title']),
+            'thread',
+            $this->threadID
+        );
 
         UrlManager::Redirect(UrlManager::ThreadUrl(
             $this->threadID,

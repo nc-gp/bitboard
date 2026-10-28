@@ -6,6 +6,7 @@ use Api\Classes\ApiResponse;
 use Api\Classes\ApiCodes;
 
 use App\Classes\Database;
+use App\Forum\Controllers\AuditController;
 
 class Prefixes
 {
@@ -124,6 +125,13 @@ class Prefixes
         );
 
         $this->newPrefixId = (int) $db->LastInsertID();
+        AuditController::Log(
+            $db,
+            'prefix.create',
+            sprintf('Created prefix "%s" with class "%s".', $prefixName, $prefixClass),
+            'prefix',
+            $this->newPrefixId
+        );
         $this->message = sprintf('Prefix "%s" created!', $prefixName);
     }
 
@@ -143,6 +151,14 @@ class Prefixes
             'UPDATE bit_prefixes SET prefix_name = ?, prefix_class = ? WHERE id = ? AND id > 2',
             $prefixName,
             $prefixClass,
+            (int) $prefix['id']
+        );
+
+        AuditController::Log(
+            $db,
+            'prefix.update',
+            sprintf('Updated prefix "%s" to "%s".', $prefix['prefix_name'], $prefixName),
+            'prefix',
             (int) $prefix['id']
         );
 
@@ -181,6 +197,14 @@ class Prefixes
             $this->message = 'Prefix not found.';
             return;
         }
+
+        AuditController::Log(
+            $db,
+            'prefix.delete',
+            sprintf('Deleted prefix "%s".', $prefix['prefix_name']),
+            'prefix',
+            (int) $prefix['id']
+        );
 
         $this->message = sprintf('Prefix "%s" deleted!', $prefix['prefix_name']);
     }

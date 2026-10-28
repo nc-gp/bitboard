@@ -12,6 +12,7 @@ use App\Classes\Template;
 use App\Classes\UrlManager;
 
 use App\Forum\Controllers\ThreadController;
+use App\Forum\Controllers\AuditController;
 
 use App\Interfaces\PageInterface;
 
@@ -158,6 +159,31 @@ class MovePage extends PageBase implements PageInterface
         try
         {
             ThreadController::Move($this->database, $this->threadID, $forumID, $subforumID);
+
+            if ($subforumID > 0)
+            {
+                $destination = $this->database->Query('SELECT sf.subforum_name, f.forum_name
+                    FROM bit_subforums AS sf
+                    JOIN bit_forums AS f ON f.id = sf.forum_id
+                    WHERE sf.id = ?', $subforumID)->FetchArray();
+                $destinationName = !empty($destination)
+                    ? $destination['forum_name'] . ' / ' . $destination['subforum_name']
+                    : 'subforum #' . $subforumID;
+            }
+            else
+            {
+                $destination = $this->database->Query('SELECT forum_name FROM bit_forums WHERE id = ?', $forumID)->FetchArray();
+                $destinationName = $destination['forum_name'] ?? ('forum #' . $forumID);
+            }
+
+            AuditController::Log(
+                $this->database,
+                'thread.move',
+                sprintf('Moved thread "%s" to "%s".', $this->thread['thread_title'], $destinationName),
+                'thread',
+                $this->threadID
+            );
+
             UrlManager::Redirect(UrlManager::ThreadUrl(
                 $this->threadID,
                 Slug::FromTitle($this->thread['thread_title']),
