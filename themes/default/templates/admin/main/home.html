@@ -10,6 +10,10 @@
         </div>
     </header>
 
+    <div class="admin-stats">
+        {stats}
+    </div>
+
     <div class="admin-quick-links">
         <a class="admin-quick-link" href="{server_url}admin/settings">
             <i class="ti ti-settings" aria-hidden="true"></i> Forum settings
@@ -28,5 +32,33 @@
         <a class="admin-quick-link" href="{server_url}">
             <i class="ti ti-home" aria-hidden="true"></i> View forum
         </a>
+    </div>
+
+    <section class="admin-dashboard-section">
+        <div class="admin-dashboard-section-head">
+            <h3>Activity — last {days} days</h3>
+            <div class="admin-period-links">
+                {period_links}
+            </div>
+        </div>
+        <div class="admin-charts">
+            {charts}
+        </div>
+    </section>
+
+    <div class="admin-dashboard-columns">
+        <section class="admin-panel">
+            <h3>Recent threads</h3>
+            <div class="admin-recent">
+                {recent_threads}
+            </div>
+        </section>
+
+        <section class="admin-panel">
+            <h3>Newest members</h3>
+            <div class="admin-recent">
+                {recent_members}
+            </div>
+        </section>
     </div>
 </article>

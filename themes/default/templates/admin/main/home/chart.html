@@ -1,0 +1,15 @@
+<div class="admin-chart-card">
+    <div class="admin-chart-head">
+        <i class="ti {icon}" aria-hidden="true"></i>
+        <span>{title}</span>
+        <span class="admin-chart-trend {trend_class}">{trend_label}</span>
+        <strong>{total}</strong>
+    </div>
+    <div class="admin-chart">
+        <svg viewBox="0 0 280 80" role="img" aria-label="{aria_label}" preserveAspectRatio="none">
+            <line x1="0" y1="76" x2="280" y2="76" class="admin-chart-axis-line"></line>
+            {bars}
+        </svg>
+    </div>
+    <div class="admin-chart-axis"><span>{first_label}</span><span>{last_label}</span></div>
+</div>

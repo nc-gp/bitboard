@@ -302,9 +302,9 @@ Items marked **good first issue** are small and self-contained.
 - [ ] Account deletion with explicit content reassignment or removal rules.
 - [x] Rank/permission matrix editor with readable labels for every bit flag.
 - [ ] Audit log for admin actions and moderator actions.
-- [ ] Expand the admin dashboard with forum statistics, recent activity, and lightweight charts
-  (for example new threads/posts/users over time and open reports) using local SVG/CSS rather
-  than an external chart library.
+- [x] Expanded the admin dashboard with forum statistics, recent threads, newest members, and
+  lightweight SVG activity charts for new threads/posts/members, with selectable 7/14/30-day
+  periods and previous-period trend labels.
 - [x] Offline-mode notice for moderators/administrators: staff see a persistent banner with the
   offline message while browsing; everyone else is redirected to the offline page.
 - [x] Finish the prefix edit/delete API and add validation.
@@ -344,6 +344,8 @@ Items marked **good first issue** are small and self-contained.
 - [ ] Redesign the installation wizard to match the default theme layout and styling.
 - [ ] Move the admin panel to a dedicated admin theme/layout, independent of forum themes, so
   custom themes cannot break admin pages.
+- [x] Keep admin dashboard and shared admin controls in templates (stat cards, charts, badges,
+  options, buttons, rank/user controls) so admin themes can override them.
 - [ ] Theme manager (install, activate, preview, delete).
 - [ ] Child themes and a documented template variable reference.
 - [ ] Consistent dark/light/auto handling (some layouts hardcode `data-theme="dark"`).

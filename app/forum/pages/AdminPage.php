@@ -2,13 +2,16 @@
 
 namespace App\Forum\Pages;
 
+use App\Classes\AvatarUtils;
 use App\Classes\Console;
 use App\Classes\PageBase;
 use App\Classes\Database;
 use App\Classes\Permissions;
 use App\Classes\RelativeTime;
 use App\Classes\SessionManager;
+use App\Classes\Slug;
 use App\Classes\UrlManager;
+use App\Classes\UsernameUtils;
 use App\Interfaces\PageInterface;
 use App\Classes\Template;
 use App\Forum\Controllers\AccountController;
@@ -134,18 +137,7 @@ class AdminPage extends PageBase implements PageInterface
             }
             default:
             {
-                $this->content = new Template('admin/main', 'home');
-                $this->content->AddEscapedEntry('{username}', $_SESSION['bitboard_user']->username);
-                $this->content->AddEscapedEntry('{rankname}', RankController::GetRankNameByID($this->database, $_SESSION['bitboard_user']->rank_id));
-                $this->content->AddEntry('{ranks_link}', SessionManager::HasPermission(Permissions::MANAGING_ROLES)
-                    ? '<a class="admin-quick-link" href="' . $this->serverPath . 'admin/ranks">'
-                        . '<i class="ti ti-shield" aria-hidden="true"></i> Ranks</a>'
-                    : '');
-                $this->content->AddEntry('{users_link}', SessionManager::HasPermission(Permissions::MANAGING_USERS)
-                    ? '<a class="admin-quick-link" href="' . $this->serverPath . 'admin/users">'
-                        . '<i class="ti ti-users" aria-hidden="true"></i> Users</a>'
-                    : '');
-                $this->content->Replace();
+                $this->content = $this->BuildDashboard();
                 break;
             }
         }
@@ -262,9 +254,7 @@ class AdminPage extends PageBase implements PageInterface
         foreach ($categories as $category)
         {
             $icon = (string) $category['category_icon'];
-            $preview = $icon !== ''
-                ? '<i class="ti ti-' . Template::Escape($icon) . '" aria-hidden="true"></i>'
-                : '<i class="ti ti-category" aria-hidden="true"></i>';
+            $preview = $this->BuildIcon($icon !== '' ? $icon : 'category');
 
             $row = new Template('admin/main/categories', 'category');
             $row->AddEscapedEntry('{category_id}', $category['id']);
@@ -485,8 +475,7 @@ class AdminPage extends PageBase implements PageInterface
         foreach ($categories as $category)
         {
             $categoryID = (int) $category['id'];
-            $options .= '<option value="' . $categoryID . '"' . ($categoryID === $selectedID ? ' selected' : '') . '>'
-                . Template::Escape($category['category_name']) . '</option>';
+            $options .= $this->BuildOption((string) $categoryID, $category['category_name'], $categoryID === $selectedID);
         }
 
         return $options;
@@ -531,8 +520,8 @@ class AdminPage extends PageBase implements PageInterface
         $row->AddEscapedEntry('{forum_position}', $forum['forum_position']);
         $row->AddEscapedEntry('{thread_label}', $this->CountLabel((int) $forum['thread_count'], 'thread'));
         $row->AddEscapedEntry('{subforum_label}', $this->CountLabel((int) $forum['subforum_count'], 'subforum'));
-        $row->AddEntry('{icon_preview}', '<i class="ti ti-' . Template::Escape($iconName) . '" aria-hidden="true"></i>');
-        $row->AddEntry('{locked_badge}', $isLocked ? '<span class="admin-forum-locked">Locked</span>' : '');
+        $row->AddEntry('{icon_preview}', $this->BuildIcon($iconName));
+        $row->AddEntry('{locked_badge}', $isLocked ? $this->BuildBadge('admin-forum-locked', 'Locked') : '');
         $row->AddEntry('{locked_checked}', $isLocked ? 'checked' : '');
         $row->AddEntry('{category_options}', $this->BuildCategoryOptions($categories, (int) $forum['category_id']));
         $row->AddEntry('{subforums}', $subforumRows);
@@ -645,30 +634,37 @@ class AdminPage extends PageBase implements PageInterface
 
     private function BuildPermissionMatrix(int $flags, string $prefix, bool $disabled = false): string
     {
-        $html = '<div class="admin-permissions">';
-        $disabledAttribute = $disabled ? ' disabled' : '';
+        $groups = '';
 
         foreach (Permissions::GROUPS as $group => $permissions)
         {
-            $html .= '<fieldset class="admin-permission-group">';
-            $html .= '<legend>' . Template::Escape($group) . '</legend>';
-            $html .= '<div class="admin-permission-list">';
+            $items = '';
 
             foreach ($permissions as $permission => $label)
             {
                 $id = $prefix . '-' . $permission;
-                $checked = (($flags & (int) $permission) !== 0) ? ' checked' : '';
-
-                $html .= '<label class="admin-permission" for="' . Template::Escape($id) . '">'
-                    . '<input type="checkbox" id="' . Template::Escape($id) . '" name="permissions[]" value="' . (int) $permission . '"' . $checked . $disabledAttribute . '>'
-                    . '<span>' . Template::Escape($label) . '</span>'
-                    . '</label>';
+                $item = new Template('admin/main/ranks', 'permission');
+                $item->AddEscapedEntry('{id}', $id);
+                $item->AddEscapedEntry('{value}', (int) $permission);
+                $item->AddEscapedEntry('{label}', $label);
+                $item->AddEntry('{checked}', (($flags & (int) $permission) !== 0) ? ' checked' : '');
+                $item->AddEntry('{disabled}', $disabled ? ' disabled' : '');
+                $item->Replace();
+                $items .= $item->template;
             }
 
-            $html .= '</div></fieldset>';
+            $groupTemplate = new Template('admin/main/ranks', 'permission_group');
+            $groupTemplate->AddEscapedEntry('{group}', $group);
+            $groupTemplate->AddEntry('{permissions}', $items);
+            $groupTemplate->Replace();
+            $groups .= $groupTemplate->template;
         }
 
-        return $html . '</div>';
+        $matrix = new Template('admin/main/ranks', 'permission_matrix');
+        $matrix->AddEntry('{groups}', $groups);
+        $matrix->Replace();
+
+        return $matrix->template;
     }
 
     private function HandleRankSubmission(): void
@@ -855,10 +851,10 @@ class AdminPage extends PageBase implements PageInterface
 
         if ($canManage)
         {
-            $actions .= '<button type="submit" form="edit-rank-' . $rankID . '">Save</button>';
+            $actions .= $this->BuildButton('edit-rank-' . $rankID, 'Save');
 
             if (!$builtIn)
-                $actions .= '<button type="submit" form="delete-rank-' . $rankID . '" class="danger-button">Delete</button>';
+                $actions .= $this->BuildButton('delete-rank-' . $rankID, 'Delete', 'danger-button');
         }
 
         $row = new Template('admin/main/ranks', 'rank');
@@ -873,8 +869,8 @@ class AdminPage extends PageBase implements PageInterface
         $row->AddEntry('{position_readonly}', $builtIn ? ' readonly' : '');
         $row->AddEscapedEntry('{user_label}', $this->CountLabel((int) $rank['user_count'], 'user'));
         $row->AddEscapedEntry('{permission_label}', $this->CountLabel($permissionCount, 'permission'));
-        $row->AddEntry('{builtin_badge}', $builtIn ? '<span class="admin-rank-builtin">Built-in</span>' : '');
-        $row->AddEntry('{readonly_badge}', $canManage ? '' : '<span class="admin-rank-readonly">Read only</span>');
+        $row->AddEntry('{builtin_badge}', $builtIn ? $this->BuildBadge('admin-rank-builtin', 'Built-in') : '');
+        $row->AddEntry('{readonly_badge}', $canManage ? '' : $this->BuildBadge('admin-rank-readonly', 'Read only'));
         $row->AddEntry('{permissions}', $this->BuildPermissionMatrix($flags, 'rank-' . $rankID, !$canManage));
         $row->AddEntry('{actions}', $actions);
         $row->Replace();
@@ -1068,7 +1064,7 @@ class AdminPage extends PageBase implements PageInterface
     private function BuildRankOptions(array $ranks, int $selectedID, bool $includeAll = false, ?int $maxPosition = null): string
     {
         $options = $includeAll
-            ? '<option value="0"' . ($selectedID === 0 ? ' selected' : '') . '>All ranks</option>'
+            ? $this->BuildOption('0', 'All ranks', $selectedID === 0)
             : '';
 
         foreach ($ranks as $rank)
@@ -1079,8 +1075,11 @@ class AdminPage extends PageBase implements PageInterface
             if ($maxPosition !== null && $rankPosition > $maxPosition)
                 continue;
 
-            $options .= '<option value="' . $rankID . '"' . ($rankID === $selectedID ? ' selected' : '') . '>'
-                . Template::Escape($rank['rank_name']) . ' (position ' . $rankPosition . ')</option>';
+            $options .= $this->BuildOption(
+                (string) $rankID,
+                $rank['rank_name'] . ' (position ' . $rankPosition . ')',
+                $rankID === $selectedID
+            );
         }
 
         return $options;
@@ -1106,27 +1105,31 @@ class AdminPage extends PageBase implements PageInterface
 
         if (!$canManage)
         {
-            $rankControl = '<select disabled aria-label="Rank">'
-                . $this->BuildRankOptions($ranks, (int) $user['rank_id'])
-                . '</select>';
+            $select = new Template('admin/main/users', 'rank_select_disabled');
+            $select->AddEntry('{options}', $this->BuildRankOptions($ranks, (int) $user['rank_id']));
+            $select->Replace();
+            $rankControl = $select->template;
             $reputationDisabled = ' disabled';
-            $badge = '<span class="admin-user-readonly">Read only</span>';
+            $badge = $this->BuildBadge('admin-user-readonly', 'Read only');
         }
         elseif ($isSelf)
         {
-            $rankControl = '<input type="hidden" name="rank_id" value="' . $userID . '">'
-                . '<p class="admin-user-rank-static">' . Template::Escape($user['rank_name']) . '</p>';
-            $actions = '<button type="submit" form="edit-user-' . $userID . '">Save</button>';
-            $badge = '<span class="admin-user-self">You</span>';
+            $static = new Template('admin/main/users', 'rank_static');
+            $static->AddEscapedEntry('{user_id}', $userID);
+            $static->AddEscapedEntry('{rank_name}', $user['rank_name']);
+            $static->Replace();
+            $rankControl = $static->template;
+            $actions = $this->BuildButton('edit-user-' . $userID, 'Save');
+            $badge = $this->BuildBadge('admin-user-self', 'You');
         }
         else
         {
-            $rankControl = '<select name="rank_id">'
-                . $this->BuildRankOptions($ranks, (int) $user['rank_id'], false, $actorPosition)
-                . '</select>';
-            $actions = '<button type="submit" form="edit-user-' . $userID . '">Save</button>'
-                . '<button type="submit" form="moderate-user-' . $userID . '" class="'
-                . ($isBanned ? '' : 'danger-button') . '">' . ($isBanned ? 'Unban' : 'Ban') . '</button>';
+            $select = new Template('admin/main/users', 'rank_select');
+            $select->AddEntry('{options}', $this->BuildRankOptions($ranks, (int) $user['rank_id'], false, $actorPosition));
+            $select->Replace();
+            $rankControl = $select->template;
+            $actions = $this->BuildButton('edit-user-' . $userID, 'Save')
+                . $this->BuildButton('moderate-user-' . $userID, $isBanned ? 'Unban' : 'Ban', $isBanned ? '' : 'danger-button');
         }
 
         $row = new Template('admin/main/users', 'user');
@@ -1231,6 +1234,350 @@ class AdminPage extends PageBase implements PageInterface
         $content->AddEscapedEntry('{total_label}', $this->CountLabel($total, 'member'));
         $content->AddEntry('{pagination}', $pagination);
         $content->AddEntry('{users}', $rows);
+        $content->Replace();
+
+        return $content->template;
+    }
+
+    private function BuildIcon(string $icon): string
+    {
+        $template = new Template('admin/main/shared', 'icon');
+        $template->AddEscapedEntry('{icon}', $icon);
+        $template->Replace();
+
+        return $template->template;
+    }
+
+    private function BuildOption(string $value, string $label, bool $selected): string
+    {
+        $template = new Template('admin/main/shared', 'option');
+        $template->AddEscapedEntry('{value}', $value);
+        $template->AddEscapedEntry('{label}', $label);
+        $template->AddEntry('{selected}', $selected ? ' selected' : '');
+        $template->Replace();
+
+        return $template->template;
+    }
+
+    private function BuildBadge(string $class, string $label): string
+    {
+        $template = new Template('admin/main/shared', 'badge');
+        $template->AddEscapedEntry('{class}', $class);
+        $template->AddEscapedEntry('{label}', $label);
+        $template->Replace();
+
+        return $template->template;
+    }
+
+    private function BuildButton(string $form, string $label, string $class = ''): string
+    {
+        $template = new Template('admin/main/shared', 'button');
+        $template->AddEscapedEntry('{form}', $form);
+        $template->AddEscapedEntry('{label}', $label);
+        $template->AddEscapedEntry('{class}', $class);
+        $template->Replace();
+
+        return $template->template;
+    }
+
+    private function BuildQuickLink(string $url, string $icon, string $label): string
+    {
+        $template = new Template('admin/main/home', 'quick_link');
+        $template->AddEscapedEntry('{url}', $url);
+        $template->AddEscapedEntry('{icon}', $icon);
+        $template->AddEscapedEntry('{label}', $label);
+        $template->Replace();
+
+        return $template->template;
+    }
+
+    private function BuildStatCard(string $label, string $value, string $icon, string $url = ''): string
+    {
+        $body = new Template('admin/main/home', 'stat_body');
+        $body->AddEscapedEntry('{icon}', $icon);
+        $body->AddEscapedEntry('{value}', $value);
+        $body->AddEscapedEntry('{label}', $label);
+        $body->Replace();
+
+        $template = new Template('admin/main/home', $url !== '' ? 'stat_link' : 'stat');
+        $template->AddEntry('{body}', $body->template);
+
+        if ($url !== '')
+            $template->AddEscapedEntry('{url}', $url);
+
+        $template->Replace();
+
+        return $template->template;
+    }
+
+    private function BuildPeriodLinks(int $activeDays): string
+    {
+        $links = '';
+
+        foreach ([7, 14, 30] as $days)
+        {
+            $template = new Template('admin/main/home', 'period_link');
+            $template->AddEscapedEntry('{url}', $this->serverPath . 'admin?days=' . $days);
+            $template->AddEscapedEntry('{label}', $days . ' days');
+            $template->AddEntry('{active_class}', $days === $activeDays ? ' is-active' : '');
+            $template->Replace();
+            $links .= $template->template;
+        }
+
+        return $links;
+    }
+
+    private function BuildTrend(int $current, int $previous): array
+    {
+        if ($previous === 0)
+        {
+            return $current > 0
+                ? ['class' => 'is-up', 'label' => 'New activity']
+                : ['class' => 'is-flat', 'label' => 'No change'];
+        }
+
+        $change = (int) round((($current - $previous) / $previous) * 100);
+
+        if ($change > 0)
+            return ['class' => 'is-up', 'label' => '+' . $change . '% vs previous'];
+
+        if ($change < 0)
+            return ['class' => 'is-down', 'label' => $change . '% vs previous'];
+
+        return ['class' => 'is-flat', 'label' => 'No change vs previous'];
+    }
+
+    private function GetDailyCounts(string $table, string $column, int $days = 14, bool $excludeSystem = false): array
+    {
+        $start = strtotime('today -' . ($days - 1) . ' days');
+        $counts = [];
+
+        for ($i = 0; $i < $days; $i++)
+        {
+            $date = date('Y-m-d', strtotime('+' . $i . ' days', $start));
+            $counts[$date] = 0;
+        }
+
+        $sql = 'SELECT DATE(' . $column . ') AS day, COUNT(*) AS total
+            FROM ' . $table . '
+            WHERE ' . $column . ' >= ?'
+            . ($excludeSystem ? ' AND id > 1' : '')
+            . ' GROUP BY DATE(' . $column . ')';
+
+        $rows = $this->database->Query($sql, date('Y-m-d 00:00:00', $start))->FetchAll();
+
+        foreach ($rows as $row)
+        {
+            $day = (string) $row['day'];
+
+            if (array_key_exists($day, $counts))
+                $counts[$day] = (int) $row['total'];
+        }
+
+        return $counts;
+    }
+
+    private function GetPeriodTotal(
+        string $table,
+        string $column,
+        int $start,
+        int $end,
+        bool $excludeSystem = false
+    ): int
+    {
+        $sql = 'SELECT COUNT(*) AS total
+            FROM ' . $table . '
+            WHERE ' . $column . ' >= ? AND ' . $column . ' < ?'
+            . ($excludeSystem ? ' AND id > 1' : '');
+
+        $row = $this->database->Query(
+            $sql,
+            date('Y-m-d H:i:s', $start),
+            date('Y-m-d H:i:s', $end)
+        )->FetchArray();
+
+        return (int) ($row['total'] ?? 0);
+    }
+
+    private function BuildActivityChart(string $title, string $icon, string $modifier, array $values, array $labels, array $trend): string
+    {
+        $maximum = count($values) > 0 ? max(1, max($values)) : 1;
+        $total = array_sum($values);
+        $bars = '';
+        $count = count($values);
+        $slot = $count > 0 ? 280 / $count : 0;
+        $barWidth = max(4, (int) floor($slot * 0.6));
+        $index = 0;
+
+        foreach ($values as $value)
+        {
+            if ($value > 0)
+            {
+                $height = max(2, (int) round(($value / $maximum) * 64));
+                $x = (int) round($index * $slot + ($slot - $barWidth) / 2);
+                $y = 76 - $height;
+
+                $bar = new Template('admin/main/home', 'chart_bar');
+                $bar->AddEscapedEntry('{x}', $x);
+                $bar->AddEscapedEntry('{y}', $y);
+                $bar->AddEscapedEntry('{width}', $barWidth);
+                $bar->AddEscapedEntry('{height}', $height);
+                $bar->AddEscapedEntry('{modifier}', $modifier);
+                $bar->AddEscapedEntry('{tooltip}', ($labels[$index] ?? '') . ': ' . $value);
+                $bar->Replace();
+                $bars .= $bar->template;
+            }
+
+            $index++;
+        }
+
+        $template = new Template('admin/main/home', 'chart');
+        $template->AddEscapedEntry('{icon}', $icon);
+        $template->AddEscapedEntry('{title}', $title);
+        $template->AddEscapedEntry('{total}', number_format($total));
+        $template->AddEscapedEntry('{aria_label}', $title . ' over the selected period');
+        $template->AddEscapedEntry('{trend_class}', $trend['class'] ?? 'is-flat');
+        $template->AddEscapedEntry('{trend_label}', $trend['label'] ?? '');
+        $template->AddEntry('{bars}', $bars);
+        $template->AddEscapedEntry('{first_label}', $labels[0] ?? '');
+        $template->AddEscapedEntry('{last_label}', $labels[$count - 1] ?? '');
+        $template->Replace();
+
+        return $template->template;
+    }
+
+    private function BuildRecentThreads(): string
+    {
+        $rows = $this->database->Query('SELECT t.id, t.thread_title, t.thread_timestamp,
+                f.forum_name, a.id AS author_id, a.username, r.rank_format
+            FROM bit_threads AS t
+            JOIN bit_forums AS f ON f.id = t.forum_id
+            JOIN bit_accounts AS a ON a.id = t.user_id
+            JOIN bit_ranks AS r ON r.id = a.rank_id
+            ORDER BY t.thread_timestamp DESC, t.id DESC
+            LIMIT 5')->FetchAll();
+
+        if (empty($rows))
+            return (new Template('admin/main/home', 'threads_empty'))->template;
+
+        $html = '';
+
+        foreach ($rows as $row)
+        {
+            $template = new Template('admin/main/home', 'thread');
+            $template->AddEscapedEntry('{thread_title}', $row['thread_title']);
+            $template->AddEntry('{thread_url}', UrlManager::ThreadUrl(
+                (int) $row['id'],
+                Slug::FromTitle($row['thread_title'])
+            ));
+            $template->AddEscapedEntry('{forum_name}', $row['forum_name']);
+            $template->AddEntry('{author}', UsernameUtils::Format($row['rank_format'], $row['username']));
+            $template->AddEscapedEntry('{author_url}', $this->serverPath . 'profile/' . (int) $row['author_id']);
+            $template->AddEscapedEntry('{time}', RelativeTime::Convert($row['thread_timestamp']));
+            $template->Replace();
+            $html .= $template->template;
+        }
+
+        return $html;
+    }
+
+    private function BuildRecentMembers(): string
+    {
+        $rows = $this->database->Query('SELECT a.id, a.username, a.avatar, a.reg_date,
+                r.rank_name, r.rank_format
+            FROM bit_accounts AS a
+            JOIN bit_ranks AS r ON r.id = a.rank_id
+            WHERE a.id > 1
+            ORDER BY a.reg_date DESC, a.id DESC
+            LIMIT 5')->FetchAll();
+
+        if (empty($rows))
+            return (new Template('admin/main/home', 'members_empty'))->template;
+
+        $html = '';
+
+        foreach ($rows as $row)
+        {
+            $template = new Template('admin/main/home', 'member');
+            $template->AddEntry('{avatar}', AvatarUtils::GetPath($row['avatar']));
+            $template->AddEntry('{username}', UsernameUtils::Format($row['rank_format'], $row['username']));
+            $template->AddEscapedEntry('{profile_url}', $this->serverPath . 'profile/' . (int) $row['id']);
+            $template->AddEscapedEntry('{rank_name}', $row['rank_name']);
+            $template->AddEscapedEntry('{joined}', RelativeTime::Convert($row['reg_date']));
+            $template->Replace();
+            $html .= $template->template;
+        }
+
+        return $html;
+    }
+
+    private function BuildDashboard(): string
+    {
+        $stats = $this->database->Query('SELECT
+                (SELECT COUNT(*) FROM bit_accounts WHERE id > 1) AS members,
+                (SELECT COUNT(*) FROM bit_threads) AS threads,
+                (SELECT COUNT(*) FROM bit_posts) AS posts,
+                (SELECT COUNT(*) FROM bit_forums) AS forums,
+                (SELECT COUNT(*) FROM bit_reports WHERE status = \'open\') AS open_reports')->FetchArray();
+
+        $online = AccountController::CountOnline($this->database);
+        $canManageUsers = SessionManager::HasPermission(Permissions::MANAGING_USERS);
+        $canManageRanks = SessionManager::HasPermission(Permissions::MANAGING_ROLES);
+        $canViewReports = SessionManager::HasPermission(Permissions::VIEWING_REPORTS);
+
+        $cards = '';
+        $cards .= $this->BuildStatCard('Members', number_format((int) ($stats['members'] ?? 0)), 'users', $this->serverPath . 'members/page/1');
+        $cards .= $this->BuildStatCard('Threads', number_format((int) ($stats['threads'] ?? 0)), 'messages', $this->serverPath);
+        $cards .= $this->BuildStatCard('Posts', number_format((int) ($stats['posts'] ?? 0)), 'message-2', $this->serverPath);
+        $cards .= $this->BuildStatCard('Forums', number_format((int) ($stats['forums'] ?? 0)), 'layout-grid', $this->serverPath . 'admin/forums');
+
+        if ($canViewReports)
+            $cards .= $this->BuildStatCard('Open reports', number_format((int) ($stats['open_reports'] ?? 0)), 'flag', $this->serverPath . 'reports/page/1');
+
+        $cards .= $this->BuildStatCard('Online now', number_format($online), 'user-check', $this->serverPath . 'online');
+
+        $days = 14;
+
+        if (isset($_GET['days']) && is_string($_GET['days']) && in_array($_GET['days'], ['7', '14', '30'], true))
+            $days = (int) $_GET['days'];
+
+        $threadCounts = $this->GetDailyCounts('bit_threads', 'thread_timestamp', $days);
+        $postCounts = $this->GetDailyCounts('bit_posts', 'post_timestamp', $days);
+        $memberCounts = $this->GetDailyCounts('bit_accounts', 'reg_date', $days, true);
+
+        $labels = [];
+        foreach (array_keys($threadCounts) as $date)
+            $labels[] = date('M j', strtotime($date));
+
+        $currentStart = strtotime('today -' . ($days - 1) . ' days');
+        $previousStart = strtotime('-' . $days . ' days', $currentStart);
+
+        $threadPrevious = $this->GetPeriodTotal('bit_threads', 'thread_timestamp', $previousStart, $currentStart);
+        $postPrevious = $this->GetPeriodTotal('bit_posts', 'post_timestamp', $previousStart, $currentStart);
+        $memberPrevious = $this->GetPeriodTotal('bit_accounts', 'reg_date', $previousStart, $currentStart, true);
+
+        $charts = $this->BuildActivityChart('New threads', 'messages', 'is-threads', $threadCounts, $labels, $this->BuildTrend(array_sum($threadCounts), $threadPrevious))
+            . $this->BuildActivityChart('New posts', 'message-2', 'is-posts', $postCounts, $labels, $this->BuildTrend(array_sum($postCounts), $postPrevious))
+            . $this->BuildActivityChart('New members', 'user-plus', 'is-members', $memberCounts, $labels, $this->BuildTrend(array_sum($memberCounts), $memberPrevious));
+
+        $usersLink = $canManageUsers
+            ? $this->BuildQuickLink($this->serverPath . 'admin/users', 'users', 'Users')
+            : '';
+        $ranksLink = $canManageRanks
+            ? $this->BuildQuickLink($this->serverPath . 'admin/ranks', 'shield', 'Ranks')
+            : '';
+
+        $content = new Template('admin/main', 'home');
+        $content->AddEscapedEntry('{username}', $_SESSION['bitboard_user']->username);
+        $content->AddEscapedEntry('{rankname}', RankController::GetRankNameByID($this->database, $_SESSION['bitboard_user']->rank_id));
+        $content->AddEntry('{stats}', $cards);
+        $content->AddEntry('{charts}', $charts);
+        $content->AddEscapedEntry('{days}', $days);
+        $content->AddEntry('{period_links}', $this->BuildPeriodLinks($days));
+        $content->AddEntry('{recent_threads}', $this->BuildRecentThreads());
+        $content->AddEntry('{recent_members}', $this->BuildRecentMembers());
+        $content->AddEntry('{users_link}', $usersLink);
+        $content->AddEntry('{ranks_link}', $ranksLink);
         $content->Replace();
 
         return $content->template;
