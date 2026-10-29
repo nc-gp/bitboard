@@ -17,6 +17,7 @@ use App\Forum\Controllers\NotificationController;
 use App\Forum\Controllers\RankController;
 use App\Forum\Controllers\ReportController;
 use App\Forum\Controllers\SubscriptionController;
+use App\Forum\Controllers\SettingsController;
 use App\Forum\Controllers\ThreadReadController;
 
 use App\Forum\Structs\ForumDataStruct;
@@ -50,6 +51,7 @@ class BitBoard
 		$this->database->SelectDatabase($config['name']);
 		ContentController::EnsureSchema($this->database);
 		AccountController::EnsureSchema($this->database);
+		SettingsController::EnsureSchema($this->database);
 		NotificationController::EnsureSchema($this->database);
 		SubscriptionController::EnsureSchema($this->database);
 		ForumSubscriptionController::EnsureSchema($this->database);

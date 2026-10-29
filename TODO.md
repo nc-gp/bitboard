@@ -237,8 +237,9 @@ Items marked **good first issue** are small and self-contained.
   and length limits.
 - [x] Account settings for avatar uploads with image type/size validation, custom avatar storage,
   preview, and removal.
-- [ ] Make avatar upload limits configurable in forum settings: uploads enabled/disabled, maximum
-  file size, allowed formats, and optional dimension limits, enforced in account settings.
+- [x] Avatar upload limits are configurable from a dedicated Avatars tab inside Forum Settings:
+  uploads enabled/disabled, maximum file size, allowed formats, and optional dimension limits,
+  enforced in account settings.
 - [ ] Account settings for timezone and notification preferences.
 - [ ] Optional two-factor authentication (TOTP) after the core is stable.
 - [ ] Ban/suspension records with reasons and expiry instead of only the "Banned" rank.

@@ -50,6 +50,31 @@ class ForumDataStruct
     public bool $forum_credits = true;
 
     /**
+     * @var bool Whether avatar uploads are enabled.
+     */
+    public bool $avatar_uploads = true;
+
+    /**
+     * @var int Maximum avatar file size in kilobytes.
+     */
+    public int $avatar_max_size = 2048;
+
+    /**
+     * @var string Comma-separated avatar file extensions.
+     */
+    public string $avatar_formats = 'jpg,png,webp,gif';
+
+    /**
+     * @var int Maximum avatar width in pixels; 0 means unlimited.
+     */
+    public int $avatar_max_width = 0;
+
+    /**
+     * @var int Maximum avatar height in pixels; 0 means unlimited.
+     */
+    public int $avatar_max_height = 0;
+
+    /**
      * @var array The array of splitted URL. (/)
      * Note: Can be empty.
      */

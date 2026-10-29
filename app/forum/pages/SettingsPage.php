@@ -13,6 +13,7 @@ use App\Classes\SessionManager;
 use App\Classes\Template;
 use App\Classes\UrlManager;
 
+use App\Forum\Controllers\SettingsController;
 use App\Forum\Widgets\NotifyWidget;
 
 use App\Interfaces\PageInterface;
@@ -57,8 +58,18 @@ class SettingsPage extends PageBase implements PageInterface
         $removeAvatar = isset($_POST['remove_avatar']);
         $file = $_FILES['avatar'] ?? null;
 
+        $avatarUploads = (bool) ($this->forumData->avatar_uploads ?? true);
+        $avatarMaxSize = max(1, (int) ($this->forumData->avatar_max_size ?? 2048));
+        $avatarMaxWidth = max(0, (int) ($this->forumData->avatar_max_width ?? 0));
+        $avatarMaxHeight = max(0, (int) ($this->forumData->avatar_max_height ?? 0));
+        $avatarFormats = (string) ($this->forumData->avatar_formats ?? '');
+        $avatarMimeMap = SettingsController::AvatarMimeMap($avatarFormats);
+
         if (is_array($file) && isset($file['error']) && $file['error'] !== UPLOAD_ERR_NO_FILE)
         {
+            if (!$avatarUploads)
+                $this->Fail('Avatar uploads are disabled.');
+
             if ($file['error'] !== UPLOAD_ERR_OK)
                 $this->Fail('Unable to upload the avatar. Please try again.');
 
@@ -68,30 +79,35 @@ class SettingsPage extends PageBase implements PageInterface
             if (!is_uploaded_file($file['tmp_name']))
                 $this->Fail('Unable to upload the avatar. Please try again.');
 
-            if ((int) $file['size'] <= 0 || (int) $file['size'] > 2 * 1024 * 1024)
-                $this->Fail('Avatar must be smaller than 2 MB.');
+            if ((int) $file['size'] <= 0 || (int) $file['size'] > $avatarMaxSize * 1024)
+                $this->Fail('Avatar must be smaller than ' . $this->AvatarSizeLabel($avatarMaxSize) . '.');
 
             $finfo = new \finfo(FILEINFO_MIME_TYPE);
             $mime = $finfo->file($file['tmp_name']);
-            $allowed = [
-                'image/jpeg' => 'jpg',
-                'image/png' => 'png',
-                'image/webp' => 'webp',
-                'image/gif' => 'gif',
-            ];
 
-            if (!is_string($mime) || !isset($allowed[$mime]))
-                $this->Fail('Avatar must be a JPEG, PNG, WebP, or GIF image.');
+            if (!is_string($mime) || !isset($avatarMimeMap[$mime]))
+                $this->Fail('Avatar must be one of: ' . SettingsController::AvatarFormatLabel($avatarFormats) . '.');
 
-            if (@getimagesize($file['tmp_name']) === false)
+            $imageInfo = @getimagesize($file['tmp_name']);
+
+            if ($imageInfo === false)
                 $this->Fail('Avatar must be a valid image.');
+
+            if ($avatarMaxWidth > 0 && $avatarMaxHeight > 0 && ($imageInfo[0] > $avatarMaxWidth || $imageInfo[1] > $avatarMaxHeight))
+                $this->Fail('Avatar must be no larger than ' . $avatarMaxWidth . '×' . $avatarMaxHeight . ' pixels.');
+
+            if ($avatarMaxWidth > 0 && $imageInfo[0] > $avatarMaxWidth)
+                $this->Fail('Avatar width must be no larger than ' . $avatarMaxWidth . ' pixels.');
+
+            if ($avatarMaxHeight > 0 && $imageInfo[1] > $avatarMaxHeight)
+                $this->Fail('Avatar height must be no larger than ' . $avatarMaxHeight . ' pixels.');
 
             $directory = __DIR__ . '/../../../assets/images/avatars';
 
             if (!is_dir($directory) && !@mkdir($directory, 0775, true))
                 $this->Fail('Unable to store the avatar. Please try again.');
 
-            $avatarName = bin2hex(random_bytes(16)) . '.' . $allowed[$mime];
+            $avatarName = bin2hex(random_bytes(16)) . '.' . $avatarMimeMap[$mime];
 
             if (!move_uploaded_file($file['tmp_name'], $directory . '/' . $avatarName))
                 $this->Fail('Unable to store the avatar. Please try again.');
@@ -176,6 +192,56 @@ class SettingsPage extends PageBase implements PageInterface
         SessionManager::RemoveInformation('account');
     }
 
+    private function AvatarSizeLabel(int $kilobytes): string
+    {
+        if ($kilobytes >= 1024 && $kilobytes % 1024 === 0)
+            return (string) (int) ($kilobytes / 1024) . ' MB';
+
+        return $kilobytes . ' KB';
+    }
+
+    private function BuildAvatarControls(): string
+    {
+        $uploads = (bool) ($this->forumData->avatar_uploads ?? true);
+        $maxSize = max(1, (int) ($this->forumData->avatar_max_size ?? 2048));
+        $maxWidth = max(0, (int) ($this->forumData->avatar_max_width ?? 0));
+        $maxHeight = max(0, (int) ($this->forumData->avatar_max_height ?? 0));
+        $formats = (string) ($this->forumData->avatar_formats ?? '');
+
+        if (!$uploads)
+            return (new Template('settings', 'avatar_disabled'))->template;
+
+        $hint = 'Allowed formats: ' . SettingsController::AvatarFormatLabel($formats)
+            . '. Maximum size: ' . $this->AvatarSizeLabel($maxSize) . '.';
+
+        if ($maxWidth > 0 && $maxHeight > 0)
+            $hint .= ' Maximum dimensions: ' . $maxWidth . '×' . $maxHeight . ' pixels.';
+        elseif ($maxWidth > 0)
+            $hint .= ' Maximum width: ' . $maxWidth . ' pixels.';
+        elseif ($maxHeight > 0)
+            $hint .= ' Maximum height: ' . $maxHeight . ' pixels.';
+
+        $template = new Template('settings', 'avatar_upload');
+        $template->AddEscapedEntry('{accept}', implode(',', array_keys(SettingsController::AvatarMimeMap($formats))));
+        $template->AddEscapedEntry('{hint}', $hint);
+        $template->Replace();
+
+        return $template->template;
+    }
+
+    private function BuildAvatarRemove(): string
+    {
+        $avatar = (string) ($_SESSION['bitboard_user']->avatar ?? 'default.webp');
+
+        if ($avatar === '' || $avatar === 'default.webp')
+            return '';
+
+        $template = new Template('settings', 'avatar_remove');
+        $template->Replace();
+
+        return $template->template;
+    }
+
     public function Do(): void
     {
         $this->CheckError();
@@ -186,6 +252,8 @@ class SettingsPage extends PageBase implements PageInterface
         $this->template->AddEscapedEntry('{bio}', $_SESSION['bitboard_user']->bio ?? '');
         $this->template->AddEscapedEntry('{signature}', $_SESSION['bitboard_user']->signature ?? '');
         $this->template->AddEntry('{avatar}', AvatarUtils::GetPath((string) ($_SESSION['bitboard_user']->avatar ?? 'default.webp')));
+        $this->template->AddEntry('{avatar_upload_controls}', $this->BuildAvatarControls());
+        $this->template->AddEntry('{avatar_remove}', $this->BuildAvatarRemove());
         $this->template->AddEntry('{error}', $this->error);
 
         parent::RenderPage('settings');

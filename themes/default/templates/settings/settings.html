@@ -18,20 +18,9 @@
 					<div class="settings-avatar">
 						<img src="{avatar}" alt="Current avatar">
 						<div class="settings-avatar-fields">
-							<span class="settings-avatar-label">Upload a new avatar</span>
-							<div class="settings-avatar-upload-row">
-								<input id="settings-avatar" class="settings-avatar-input" type="file" name="avatar"
-									accept="image/jpeg,image/png,image/webp,image/gif" aria-label="Upload a new avatar">
-								<label class="settings-avatar-upload" for="settings-avatar">
-									<i class="ti ti-upload" aria-hidden="true"></i> Choose image
-								</label>
-								<span id="settings-avatar-filename" class="settings-avatar-filename">No file selected</span>
-							</div>
-							<p class="settings-hint">JPEG, PNG, WebP or GIF. Maximum 2 MB.</p>
-							<label class="settings-remove-avatar" for="settings-remove-avatar">
-								<input id="settings-remove-avatar" type="checkbox" name="remove_avatar" value="1">
-								Remove current avatar
-							</label>
+							<span class="settings-avatar-label">Avatar</span>
+							{avatar_upload_controls}
+							{avatar_remove}
 						</div>
 					</div>
 

@@ -86,6 +86,43 @@
     margin-top: 14px;
 }
 
+.admin-settings-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin: 0;
+    padding: 6px;
+    border-radius: var(--border-radius);
+    background: var(--opposite-x2);
+}
+
+.admin-settings-tab {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0;
+    padding: 7px 12px;
+    border-radius: 999px;
+    color: gray;
+    font-size: 0.85rem;
+    line-height: 1.2;
+    text-decoration: none;
+}
+
+.admin-settings-tab:hover {
+    background: var(--opposite);
+    color: var(--primary-hover);
+}
+
+.admin-settings-tab.is-active {
+    background: var(--primary-focus);
+    color: var(--primary-hover);
+}
+
+.admin-settings-tab i {
+    font-size: 1rem;
+}
+
 #admin-main article {
     padding: 20px;
     border-radius: var(--border-radius);
@@ -428,6 +465,14 @@ a.admin-stat:hover {
 
 #settingsForm input[type="text"] {
     width: 100%;
+}
+
+#settingsForm input[type="number"] {
+    width: 100%;
+}
+
+#settingsForm .admin-field-hint {
+    margin: -10px 0 8px;
 }
 
 #settings {

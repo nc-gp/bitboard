@@ -116,7 +116,12 @@ class Step_3 extends StepBase implements StepInterface
 				forum_online_msg VARCHAR(1024) NOT NULL,
 				forum_theme VARCHAR(64) NOT NULL,
 				forum_force_login TINYINT(1) NOT NULL,
-				forum_credits TINYINT(1) NOT NULL
+				forum_credits TINYINT(1) NOT NULL,
+				avatar_uploads TINYINT(1) NOT NULL DEFAULT 1,
+				avatar_max_size INT(6) NOT NULL DEFAULT 2048,
+				avatar_formats VARCHAR(64) NOT NULL DEFAULT \'jpg,png,webp,gif\',
+				avatar_max_width INT(6) NOT NULL DEFAULT 0,
+				avatar_max_height INT(6) NOT NULL DEFAULT 0
 			)');
 
 			$InstallDatabase->Query('INSERT INTO bit_settings 

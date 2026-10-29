@@ -1,0 +1,71 @@
+<form id="settingsForm" method="post" action="{server_url}admin/settings/avatars">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
+
+    <fieldset>
+        <label for="avatar_uploads">
+            <input type="checkbox" role="switch" id="avatar_uploads" name="avatar_uploads"
+                aria-describedby="settings-avatar-uploads-hint" {avatar_uploads}>
+            Allow members to upload avatars
+        </label>
+        <p id="settings-avatar-uploads-hint" class="admin-field-hint">
+            When disabled, members keep their current avatars but cannot upload new ones. They can still remove them.
+        </p>
+    </fieldset>
+
+    <input type="number" id="settings-avatar-size" name="avatar_max_size" min="1" max="10240" step="1"
+        placeholder="Maximum file size (KB)" aria-label="Maximum avatar file size in kilobytes"
+        aria-describedby="settings-avatar-size-hint" value="{avatar_max_size}">
+    <p id="settings-avatar-size-hint" class="admin-field-hint">Maximum upload size in kilobytes; 1024 KB equals 1 MB.</p>
+
+    <input type="text" id="settings-avatar-formats" name="avatar_formats" maxlength="64"
+        placeholder="Allowed formats: jpg,png,webp,gif"
+        aria-label="Allowed avatar formats, comma separated"
+        aria-describedby="settings-avatar-formats-hint" value="{avatar_formats}">
+    <p id="settings-avatar-formats-hint" class="admin-field-hint">
+        Comma-separated list of allowed formats. Supported: jpg, png, webp, gif.
+    </p>
+
+    <input type="number" id="settings-avatar-width" name="avatar_max_width" min="0" max="10000" step="1"
+        placeholder="Maximum width (px, 0 = unlimited)" aria-label="Maximum avatar width in pixels"
+        aria-describedby="settings-avatar-width-hint" value="{avatar_max_width}">
+    <p id="settings-avatar-width-hint" class="admin-field-hint">Maximum image width in pixels. Use 0 for unlimited.</p>
+
+    <input type="number" id="settings-avatar-height" name="avatar_max_height" min="0" max="10000" step="1"
+        placeholder="Maximum height (px, 0 = unlimited)" aria-label="Maximum avatar height in pixels"
+        aria-describedby="settings-avatar-height-hint" value="{avatar_max_height}">
+    <p id="settings-avatar-height-hint" class="admin-field-hint">Maximum image height in pixels. Use 0 for unlimited.</p>
+</form>
+<button id="settings">Update avatar settings</button>
+
+<script>
+    window.onload = () => {
+        const btn = document.querySelector('#settings');
+        btn.addEventListener('click', () => {
+            const formData = new FormData(document.getElementById('settingsForm'));
+
+            const formObject = {};
+            formData.forEach((value, key) => {
+                formObject[key] = value;
+            });
+
+            toast('Trying to update..', 2, '180, 180, 53');
+            req('POST', '{server_url}api/avatars', JSON.stringify(formObject), (msg, data) => {
+                if(msg !== null) {
+                    toast(msg);
+                    return;
+                }
+
+                try {
+                    if (data !== null) {
+                        let d = JSON.parse(data);
+                        toast(d.data.message, 5, '53, 255, 53');
+                    } else {
+                        toast('Data is null');
+                    }
+                } catch (error) {
+                    toast('Error parsing JSON data: ' + error.message);
+                }
+            });
+        });
+    }
+</script>

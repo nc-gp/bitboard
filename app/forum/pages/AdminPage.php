@@ -76,14 +76,7 @@ class AdminPage extends PageBase implements PageInterface
         {
             case 'settings':
             {
-                $this->content = new Template('admin/main', 'settings');
-                $this->content->AddEscapedEntry('{forum_name}', $this->forumData->forum_name);
-                $this->content->AddEscapedEntry('{forum_desc}', $this->forumData->forum_description);
-                $this->content->AddEntry('{forum_online}', $this->forumData->forum_online ? 'checked' : '');
-                $this->content->AddEscapedEntry('{forum_online_msg}', $this->forumData->forum_online_msg);
-                $this->content->AddEntry('{forum_force_login}', $this->forumData->forum_force_login ? 'checked' : '');
-                $this->content->AddEntry('{forum_credits}', $this->forumData->forum_credits ? 'checked' : '');
-                $this->content->Replace();
+                $this->content = $this->BuildSettings();
                 break;
             }
             case 'prefixes':
@@ -1803,6 +1796,83 @@ class AdminPage extends PageBase implements PageInterface
         $content->Replace();
 
         return $content->template;
+    }
+
+    private function BuildSettings(): string
+    {
+        $tabs = [
+            'general' => [
+                'General',
+                'ti-adjustments',
+                'admin/settings',
+                'Manage the forum name, description, availability, and footer credit.',
+            ],
+            'avatars' => [
+                'Avatars',
+                'ti-photo',
+                'admin/settings/avatars',
+                'Control whether members can upload avatars and how large or which formats are allowed.',
+            ],
+        ];
+
+        $tab = isset($this->forumData->actionParameters[2]) && is_string($this->forumData->actionParameters[2])
+            ? $this->forumData->actionParameters[2]
+            : 'general';
+
+        if (!array_key_exists($tab, $tabs))
+            UrlManager::Redirect($this->serverPath . 'admin/settings');
+
+        $content = new Template('admin/main/settings', $tab);
+
+        if ($tab === 'general')
+        {
+            $content->AddEscapedEntry('{forum_name}', $this->forumData->forum_name);
+            $content->AddEscapedEntry('{forum_desc}', $this->forumData->forum_description);
+            $content->AddEntry('{forum_online}', $this->forumData->forum_online ? 'checked' : '');
+            $content->AddEscapedEntry('{forum_online_msg}', $this->forumData->forum_online_msg);
+            $content->AddEntry('{forum_force_login}', $this->forumData->forum_force_login ? 'checked' : '');
+            $content->AddEntry('{forum_credits}', $this->forumData->forum_credits ? 'checked' : '');
+        }
+        else
+        {
+            $content->AddEntry('{avatar_uploads}', ($this->forumData->avatar_uploads ?? true) ? 'checked' : '');
+            $content->AddEscapedEntry('{avatar_max_size}', max(1, (int) ($this->forumData->avatar_max_size ?? 2048)));
+            $content->AddEscapedEntry('{avatar_formats}', (string) ($this->forumData->avatar_formats ?? 'jpg,png,webp,gif'));
+            $content->AddEscapedEntry('{avatar_max_width}', max(0, (int) ($this->forumData->avatar_max_width ?? 0)));
+            $content->AddEscapedEntry('{avatar_max_height}', max(0, (int) ($this->forumData->avatar_max_height ?? 0)));
+        }
+
+        $content->Replace();
+
+        $wrapper = new Template('admin/main', 'settings');
+        $wrapper->AddEscapedEntry('{settings_description}', $tabs[$tab][3]);
+        $wrapper->AddEntry('{settings_tabs}', $this->BuildSettingsTabs($tabs, $tab));
+        $wrapper->AddEntry('{settings_content}', $content->template);
+        $wrapper->Replace();
+
+        return $wrapper->template;
+    }
+
+    private function BuildSettingsTabs(array $tabs, string $current): string
+    {
+        $items = '';
+
+        foreach ($tabs as $key => [$label, $icon, $route])
+        {
+            $item = new Template('admin/main/settings', 'tab_item');
+            $item->AddEscapedEntry('{url}', $this->serverPath . $route);
+            $item->AddEscapedEntry('{label}', $label);
+            $item->AddEscapedEntry('{icon}', $icon);
+            $item->AddEscapedEntry('{active_class}', $key === $current ? ' is-active' : '');
+            $item->Replace();
+            $items .= $item->template;
+        }
+
+        $nav = new Template('admin/main/settings', 'tabs');
+        $nav->AddEntry('{items}', $items);
+        $nav->Replace();
+
+        return $nav->template;
     }
 
     private function BuildAdminNav(): string

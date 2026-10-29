@@ -1,0 +1,74 @@
+<form id="settingsForm" method="post" action="{server_url}admin/settings">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
+    <input type="text" id="settings-forum-name" name="forumname" placeholder="Forum name" aria-label="Forum name"
+        aria-describedby="settings-forum-name-hint" required="" value="{forum_name}">
+    <p id="settings-forum-name-hint" class="admin-field-hint">Shown in the browser title, header, and footer.</p>
+
+    <input type="text" id="settings-forum-desc" name="forumdesc" placeholder="Forum description" aria-label="Forum description"
+        aria-describedby="settings-forum-desc-hint" required="" value="{forum_desc}">
+    <p id="settings-forum-desc-hint" class="admin-field-hint">Short summary used on the index page and in page metadata.</p>
+
+    <input type="text" id="settings-forum-offline" name="forumonline" placeholder="Forum offline Message"
+        aria-label="Forum offline Message" aria-describedby="settings-forum-offline-hint" value="{forum_online_msg}">
+    <p id="settings-forum-offline-hint" class="admin-field-hint">Shown on the offline page while the forum is closed.</p>
+
+    <fieldset>
+        <label for="online">
+            <input type="checkbox" role="switch" id="online" name="online" aria-describedby="settings-online-hint" {forum_online}>
+            Forum online
+        </label>
+        <p id="settings-online-hint" class="admin-field-hint">When disabled, visitors see the offline page; staff can still browse.</p>
+    </fieldset>
+
+    <fieldset>
+        <label for="forum_force_login">
+            <input type="checkbox" role="switch" id="forum_force_login" name="forum_force_login"
+                aria-describedby="settings-force-login-hint" {forum_force_login}>
+            Force visitors to login
+        </label>
+        <p id="settings-force-login-hint" class="admin-field-hint">Guests are redirected to the login page before they can browse.</p>
+    </fieldset>
+
+    <fieldset>
+        <label for="forum_credits">
+            <input type="checkbox" role="switch" id="forum_credits" name="forum_credits"
+                aria-describedby="settings-credits-hint" {forum_credits}>
+            Show "Powered by BitBoard" credit
+        </label>
+        <p id="settings-credits-hint" class="admin-field-hint">Adds a small “Powered by BitBoard” line to the footer.</p>
+    </fieldset>
+</form>
+<button id="settings">Update settings</button>
+
+<script>
+    window.onload = () => {
+        const btn = document.querySelector('#settings');
+        btn.addEventListener('click', () => {
+            const formData = new FormData(document.getElementById('settingsForm'));
+
+            const formObject = {};
+            formData.forEach((value, key) => {
+                formObject[key] = value;
+            });
+
+            toast('Trying to update..', 2, '180, 180, 53');
+            req('POST', '{server_url}api/settings', JSON.stringify(formObject), (msg, data) => {
+                if(msg !== null) {
+                    toast(msg);
+                    return;
+                }
+
+                try {
+                    if (data !== null) {
+                        let d = JSON.parse(data);
+                        toast(d.data.message, 5, '53, 255, 53');
+                    } else {
+                        toast('Data is null');
+                    }
+                } catch (error) {
+                    toast('Error parsing JSON data: ' + error.message);
+                }
+            });
+        });
+    }
+</script>
