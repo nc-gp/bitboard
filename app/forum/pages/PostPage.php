@@ -16,6 +16,7 @@ use App\Classes\Text;
 use App\Classes\UrlManager;
 
 use App\Forum\Controllers\PostController;
+use App\Forum\Controllers\ForumSubscriptionController;
 use App\Forum\Controllers\MentionController;
 use App\Forum\Controllers\PrefixController;
 use App\Forum\Controllers\SubscriptionController;
@@ -351,6 +352,19 @@ class PostPage extends PageBase implements PageInterface
                     throw new Exception('The new thread ID could not be determined.');
 
                 $threadUrl = UrlManager::ThreadUrl($newThreadID, Slug::FromTitle($this->titleValue), 1);
+
+                ForumSubscriptionController::NotifyNewThread(
+                    $this->database,
+                    $this->forumID,
+                    $this->subforumID,
+                    $newThreadID,
+                    $this->titleValue,
+                    $userId,
+                    (string) $_SESSION['bitboard_user']->username,
+                    $this->targetForumName,
+                    $this->subforumName,
+                    $threadUrl
+                );
 
                 MentionController::NotifyMentions(
                     $this->database,

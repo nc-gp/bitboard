@@ -13,6 +13,7 @@ use App\Forum\Widgets\PaginationWidget;
 use App\Interfaces\PageInterface;
 
 use App\Forum\Controllers\ThreadController;
+use App\Forum\Widgets\WatchWidget;
 
 use App\Classes\AvatarUtils;
 use App\Classes\RelativeTime;
@@ -192,6 +193,13 @@ class SubforumPage extends PageBase implements PageInterface
         }
 
         $this->template = new Template('subforum', 'subforum');
+        $this->template->AddEntry('{watch_button}', (new WatchWidget(
+            $this->database,
+            (int) $this->parentForumID,
+            (int) $this->subforumID,
+            (int) $this->subforumPage,
+            'subforum'
+        ))->template);
         $this->template->AddEntry('{new_thread_button}', $newThreadButton);
         $this->template->AddEntry('{threads}', $this->threads);
         $this->template->AddEntry('{pagination}', $this->threadsCount > $this->maximumResults ? $paginationTemplate->Template->template : '');

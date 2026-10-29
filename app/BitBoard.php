@@ -12,6 +12,7 @@ use App\Classes\SessionManager;
 use App\Forum\Controllers\AccountController;
 use App\Forum\Controllers\AuditController;
 use App\Forum\Controllers\ContentController;
+use App\Forum\Controllers\ForumSubscriptionController;
 use App\Forum\Controllers\NotificationController;
 use App\Forum\Controllers\RankController;
 use App\Forum\Controllers\ReportController;
@@ -49,6 +50,7 @@ class BitBoard
 		ContentController::EnsureSchema($this->database);
 		NotificationController::EnsureSchema($this->database);
 		SubscriptionController::EnsureSchema($this->database);
+		ForumSubscriptionController::EnsureSchema($this->database);
 		ReportController::EnsureSchema($this->database);
 		RankController::EnsureSchema($this->database);
 		AuditController::EnsureSchema($this->database);

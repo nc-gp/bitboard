@@ -22,6 +22,7 @@ use App\Forum\Widgets\PaginationWidget;
 use App\Forum\Controllers\ThreadController;
 use App\Forum\Controllers\SubForumController;
 use App\Forum\Widgets\PrefixWidget;
+use App\Forum\Widgets\WatchWidget;
 
 class ForumPage extends PageBase implements PageInterface
 {
@@ -240,6 +241,13 @@ class ForumPage extends PageBase implements PageInterface
         }
 
         $this->template = new Template('forum', 'forum');
+        $this->template->AddEntry('{watch_button}', (new WatchWidget(
+            $this->database,
+            (int) $this->forumID,
+            -1,
+            (int) $this->forumPage,
+            'forum'
+        ))->template);
         $this->template->AddEntry('{new_thread_button}', $newThreadButton);
         $this->template->AddEntry('{subforums}', $this->subforums);
         $this->template->AddEntry('{threads}', $this->threads);

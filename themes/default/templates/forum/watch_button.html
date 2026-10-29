@@ -1,0 +1,10 @@
+<form class="forum-watch-form" action="{server_url}watch" method="post">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
+    <input type="hidden" name="forum" value="{forum_id}">
+    <input type="hidden" name="subforum" value="{subforum_id}">
+    <input type="hidden" name="page" value="{page}">
+    <input type="hidden" name="action" value="{action}">
+    <button type="submit" class="forum-watch-button{state_class}">
+        <i class="ti ti-{icon}" aria-hidden="true"></i> {label}
+    </button>
+</form>

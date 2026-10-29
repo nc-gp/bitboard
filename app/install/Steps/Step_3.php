@@ -23,6 +23,7 @@ use App\Forum\Controllers\PrefixController;
 use App\Forum\Controllers\NotificationController;
 use App\Forum\Controllers\ReportController;
 use App\Forum\Controllers\AuditController;
+use App\Forum\Controllers\ForumSubscriptionController;
 use App\Forum\Controllers\SubscriptionController;
 
 use Exception;
@@ -144,6 +145,7 @@ class Step_3 extends StepBase implements StepInterface
 			SubscriptionController::CreateTable($InstallDatabase);
 			ReportController::CreateTable($InstallDatabase);
 			AuditController::CreateTable($InstallDatabase);
+			ForumSubscriptionController::CreateTable($InstallDatabase);
 
 			RankController::CreateTable($InstallDatabase);
 			RankController::Create($InstallDatabase, 'Admin', '<span style="color: #B22222">{username}</span>', Permissions::$All, RankController::ADMIN_POSITION);

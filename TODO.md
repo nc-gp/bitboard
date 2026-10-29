@@ -274,7 +274,9 @@ Items marked **good first issue** are small and self-contained.
 - [ ] Attachments/uploads with extension/MIME/size validation and private storage.
 - [x] Thread subscriptions: subscribe/unsubscribe from the thread page, with a reply
   notification (including a direct post anchor) for every new reply by another member.
-- [ ] "Watch forum" notifications.
+- [x] "Watch forum" notifications for forums and subforums, with watch/unwatch buttons, a
+  `forum_thread` notification for new threads, deduplication when watching both targets, and
+  cleanup when a target is deleted.
 - [ ] Pagination-preserving anchors and "jump to last unread".
 - [x] Submit replies from the inline fast reply via AJAX, append the new post in place, scroll to it,
   and keep the normal POST fallback. Validation, permission, and CSRF errors return JSON and are

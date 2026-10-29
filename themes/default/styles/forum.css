@@ -96,9 +96,52 @@
 
 .info {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
   gap: 12px;
+}
+
+.info-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+.forum-watch-form {
+  margin: 0;
+}
+
+.forum-watch-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  width: auto;
+  margin: 0;
+  padding: 8px 14px;
+  border: 1px solid var(--opposite-x2);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--primary-hover);
+  font-size: 0.85rem;
+  line-height: 1.2;
+}
+
+.forum-watch-button:hover {
+  border-color: var(--primary);
+  background: var(--primary-focus);
+}
+
+.forum-watch-button.is-active {
+  border-color: var(--primary);
+  background: var(--primary-focus);
+}
+
+.forum-watch-button i {
+  margin: 0;
+  font-size: 1rem;
 }
 
 .info-title {

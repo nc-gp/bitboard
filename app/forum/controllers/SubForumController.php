@@ -112,6 +112,7 @@ class SubForumController
 
     public static function Delete(Database $db, int $subforumID): void
     {
+        ForumSubscriptionController::DeleteForSubforum($db, $subforumID);
         $db->Query('DELETE FROM bit_subforums WHERE id = ?', $subforumID);
     }
 

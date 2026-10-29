@@ -130,6 +130,7 @@ class ForumController
      */
     public static function Delete(Database $db, int $forumID): void
     {
+        ForumSubscriptionController::DeleteForForum($db, $forumID);
         $db->Query('DELETE FROM bit_subforums WHERE forum_id = ?', $forumID);
         $db->Query('DELETE FROM bit_forums WHERE id = ?', $forumID);
     }
