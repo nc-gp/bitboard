@@ -350,13 +350,15 @@ Items marked **good first issue** are small and self-contained.
 - [x] Redesign the offline page as a standalone theme-aware card with no header/footer chrome and
   a context-aware action (staff login, view forum, or log out).
 - [ ] Redesign the installation wizard to match the default theme layout and styling.
-- [ ] Move the admin panel to a dedicated admin theme/layout, independent of forum themes, so
-  custom themes cannot break admin pages.
+- [x] Pin the admin panel to the default theme so custom forum themes cannot break its
+  templates, header, footer, or assets.
+- [ ] Build a dedicated admin theme/layout independent of the default theme.
 - [x] Keep admin dashboard and shared admin controls in templates (stat cards, charts, badges,
   options, buttons, rank/user controls) so admin themes can override them.
 - [ ] Theme manager (install, activate, preview, delete).
 - [ ] Child themes and a documented template variable reference.
-- [ ] Consistent dark/light/auto handling (some layouts hardcode `data-theme="dark"`).
+- [x] Consistent dark/light/auto handling: removed the remaining hardcoded
+  `data-theme="dark"` layouts so every page uses the shared theme switcher.
 - [ ] Responsive audit on mobile and tablet.
 - [ ] Accessibility pass: landmarks, labels, focus states, contrast, keyboard navigation.
 - [ ] Loading, empty, and error states for every page.

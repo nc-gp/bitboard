@@ -34,6 +34,11 @@ class AdminPage extends PageBase implements PageInterface
     public function __construct(Database $db, object $data)
     {
         parent::__construct($db, $data);
+
+        // The admin panel is pinned to the default theme so custom forum themes
+        // cannot break its templates, header, footer, or assets.
+        Template::SetTheme('default');
+
         $this->UrlHandler();
         $this->forumDesc = 'Admin panel';
     }

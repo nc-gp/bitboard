@@ -3,6 +3,7 @@
 namespace App\Classes;
 
 use App\Classes\UrlManager;
+use App\Classes\Template;
 
 /**
  * The Avatar class provides methods for generating avatar image paths.
@@ -18,7 +19,13 @@ class AvatarUtils
      */
     static public function GetPath(string $avatarName): string
     {
-        $defaultPath = UrlManager::GetPath() . 'themes/' . BB_THEME . '/images/default.webp';
+        $theme = Template::GetTheme();
+        $themeImage = __DIR__ . '/../../themes/' . $theme . '/images/default.webp';
+
+        if (!is_file($themeImage))
+            $theme = 'default';
+
+        $defaultPath = UrlManager::GetPath() . 'themes/' . $theme . '/images/default.webp';
 
         if($avatarName === '' || $avatarName === 'default.webp' || $avatarName !== basename($avatarName))
             return $defaultPath;

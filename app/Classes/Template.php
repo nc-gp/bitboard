@@ -12,6 +12,24 @@ class Template
     private string $name;
     private array $variables = [];
     private array $replaces = [];
+    private static ?string $themeOverride = null;
+
+    /**
+     * Force templates to load from a specific theme for the current request.
+     * Admin pages use this so a custom forum theme cannot break the panel.
+     */
+    public static function SetTheme(?string $theme): void
+    {
+        self::$themeOverride = $theme;
+    }
+
+    /**
+     * Get the template theme for the current request.
+     */
+    public static function GetTheme(): string
+    {
+        return self::$themeOverride ?? BB_THEME;
+    }
 
     /**
      * Constructor to initialize the Template object with a template file path.
@@ -25,7 +43,7 @@ class Template
         $this->name = $name;
 
         if(!$custom)
-            $this->fullPath = './themes/' . BB_THEME . '/templates/' . $category_path . '/' . $this->name . '.html';
+            $this->fullPath = './themes/' . (self::$themeOverride ?? BB_THEME) . '/templates/' . $category_path . '/' . $this->name . '.html';
         else
             $this->fullPath = $category_path . $this->name . '.html';
 
