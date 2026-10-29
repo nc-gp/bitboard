@@ -4,6 +4,7 @@
     const storageKey = threadId ? 'bitboard-multiquote-' + threadId : '';
 
     const getTextarea = () => document.querySelector('#fast-reply-content');
+    const getButtons = () => [...document.querySelectorAll('.content-multiquote-link')];
 
     const readSelection = () => {
         if (!storageKey)
@@ -61,31 +62,16 @@
         return true;
     };
 
-    document.querySelectorAll('.content-quote-link').forEach(link => {
-        link.addEventListener('click', event => {
-            const text = link.dataset.quoteText || '';
-            if (text === '' || !getTextarea())
-                return;
-
-            if (insertQuote(text))
-                event.preventDefault();
-        });
-    });
-
-    const buttons = [...document.querySelectorAll('.content-multiquote-link')];
-    if (buttons.length === 0)
-        return;
-
-    const bar = document.querySelector('.fast-reply-quote-bar');
     let selection = readSelection();
 
     const render = () => {
-        buttons.forEach(button => {
+        getButtons().forEach(button => {
             const active = selection.some(item => item.key === button.dataset.quoteKey);
             button.classList.toggle('is-selected', active);
             button.setAttribute('aria-pressed', active ? 'true' : 'false');
         });
 
+        const bar = document.querySelector('.fast-reply-quote-bar');
         if (!bar)
             return;
 
@@ -99,25 +85,37 @@
         }
     };
 
-    buttons.forEach(button => {
-        button.addEventListener('click', () => {
-            if (!storageKey)
-                return;
+    document.addEventListener('click', event => {
+        const quoteLink = event.target.closest('.content-quote-link');
+        if (quoteLink) {
+            const text = quoteLink.dataset.quoteText || '';
+            if (text !== '' && getTextarea() && insertQuote(text))
+                event.preventDefault();
 
-            const key = button.dataset.quoteKey || '';
-            if (key === '')
-                return;
+            return;
+        }
 
-            const index = selection.findIndex(item => item.key === key);
-            if (index >= 0)
-                selection.splice(index, 1);
-            else
-                selection.push({ key: key, text: button.dataset.quoteText || '' });
+        const button = event.target.closest('.content-multiquote-link');
+        if (!button || !storageKey)
+            return;
 
-            saveSelection(selection);
-            render();
-        });
+        const key = button.dataset.quoteKey || '';
+        if (key === '')
+            return;
+
+        event.preventDefault();
+
+        const index = selection.findIndex(item => item.key === key);
+        if (index >= 0)
+            selection.splice(index, 1);
+        else
+            selection.push({ key: key, text: button.dataset.quoteText || '' });
+
+        saveSelection(selection);
+        render();
     });
+
+    const bar = document.querySelector('.fast-reply-quote-bar');
 
     if (bar) {
         const quoteSelected = bar.querySelector('.quote-selected');
@@ -147,5 +145,6 @@
         }
     }
 
+    document.addEventListener('bb:post-appended', render);
     render();
 })();

@@ -276,8 +276,9 @@ Items marked **good first issue** are small and self-contained.
   notification (including a direct post anchor) for every new reply by another member.
 - [ ] "Watch forum" notifications.
 - [ ] Pagination-preserving anchors and "jump to last unread".
-- [ ] Submit replies from the inline fast reply via AJAX, append the new post in place, and
-  scroll to it. Keep the normal POST fallback.
+- [x] Submit replies from the inline fast reply via AJAX, append the new post in place, scroll to it,
+  and keep the normal POST fallback. Validation, permission, and CSRF errors return JSON and are
+  shown as toasts; replies that overflow the page redirect to the new post.
 
 ### Moderation and admin
 

@@ -4,7 +4,7 @@
         <span>{hint}</span>
     </div>
 
-    <form action="{server_url}post" method="post">
+    <form id="fast-reply-form" action="{server_url}post" method="post">
         <input type="hidden" name="csrf_token" value="{csrf_token}">
         <input type="hidden" name="thread" value="{thread_id}">
         <input type="hidden" name="page" value="{return_page}">

@@ -1,17 +1,58 @@
-document.querySelectorAll('.reaction-picker').forEach(picker => {
-    const trigger = picker.querySelector('.reaction-trigger');
-    const form = picker.querySelector('.reaction-form');
-    if (!trigger || !form)
-        return;
+(() => {
+    const closePicker = (picker, focusTrigger = false) => {
+        picker.classList.remove('is-open');
 
-    trigger.addEventListener('click', event => {
-        event.preventDefault();
-        const open = picker.classList.toggle('is-open');
-        trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+        const trigger = picker.querySelector('.reaction-trigger');
+        if (trigger) {
+            trigger.setAttribute('aria-expanded', 'false');
+
+            if (focusTrigger)
+                trigger.focus();
+        }
+    };
+
+    document.addEventListener('click', event => {
+        const trigger = event.target.closest('.reaction-trigger');
+
+        if (trigger) {
+            const picker = trigger.closest('.reaction-picker');
+            if (!picker)
+                return;
+
+            event.preventDefault();
+
+            document.querySelectorAll('.reaction-picker.is-open').forEach(other => {
+                if (other !== picker)
+                    closePicker(other);
+            });
+
+            const open = picker.classList.toggle('is-open');
+            trigger.setAttribute('aria-expanded', open ? 'true' : 'false');
+            return;
+        }
+
+        document.querySelectorAll('.reaction-picker.is-open').forEach(picker => {
+            if (picker.contains(event.target))
+                return;
+
+            closePicker(picker);
+        });
     });
 
-    form.addEventListener('submit', async event => {
+    document.addEventListener('submit', async event => {
+        const form = event.target.closest('.reaction-form');
+        if (!form)
+            return;
+
         event.preventDefault();
+
+        const picker = form.closest('.reaction-picker');
+        if (!picker)
+            return;
+
+        const trigger = picker.querySelector('.reaction-trigger');
+        if (!trigger)
+            return;
 
         const submitter = event.submitter || form.querySelector('.reaction-option');
         if (!submitter || !submitter.value) {
@@ -21,6 +62,7 @@ document.querySelectorAll('.reaction-picker').forEach(picker => {
 
         const reaction = submitter.value;
         const options = [...form.querySelectorAll('.reaction-option')];
+
         if (options.some(option => option.disabled))
             return;
 
@@ -76,11 +118,10 @@ document.querySelectorAll('.reaction-picker').forEach(picker => {
             if (data.reaction)
                 trigger.classList.add('reaction-' + data.reaction);
 
-            picker.classList.remove('is-open');
-            trigger.setAttribute('aria-expanded', 'false');
-
             if (picker.contains(document.activeElement))
                 document.activeElement.blur();
+
+            closePicker(picker);
         } catch (error) {
             // Progressive fallback: submit the clicked reaction normally.
             let hidden = form.querySelector('input[name="reaction"]');
@@ -90,6 +131,7 @@ document.querySelectorAll('.reaction-picker').forEach(picker => {
                 hidden.name = 'reaction';
                 form.appendChild(hidden);
             }
+
             hidden.value = reaction;
             options.forEach(option => {
                 option.disabled = false;
@@ -101,26 +143,13 @@ document.querySelectorAll('.reaction-picker').forEach(picker => {
             });
         }
     });
-});
 
-document.addEventListener('click', event => {
-    document.querySelectorAll('.reaction-picker.is-open').forEach(picker => {
-        if (picker.contains(event.target))
+    document.addEventListener('keydown', event => {
+        if (event.key !== 'Escape')
             return;
 
-        picker.classList.remove('is-open');
-        picker.querySelector('.reaction-trigger')?.setAttribute('aria-expanded', 'false');
+        document.querySelectorAll('.reaction-picker.is-open').forEach(picker => {
+            closePicker(picker, true);
+        });
     });
-});
-
-document.addEventListener('keydown', event => {
-    if (event.key !== 'Escape')
-        return;
-
-    document.querySelectorAll('.reaction-picker.is-open').forEach(picker => {
-        picker.classList.remove('is-open');
-        const trigger = picker.querySelector('.reaction-trigger');
-        trigger?.setAttribute('aria-expanded', 'false');
-        trigger?.focus();
-    });
-});
+})();

@@ -51,6 +51,7 @@ class PostPage extends PageBase implements PageInterface
 
     private bool $denied = false;
     private string $deniedMessage = '';
+    private bool $ajax = false;
 
     public function __construct(Database $db, object $data)
     {
@@ -66,6 +67,11 @@ class PostPage extends PageBase implements PageInterface
 
         $isSubmission = ($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST';
         $source = $isSubmission ? $_POST : $_GET;
+
+        $this->ajax = $isSubmission && (
+            (($_SERVER['HTTP_X_REQUESTED_WITH'] ?? '') === 'XMLHttpRequest')
+            || (isset($_POST['ajax']) && $_POST['ajax'] === '1')
+        );
 
         $threadID = isset($source['thread']) && is_string($source['thread']) && ctype_digit($source['thread'])
             ? (int) $source['thread']
@@ -99,7 +105,12 @@ class PostPage extends PageBase implements PageInterface
         }
 
         if ($this->denied)
+        {
+            if ($this->ajax)
+                $this->RespondJson(['error' => $this->deniedMessage], 403);
+
             return;
+        }
 
         $this->forumDesc = $this->heading;
         $this->ogTitle = $this->heading . ' - ' . $this->forumName;
@@ -109,6 +120,9 @@ class PostPage extends PageBase implements PageInterface
             return;
 
         $this->HandleSubmission();
+
+        if ($this->ajax && $this->error !== '')
+            $this->RespondJson(['error' => $this->error], 422);
     }
 
     private function SetupReply(int $threadID, int $page, string $quote = ''): void
@@ -387,6 +401,15 @@ class PostPage extends PageBase implements PageInterface
                 $postUrl
             );
 
+            if ($this->ajax)
+            {
+                $this->RespondJson([
+                    'post_id' => $newPostID,
+                    'post_url' => $postUrl,
+                    'page' => $totalPages,
+                ]);
+            }
+
             UrlManager::Redirect($postUrl);
         }
         catch (Exception $e)
@@ -394,6 +417,14 @@ class PostPage extends PageBase implements PageInterface
             error_log('BitBoard post creation failed: ' . $e->getMessage());
             $this->error = 'Unable to save your post. Please try again.';
         }
+    }
+
+    private function RespondJson(array $data, int $status = 200): void
+    {
+        http_response_code($status);
+        header('Content-Type: application/json; charset=UTF-8');
+        echo json_encode($data, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
+        exit;
     }
 
     private function BuildContextFields(): string
