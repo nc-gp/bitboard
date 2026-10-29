@@ -2,3 +2,5 @@
 /app/install/lock
 /app/install/step
 /dumps/*
+/assets/images/avatars/*
+!/assets/images/avatars/.gitkeep

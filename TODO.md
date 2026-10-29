@@ -235,7 +235,11 @@ Items marked **good first issue** are small and self-contained.
 - [x] Account settings for email and password.
 - [x] Account settings for bio and post signature, with profile/post display, plain-text escaping,
   and length limits.
-- [ ] Account settings for avatar uploads, timezone, and notification preferences.
+- [x] Account settings for avatar uploads with image type/size validation, custom avatar storage,
+  preview, and removal.
+- [ ] Make avatar upload limits configurable in forum settings: uploads enabled/disabled, maximum
+  file size, allowed formats, and optional dimension limits, enforced in account settings.
+- [ ] Account settings for timezone and notification preferences.
 - [ ] Optional two-factor authentication (TOTP) after the core is stable.
 - [ ] Ban/suspension records with reasons and expiry instead of only the "Banned" rank.
 

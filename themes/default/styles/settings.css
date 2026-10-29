@@ -31,6 +31,129 @@
     resize: vertical;
 }
 
+.settings-avatar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 20px;
+    margin: 0 0 4px;
+    padding: 16px;
+    border: 1px solid var(--opposite-x2);
+    border-radius: var(--border-radius);
+    background: var(--opposite-x2);
+}
+
+.settings-avatar > img {
+    width: 88px;
+    height: 88px;
+    border: 3px solid var(--background-color);
+    border-radius: 50%;
+    background: var(--background-color);
+    object-fit: cover;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.18);
+}
+
+.settings-avatar-fields {
+    flex: 1;
+    min-width: 220px;
+}
+
+.settings-avatar-label {
+    display: block;
+    color: gray;
+    font-size: 0.72rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.settings-avatar-upload-row {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 10px;
+    margin: 6px 0 7px;
+}
+
+#settings .settings-avatar-input {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip: rect(0, 0, 0, 0);
+    white-space: nowrap;
+    border: 0;
+}
+
+.settings-avatar-upload {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    width: auto;
+    margin: 0;
+    padding: 8px 14px;
+    border-radius: 999px;
+    background: var(--primary);
+    color: var(--primary-inverse);
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.settings-avatar-upload:hover {
+    background: var(--primary-hover);
+}
+
+.settings-avatar-input:focus-visible + .settings-avatar-upload {
+    outline: 2px solid var(--primary-focus);
+    outline-offset: 2px;
+}
+
+.settings-avatar-upload i {
+    font-size: 1rem;
+}
+
+.settings-avatar-filename {
+    color: gray;
+    font-size: 0.78rem;
+    overflow-wrap: anywhere;
+}
+
+.settings-avatar .settings-hint {
+    margin: 0 0 6px;
+}
+
+#settings .settings-remove-avatar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    color: gray;
+    font-size: 0.8rem;
+}
+
+#settings .settings-remove-avatar input[type="checkbox"] {
+    flex: 0 0 20px;
+    width: 20px;
+    height: 20px;
+    min-width: 20px;
+    margin: 0;
+}
+
+@media (max-width: 620px) {
+    .settings-avatar {
+        align-items: flex-start;
+        padding: 14px;
+    }
+
+    .settings-avatar > img {
+        width: 72px;
+        height: 72px;
+    }
+}
+
 #settings button {
     align-self: flex-start;
     margin-top: 10px;
