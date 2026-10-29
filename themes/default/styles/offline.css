@@ -1,68 +1,124 @@
-@-webkit-keyframes pulse {
-    0%   { -webkit-transform: scale(1); opacity: 1; }
-    70%  { -webkit-transform: scale(3); opacity: 0; }
-    100% { -webkit-transform: scale(1); opacity: 0; }
-}
-
-@-ms-keyframes pulse {
-    0%   { -ms-transform: scale(1); opacity: 1; }
-    70%  { -ms-transform: scale(3); opacity: 0; }
-    100% { -ms-transform: scale(1); opacity: 0; }
-}
-
-@keyframes pulse {
-    0%   { transform: scale(1); opacity: 1; }
-    70%  { transform: scale(3); opacity: 0; }
-    100% { transform: scale(1); opacity: 0; }
-}
-
-html,body {
-    font-family: -apple-system, BlinkMacSystemFont, "Avenir Next", Avenir,
-    "Nimbus Sans L", Roboto, "Noto Sans", "Segoe UI", Arial, Helvetica,
-    "Helvetica Neue", sans-serif;
-  scroll-behavior: smooth;
-    color: #dcdcdc;
-    background-color: #212121;
-  height: 100vh;
+.offline-page {
+    min-height: 100vh;
+    margin: 0;
     display: grid;
-    place-content: center;
+    place-items: center;
 }
 
-.off-container {
-  width: 150px;
-  height: 150px;
-  display: grid;
-  place-items: center;
-  position: relative;
+.offline-shell {
+    width: 100%;
+    max-width: 680px;
+    margin: 0;
+    padding: 24px;
 }
 
-.off-container::before {
-    -webkit-animation: pulse 2s infinite;
-    -moz-animation: pulse 2s infinite;
-    -ms-animation: pulse 2s infinite;
-    animation: pulse 2s infinite;
+.offline-card {
+    padding: 44px 32px;
+    border-radius: var(--border-radius);
+    background: var(--opposite);
+    text-align: center;
+    box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
+}
+
+.offline-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 16px;
     border-radius: 50%;
-    background-color: rgba(0,0,0,0.2);
-    content: '';
-    width: 150px;
-    height: 150px;
-    position: absolute;
+    background: var(--primary-focus);
+    color: var(--primary-hover);
 }
 
-.off-container h1 {
-  font-size: 12px;
-  font-weight: 800;
-  margin-top: 10px;
-  text-align: center;
-  color: #fff;
-  text-transform: uppercase;
-  letter-spacing: 1.3px;
-  position: relative;
-  z-index: 1;
-  text-shadow: 0px 2px 2px rgba(0,0,0,0.2);
+.offline-icon i {
+    font-size: 2rem;
 }
 
-.off-container i {
-  font-size: 5.3rem;
-  color: white;
+.offline-kicker {
+    margin: 0 0 6px;
+    color: var(--primary-hover);
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.offline-card h1 {
+    margin: 0 0 12px;
+    font-size: 1.7rem;
+    line-height: 1.25;
+}
+
+.offline-message {
+    max-width: 46ch;
+    margin: 0 auto 24px;
+    color: gray;
+    line-height: 1.5;
+    white-space: pre-line;
+}
+
+.offline-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+}
+
+.offline-actions:empty {
+    display: none;
+}
+
+.offline-actions a {
+    width: auto;
+    margin: 0;
+}
+
+.offline-actions a.button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: auto;
+    min-height: 42px;
+    margin: 0;
+    padding: 0.5rem 1.25rem;
+    border: 1px solid var(--primary);
+    border-radius: 999px;
+    background: var(--primary);
+    color: var(--primary-inverse);
+    font-size: 0.9rem;
+    font-weight: 600;
+    line-height: 1.2;
+}
+
+.offline-actions a.button i {
+    font-size: 1rem;
+}
+
+.offline-actions a.button:hover,
+.offline-actions a.button:focus {
+    border-color: var(--primary-hover);
+    background: var(--primary-hover);
+    color: var(--primary-inverse);
+}
+
+.offline-actions a.button:focus-visible {
+    outline: 2px solid var(--primary-focus);
+    outline-offset: 2px;
+}
+
+@media (max-width: 620px) {
+    .offline-shell {
+        padding: 12px;
+    }
+
+    .offline-card {
+        padding: 32px 20px;
+    }
+
+    .offline-card h1 {
+        font-size: 1.4rem;
+    }
 }

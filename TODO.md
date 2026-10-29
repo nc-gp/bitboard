@@ -344,7 +344,8 @@ Items marked **good first issue** are small and self-contained.
 
 ### Themes and UX
 
-- [ ] Redesign the forum offline page to match the default theme layout and styling.
+- [x] Redesign the offline page as a standalone theme-aware card with no header/footer chrome and
+  a context-aware action (staff login, view forum, or log out).
 - [ ] Redesign the installation wizard to match the default theme layout and styling.
 - [ ] Move the admin panel to a dedicated admin theme/layout, independent of forum themes, so
   custom themes cannot break admin pages.

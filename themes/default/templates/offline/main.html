@@ -1,11 +1,22 @@
 <!doctype html>
 <html>
 {head}
-<body>
-	<div class="off-container">
-		<i class="ti ti-lock"></i>
-		<h1>{reason}</h1>
-	</div>
-	{scripts}
+<body class="offline-page">
+    <main class="offline-shell">
+        <article class="offline-card">
+            <div class="offline-icon">
+                <i class="ti ti-cloud-off" aria-hidden="true"></i>
+            </div>
+
+            <p class="offline-kicker">Temporarily offline</p>
+            <h1>{forum_name} is offline</h1>
+            <p class="offline-message">{reason}</p>
+
+            <div class="offline-actions">
+                {offline_action}
+            </div>
+        </article>
+    </main>
+    {scripts}
 </body>
 </html>
