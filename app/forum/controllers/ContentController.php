@@ -171,6 +171,7 @@ class ContentController
             $db->Query('DELETE FROM bit_thread_edits WHERE thread_id = ?', $threadID);
             $db->Query('DELETE FROM bit_notifications WHERE thread_id = ?', $threadID);
             $db->Query('DELETE FROM bit_thread_subscriptions WHERE thread_id = ?', $threadID);
+            $db->Query('DELETE FROM bit_thread_reads WHERE thread_id = ?', $threadID);
             $db->Query('DELETE FROM bit_reports WHERE thread_id = ?', $threadID);
             $db->Query('DELETE FROM bit_threads WHERE id = ?', $threadID);
 

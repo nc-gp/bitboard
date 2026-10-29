@@ -21,6 +21,7 @@ use App\Forum\Controllers\MentionController;
 use App\Forum\Controllers\PrefixController;
 use App\Forum\Controllers\SubscriptionController;
 use App\Forum\Controllers\ThreadController;
+use App\Forum\Controllers\ThreadReadController;
 
 use App\Interfaces\PageInterface;
 
@@ -384,6 +385,8 @@ class PostPage extends PageBase implements PageInterface
 
             if ($newPostID <= 0)
                 throw new Exception('The new post ID could not be determined.');
+
+            ThreadReadController::MarkRead($this->database, $userId, $this->threadID, $newPostID);
 
             $count = $this->database->Query('SELECT COUNT(*) AS post_count FROM bit_posts WHERE thread_id = ?', $this->threadID)->FetchArray();
             $totalPages = max(1, (int) ceil(((int) ($count['post_count'] ?? 0)) / PostController::POSTS_PER_PAGE));

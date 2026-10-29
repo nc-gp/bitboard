@@ -139,6 +139,19 @@
     animation: post-highlight 1.6s ease-out;
 }
 
+.post-signature {
+    margin-top: 10px;
+    padding-top: 8px;
+    border-top: 1px solid var(--opposite-x2);
+    color: gray;
+    font-size: 0.85rem;
+    white-space: pre-line;
+}
+
+.post-signature:empty {
+    display: none;
+}
+
 @keyframes post-highlight {
     0% {
         outline: 3px solid var(--primary);

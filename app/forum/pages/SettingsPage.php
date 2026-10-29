@@ -43,11 +43,19 @@ class SettingsPage extends PageBase implements PageInterface
 
         $userId = (int) $_SESSION['bitboard_user']->id;
         $email = isset($_POST['email']) && is_string($_POST['email']) ? trim($_POST['email']) : '';
+        $bio = isset($_POST['bio']) && is_string($_POST['bio']) ? trim($_POST['bio']) : '';
+        $signature = isset($_POST['signature']) && is_string($_POST['signature']) ? trim($_POST['signature']) : '';
         $password = isset($_POST['password']) && is_string($_POST['password']) ? $_POST['password'] : '';
         $passwordConfirm = isset($_POST['password_confirm']) && is_string($_POST['password_confirm']) ? $_POST['password_confirm'] : '';
 
         if (!EmailUtils::Validate($email) || mb_strlen($email) > 64)
             $this->Fail('Please enter a valid email address.');
+
+        if (mb_strlen($bio) > 1000)
+            $this->Fail('Bio must be 1000 characters or fewer.');
+
+        if (mb_strlen($signature) > 500)
+            $this->Fail('Signature must be 500 characters or fewer.');
 
         $existing = $this->database->Query('SELECT id FROM bit_accounts WHERE email = ? AND id <> ? LIMIT 1', $email, $userId)->FetchArray();
         if (!empty($existing))
@@ -66,11 +74,13 @@ class SettingsPage extends PageBase implements PageInterface
         {
             if ($password === '')
             {
-                $this->database->Query('UPDATE bit_accounts SET email = ? WHERE id = ?', $email, $userId);
+                $this->database->Query('UPDATE bit_accounts SET email = ?, bio = ?, signature = ? WHERE id = ?',
+                    $email, $bio, $signature, $userId);
             }
             else
             {
-                $this->database->Query('UPDATE bit_accounts SET email = ?, pass = ? WHERE id = ?', $email, PasswordUtils::GetHash($password), $userId);
+                $this->database->Query('UPDATE bit_accounts SET email = ?, bio = ?, signature = ?, pass = ? WHERE id = ?',
+                    $email, $bio, $signature, PasswordUtils::GetHash($password), $userId);
             }
 
             $_SESSION['bitboard_user']->Update($this->database);
@@ -110,6 +120,8 @@ class SettingsPage extends PageBase implements PageInterface
         $this->template = new Template('settings', 'settings');
         $this->template->AddEscapedEntry('{username}', $_SESSION['bitboard_user']->username);
         $this->template->AddEscapedEntry('{email}', $_SESSION['bitboard_user']->email);
+        $this->template->AddEscapedEntry('{bio}', $_SESSION['bitboard_user']->bio ?? '');
+        $this->template->AddEscapedEntry('{signature}', $_SESSION['bitboard_user']->signature ?? '');
         $this->template->AddEntry('{error}', $this->error);
 
         parent::RenderPage('settings');

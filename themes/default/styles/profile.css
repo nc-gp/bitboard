@@ -196,6 +196,13 @@
     margin: 0;
 }
 
+.profile-bio {
+    margin: 0 0 14px;
+    color: gray;
+    line-height: 1.5;
+    white-space: pre-line;
+}
+
 .profile-meta-list {
     display: grid;
     gap: 0;

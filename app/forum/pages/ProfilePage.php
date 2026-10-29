@@ -146,6 +146,17 @@ class ProfilePage extends PageBase implements PageInterface
     {
         $online = RelativeTime::IsUserActive($this->profile['last_active']);
 
+        $bio = trim((string) ($this->profile['bio'] ?? ''));
+        $bioBlock = '';
+
+        if ($bio !== '')
+        {
+            $bioTemplate = new Template('profile', 'bio');
+            $bioTemplate->AddEscapedEntry('{bio}', $bio);
+            $bioTemplate->Replace();
+            $bioBlock = $bioTemplate->template;
+        }
+
         $this->template = new Template('profile', 'profile');
         $this->template->AddEntry('{user_avatar}', AvatarUtils::GetPath($this->profile['avatar']));
         $this->template->AddEscapedEntry('{username_plain}', $this->profile['username']);
@@ -157,6 +168,7 @@ class ProfilePage extends PageBase implements PageInterface
         $this->template->AddEscapedEntry('{online_class}', $online ? 'is-online' : 'is-offline');
         $this->template->AddEscapedEntry('{joined}', RelativeTime::Format($this->profile['reg_date'], false));
         $this->template->AddEscapedEntry('{last_seen}', RelativeTime::Convert($this->profile['last_active']));
+        $this->template->AddEntry('{bio_block}', $bioBlock);
         $this->template->AddEntry('{user_threads}', $this->GetRecentThreads());
         $this->template->AddEntry('{user_posts}', $this->GetRecentPosts());
 

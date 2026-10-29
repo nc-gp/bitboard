@@ -23,6 +23,7 @@ use App\Forum\Controllers\LikeController;
 use App\Forum\Controllers\MentionController;
 use App\Forum\Controllers\PostController;
 use App\Forum\Controllers\SubscriptionController;
+use App\Forum\Controllers\ThreadReadController;
 use App\Forum\Widgets\PaginationWidget;
 use App\Forum\Widgets\PrefixWidget;
 use App\Forum\Widgets\ReactionWidget;
@@ -43,6 +44,7 @@ class ThreadPage extends PageBase implements PageInterface
 
     private int $maximumResults = PostController::POSTS_PER_PAGE;
     private int $postsCount = 0;
+    private int $lastPostID = 0;
 
     public function __construct(Database $db, object $data)
     {
@@ -253,7 +255,7 @@ class ThreadPage extends PageBase implements PageInterface
 
     private function fetchPosts()
     {
-        $posts = $this->database->Query('SELECT p.*, a.id AS author_id, a.username, a.avatar, a.reputation, r.rank_name, r.rank_format
+        $posts = $this->database->Query('SELECT p.*, a.id AS author_id, a.username, a.avatar, a.reputation, a.signature, r.rank_name, r.rank_format
             FROM bit_posts AS p
             JOIN bit_accounts AS a ON p.user_id = a.id
             JOIN bit_ranks AS r ON a.rank_id = r.id
@@ -319,6 +321,19 @@ class ThreadPage extends PageBase implements PageInterface
                 (int) $post['user_id']
             ));
 
+            $postSignature = '';
+            $signatureText = trim((string) ($post['signature'] ?? ''));
+
+            if ($signatureText !== '')
+            {
+                $signatureTemplate = new Template('thread', 'post_signature');
+                $signatureTemplate->AddEscapedEntry('{signature}', $signatureText);
+                $signatureTemplate->Replace();
+                $postSignature = $signatureTemplate->template;
+            }
+
+            $postTemplate->AddEntry('{post_signature}', $postSignature);
+
             $postEdit = '';
             $canEditPost = ContentController::CanEditPost((int) $post['user_id']);
             $canDeletePost = ContentController::CanDeletePost((int) $post['user_id']);
@@ -347,6 +362,7 @@ class ThreadPage extends PageBase implements PageInterface
             $postTemplate->Replace();
 
             $this->posts .= $postTemplate->template;
+            $this->lastPostID = max($this->lastPostID, (int) $post['id']);
         }
     }
 
@@ -513,6 +529,16 @@ class ThreadPage extends PageBase implements PageInterface
     {
         $this->fetchThread();
         $this->fetchPosts();
+
+        if (SessionManager::IsLogged() && $this->lastPostID > 0)
+        {
+            ThreadReadController::MarkRead(
+                $this->database,
+                (int) $_SESSION['bitboard_user']->id,
+                $this->threadID,
+                $this->lastPostID
+            );
+        }
 
         $canReply = $this->CanReply();
 

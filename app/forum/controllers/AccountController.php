@@ -8,6 +8,36 @@ use App\Classes\Permissions;
 class AccountController
 {
 	private const ONLINE_WINDOW_SECONDS = 900;
+	private static bool $schemaChecked = false;
+
+	/**
+	 * Add profile fields to installations created before they existed.
+	 */
+	static public function EnsureSchema(Database $db): void
+	{
+		if (self::$schemaChecked)
+			return;
+
+		self::$schemaChecked = true;
+
+		try
+		{
+			$columns = $db->Query("SELECT column_name FROM information_schema.columns
+				WHERE table_schema = DATABASE() AND table_name = 'bit_accounts'
+					AND column_name IN ('bio', 'signature')")->FetchAll();
+			$names = array_column($columns, 'column_name');
+
+			if (!in_array('bio', $names, true))
+				$db->Query("ALTER TABLE bit_accounts ADD COLUMN bio VARCHAR(1000) NOT NULL DEFAULT ''");
+
+			if (!in_array('signature', $names, true))
+				$db->Query("ALTER TABLE bit_accounts ADD COLUMN signature VARCHAR(500) NOT NULL DEFAULT ''");
+		}
+		catch (\Throwable $e)
+		{
+			error_log('BitBoard account schema check failed: ' . $e->getMessage());
+		}
+	}
 
 	/**
 	 * Get one account together with its rank name and flags.
@@ -182,7 +212,7 @@ class AccountController
      */
     static public function CreateTable(Database $db)
     {
-        $db->Query('CREATE TABLE IF NOT EXISTS bit_accounts ( id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, username VARCHAR(32) NOT NULL, pass VARCHAR(1024) NOT NULL, email VARCHAR(64) NOT NULL, avatar VARCHAR(255) NULL DEFAULT NULL, reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, reputation INT(6) NOT NULL DEFAULT 0, last_ip VARCHAR(64), last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP, last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP, rank_id INT(6) NOT NULL)');
+        $db->Query('CREATE TABLE IF NOT EXISTS bit_accounts ( id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, username VARCHAR(32) NOT NULL, pass VARCHAR(1024) NOT NULL, email VARCHAR(64) NOT NULL, avatar VARCHAR(255) NULL DEFAULT NULL, bio VARCHAR(1000) NOT NULL DEFAULT \'\', signature VARCHAR(500) NOT NULL DEFAULT \'\', reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, reputation INT(6) NOT NULL DEFAULT 0, last_ip VARCHAR(64), last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP, last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP, rank_id INT(6) NOT NULL)');
     }
 
 	/**

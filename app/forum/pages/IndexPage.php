@@ -18,6 +18,7 @@ use App\Forum\Structs\ForumStruct;
 use App\Forum\Structs\SubForumStruct;
 
 use App\Forum\Controllers\AccountController;
+use App\Forum\Controllers\ContentController;
 use App\Forum\Controllers\ForumController;
 
 class IndexPage extends PageBase implements PageInterface
@@ -181,10 +182,17 @@ class IndexPage extends PageBase implements PageInterface
                     $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($lastPost['avatar']));
                     $lastPostTemplate->AddEscapedEntry('{thread_id}', $lastPost['thread_id']);
                     $lastPostTemplate->AddEscapedEntry('{thread_title}', $lastPost['thread_title']);
+                    $lastPostPage = ContentController::PostPageNumber($this->database, [
+                        'thread_id' => (int) $lastPost['thread_id'],
+                        'post_timestamp' => $lastPost['post_timestamp'],
+                        'id' => (int) $lastPost['post_id'],
+                    ]);
+
                     $lastPostTemplate->AddEntry('{thread_url}', UrlManager::ThreadUrl(
                         (int) $lastPost['thread_id'],
-                        Slug::FromTitle($lastPost['thread_title'])
-                    ));
+                        Slug::FromTitle($lastPost['thread_title']),
+                        $lastPostPage
+                    ) . '#post-' . (int) $lastPost['post_id']);
                     $lastPostTemplate->AddEscapedEntry('{post_date}', RelativeTime::Convert($lastPost['post_timestamp']));
                     $lastPostTemplate->AddEntry('{username}', UsernameUtils::Format($lastPost['rank_format'], $lastPost['username']));
                     $lastPostTemplate->Replace();

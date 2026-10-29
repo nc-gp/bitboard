@@ -40,6 +40,42 @@
   text-decoration: none;
 }
 
+.thread_title {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+}
+
+.thread_info a.thread-unread {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--primary-focus);
+  color: var(--primary-hover);
+}
+
+.thread_info a.thread-unread:hover {
+  background: var(--primary);
+  color: var(--primary-inverse);
+}
+
+.thread-unread i {
+  font-size: 1rem;
+}
+
+.lastpost_postdate {
+  color: inherit;
+  text-decoration: none;
+}
+
+.lastpost_postdate:hover {
+  color: var(--primary-hover);
+}
+
 .stats {
   text-align: start;
 }

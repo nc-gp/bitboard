@@ -37,7 +37,7 @@ class ForumController
             return [];
 
         $placeholders = implode(',', array_fill(0, count($forumIDs), '?'));
-        $lastPosts = $db->Query('SELECT p.post_timestamp, a.id, a.username, a.avatar, t.id AS thread_id, t.thread_title, t.forum_id, r.rank_format
+        $lastPosts = $db->Query('SELECT p.id AS post_id, p.post_timestamp, a.id, a.username, a.avatar, t.id AS thread_id, t.thread_title, t.forum_id, r.rank_format
             FROM bit_posts AS p
             JOIN bit_threads AS t ON p.thread_id = t.id
             JOIN bit_accounts AS a ON p.user_id = a.id

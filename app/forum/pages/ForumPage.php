@@ -21,6 +21,9 @@ use App\Forum\Widgets\PaginationWidget;
 
 use App\Forum\Controllers\ThreadController;
 use App\Forum\Controllers\SubForumController;
+use App\Forum\Controllers\ContentController;
+use App\Forum\Controllers\PostController;
+use App\Forum\Controllers\ThreadReadController;
 use App\Forum\Widgets\PrefixWidget;
 use App\Forum\Widgets\WatchWidget;
 
@@ -144,6 +147,17 @@ class ForumPage extends PageBase implements PageInterface
 
         $lastPosts = ThreadController::GetLastPosts($this->database, array_column($threads, 'id'));
 
+        $readData = [];
+
+        if (SessionManager::IsLogged())
+        {
+            $readData = ThreadReadController::GetReadData(
+                $this->database,
+                (int) $_SESSION['bitboard_user']->id,
+                array_column($threads, 'id')
+            );
+        }
+
         $threadPrefix = '';
         foreach ($threads as $thread) 
         {
@@ -153,10 +167,23 @@ class ForumPage extends PageBase implements PageInterface
 
             if (!empty($lastPost)) {
                 $lastPostTemplate = new Template('forum/thread', 'thread_lastpost');
-                $lastPostTemplate->AddEscapedEntry('{user_id}', $lastPost['id']);
+                $lastPostTemplate->AddEscapedEntry('{user_id}', $lastPost['user_id']);
                 $lastPostTemplate->AddEntry('{avatar}', AvatarUtils::GetPath($lastPost['avatar']));
                 $lastPostTemplate->AddEscapedEntry('{post_date}', RelativeTime::Convert($lastPost['post_timestamp']));
                 $lastPostTemplate->AddEntry('{username}', UsernameUtils::Format($lastPost['rank_format'], $lastPost['username']));
+
+                $lastPostPage = ContentController::PostPageNumber($this->database, [
+                    'thread_id' => (int) $thread['id'],
+                    'post_timestamp' => $lastPost['post_timestamp'],
+                    'id' => (int) $lastPost['id'],
+                ]);
+
+                $lastPostTemplate->AddEntry('{last_post_url}', UrlManager::ThreadUrl(
+                    (int) $thread['id'],
+                    Slug::FromTitle($thread['thread_title']),
+                    $lastPostPage
+                ) . '#post-' . (int) $lastPost['id']);
+
                 $lastPostTemplate->Replace();
             }
 
@@ -199,11 +226,37 @@ class ForumPage extends PageBase implements PageInterface
             $threadTemplate->AddEntry('{thread_author_username}', UsernameUtils::Format($thread['rank_format'], $thread['username']));
             $threadTemplate->AddEscapedEntry('{thread_date}', RelativeTime::Convert($thread['thread_timestamp']));
             $threadTemplate->AddEscapedEntry('{thread_replies}', $thread['post_count']);
+            $threadTemplate->AddEntry('{unread_link}', $this->BuildUnreadLink($thread, $readData));
             $threadTemplate->AddEntry('{thread_lastpost}', $lastPostTemplate->template);
             $threadTemplate->Replace();
 
             $this->threads .= $threadTemplate->template;
         }
+    }
+
+    private function BuildUnreadLink(array $thread, array $readData): string
+    {
+        $postCount = (int) $thread['post_count'];
+        $read = $readData[(int) $thread['id']] ?? null;
+
+        if (empty($read) || (int) $read['read_count'] <= 0 || (int) $read['read_count'] >= $postCount)
+            return '';
+
+        $page = max(1, (int) ceil(((int) $read['read_count'] + 1) / PostController::POSTS_PER_PAGE));
+        $url = UrlManager::ThreadUrl(
+            (int) $thread['id'],
+            Slug::FromTitle($thread['thread_title']),
+            $page
+        );
+
+        if ((int) $read['first_unread_id'] > 0)
+            $url .= '#post-' . (int) $read['first_unread_id'];
+
+        $template = new Template('forum/thread', 'thread_unread');
+        $template->AddEscapedEntry('{url}', $url);
+        $template->Replace();
+
+        return $template->template;
     }
 
     private function SetupForumDesc()

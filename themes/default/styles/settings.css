@@ -26,6 +26,11 @@
     width: 100%;
 }
 
+#settings textarea {
+    width: 100%;
+    resize: vertical;
+}
+
 #settings button {
     align-self: flex-start;
     margin-top: 10px;

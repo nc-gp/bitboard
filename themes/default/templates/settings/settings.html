@@ -19,6 +19,17 @@
 					<input id="settings-email" type="email" name="email" value="{email}"
 						maxlength="64" required="">
 
+					<label for="settings-bio">Bio</label>
+					<textarea id="settings-bio" name="bio" maxlength="1000" rows="4"
+						placeholder="Tell the community a little about yourself.">{bio}</textarea>
+
+					<label for="settings-signature">Signature</label>
+					<textarea id="settings-signature" name="signature" maxlength="500" rows="3"
+						placeholder="Shown below your posts.">{signature}</textarea>
+
+					<p class="settings-hint">Your bio appears on your profile. Your signature appears below
+						your forum posts.</p>
+
 					<label for="settings-password">New password</label>
 					<input id="settings-password" type="password" name="password"
 						minlength="8" autocomplete="new-password">

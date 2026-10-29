@@ -233,7 +233,9 @@ Items marked **good first issue** are small and self-contained.
 - [ ] Configurable email-domain allowlist/blocklist for registration, seeded with common provider domains.
 - [ ] Password reset via signed, expiring tokens.
 - [x] Account settings for email and password.
-- [ ] Account settings for avatar, bio, signature, timezone, and notification preferences.
+- [x] Account settings for bio and post signature, with profile/post display, plain-text escaping,
+  and length limits.
+- [ ] Account settings for avatar uploads, timezone, and notification preferences.
 - [ ] Optional two-factor authentication (TOTP) after the core is stable.
 - [ ] Ban/suspension records with reasons and expiry instead of only the "Banned" rank.
 
@@ -277,7 +279,8 @@ Items marked **good first issue** are small and self-contained.
 - [x] "Watch forum" notifications for forums and subforums, with watch/unwatch buttons, a
   `forum_thread` notification for new threads, deduplication when watching both targets, and
   cleanup when a target is deleted.
-- [ ] Pagination-preserving anchors and "jump to last unread".
+- [x] Pagination-preserving last-post links that jump to the correct page and post anchor, plus
+  a per-user read-position table and “jump to first unread” links in forum/subforum listings.
 - [x] Submit replies from the inline fast reply via AJAX, append the new post in place, scroll to it,
   and keep the normal POST fallback. Validation, permission, and CSRF errors return JSON and are
   shown as toasts; replies that overflow the page redirect to the new post.

@@ -25,6 +25,7 @@ use App\Forum\Controllers\ReportController;
 use App\Forum\Controllers\AuditController;
 use App\Forum\Controllers\ForumSubscriptionController;
 use App\Forum\Controllers\SubscriptionController;
+use App\Forum\Controllers\ThreadReadController;
 
 use Exception;
 
@@ -146,6 +147,7 @@ class Step_3 extends StepBase implements StepInterface
 			ReportController::CreateTable($InstallDatabase);
 			AuditController::CreateTable($InstallDatabase);
 			ForumSubscriptionController::CreateTable($InstallDatabase);
+			ThreadReadController::CreateTable($InstallDatabase);
 
 			RankController::CreateTable($InstallDatabase);
 			RankController::Create($InstallDatabase, 'Admin', '<span style="color: #B22222">{username}</span>', Permissions::$All, RankController::ADMIN_POSITION);
