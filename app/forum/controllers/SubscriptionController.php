@@ -11,34 +11,6 @@ use App\Classes\Database;
  */
 class SubscriptionController
 {
-    private static bool $schemaChecked = false;
-
-    /**
-     * Create the subscriptions table for older installations.
-     */
-    public static function EnsureSchema(Database $db): void
-    {
-        if (self::$schemaChecked)
-            return;
-
-        self::$schemaChecked = true;
-
-        try
-        {
-            $state = $db->Query("SELECT COUNT(*) AS table_count FROM information_schema.tables
-                WHERE table_schema = DATABASE() AND table_name = 'bit_thread_subscriptions'")->FetchArray();
-
-            if ((int) ($state['table_count'] ?? 0) === 1)
-                return;
-
-            self::CreateTable($db);
-        }
-        catch (Throwable $e)
-        {
-            error_log('BitBoard subscription schema check failed: ' . $e->getMessage());
-        }
-    }
-
     public static function CreateTable(Database $db): void
     {
         $db->Query('CREATE TABLE IF NOT EXISTS bit_thread_subscriptions (

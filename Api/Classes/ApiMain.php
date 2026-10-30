@@ -8,6 +8,7 @@ use Api\Classes\ApiResponse;
 use Api\Classes\ApiCodes;
 
 use App\Classes\Database;
+use App\Classes\Migrator;
 
 class ApiMain
 {
@@ -75,6 +76,7 @@ class ApiMain
             require_once './app/config.php';
             $db = new Database($config['host'], $config['user'], $config['pass']);
             $db->SelectDatabase($config['name']);
+            Migrator::Run($db);
             $api = new $className($db, $this->data);
             $api->Response();
             $db->Close();

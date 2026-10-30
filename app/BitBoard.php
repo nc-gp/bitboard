@@ -8,20 +8,11 @@ use App\Classes\File;
 Use App\Classes\UrlManager;
 use App\Classes\Console;
 use App\Classes\AdminPath;
-use App\Classes\Schema;
+use App\Classes\Migrator;
 use App\Classes\Permissions;
 use App\Classes\SessionManager;
 use App\Forum\Controllers\AccountController;
-use App\Forum\Controllers\AuditController;
-use App\Forum\Controllers\ContentController;
-use App\Forum\Controllers\ForumSubscriptionController;
-use App\Forum\Controllers\NotificationController;
-use App\Forum\Controllers\RankController;
-use App\Forum\Controllers\ReportController;
-use App\Forum\Controllers\SubscriptionController;
-use App\Forum\Controllers\SettingsController;
 use App\Forum\Controllers\ThemeController;
-use App\Forum\Controllers\ThreadReadController;
 use App\Forum\Controllers\ViewingController;
 
 use App\Forum\Structs\ForumDataStruct;
@@ -53,17 +44,7 @@ class BitBoard
 
 		$this->database = new Database($config['host'], $config['user'], $config['pass']);
 		$this->database->SelectDatabase($config['name']);
-		ContentController::EnsureSchema($this->database);
-		AccountController::EnsureSchema($this->database);
-		SettingsController::EnsureSchema($this->database);
-		NotificationController::EnsureSchema($this->database);
-		SubscriptionController::EnsureSchema($this->database);
-		ForumSubscriptionController::EnsureSchema($this->database);
-		ThreadReadController::EnsureSchema($this->database);
-		ReportController::EnsureSchema($this->database);
-		RankController::EnsureSchema($this->database);
-		AuditController::EnsureSchema($this->database);
-		Schema::EnsureCore($this->database);
+		Migrator::Run($this->database);
 		$this->data = new ForumDataStruct($this->database->Query('SELECT * FROM bit_settings')->FetchArray());
 
 		define('BB_THEME', ThemeController::ResolveTheme($this->database, (string) $this->data->forum_theme));

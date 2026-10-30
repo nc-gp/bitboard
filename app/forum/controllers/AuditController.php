@@ -5,7 +5,6 @@ namespace App\Forum\Controllers;
 use Throwable;
 
 use App\Classes\Database;
-use App\Classes\Permissions;
 use App\Classes\SessionManager;
 
 /**
@@ -46,43 +45,6 @@ class AuditController
         'report.resolved' => 'Report resolved',
         'report.dismissed' => 'Report dismissed',
     ];
-
-    private static bool $schemaChecked = false;
-
-    public static function EnsureSchema(Database $db): void
-    {
-        if (self::$schemaChecked)
-            return;
-
-        self::$schemaChecked = true;
-
-        try
-        {
-            $state = $db->Query("SELECT COUNT(*) AS table_count FROM information_schema.tables
-                WHERE table_schema = DATABASE() AND table_name = 'bit_audit_log'")->FetchArray();
-
-            if ((int) ($state['table_count'] ?? 0) === 1)
-                return;
-
-            self::CreateTable($db);
-
-            // Existing installations need the new permission on the built-in
-            // Admin rank. Fresh installs already receive it through Permissions::$All.
-            $admin = $db->Query('SELECT rank_flags FROM bit_ranks WHERE id = 1')->FetchArray();
-
-            if (!empty($admin) && (((int) $admin['rank_flags'] & Permissions::VIEWING_AUDIT_LOG) === 0))
-            {
-                $db->Query(
-                    'UPDATE bit_ranks SET rank_flags = rank_flags | ? WHERE id = 1',
-                    Permissions::VIEWING_AUDIT_LOG
-                );
-            }
-        }
-        catch (Throwable $e)
-        {
-            error_log('BitBoard audit schema check failed: ' . $e->getMessage());
-        }
-    }
 
     public static function CreateTable(Database $db): void
     {

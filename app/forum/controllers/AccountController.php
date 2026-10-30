@@ -9,42 +9,6 @@ use App\Classes\Permissions;
 class AccountController
 {
 	private const ONLINE_WINDOW_SECONDS = 900;
-	private static bool $schemaChecked = false;
-
-	/**
-	 * Add profile fields to installations created before they existed.
-	 */
-	static public function EnsureSchema(Database $db): void
-	{
-		if (self::$schemaChecked)
-			return;
-
-		self::$schemaChecked = true;
-
-		try
-		{
-			$columns = $db->Query("SELECT column_name FROM information_schema.columns
-				WHERE table_schema = DATABASE() AND table_name = 'bit_accounts'
-					AND column_name IN ('bio', 'signature', 'viewing_type', 'viewing_id')")->FetchAll();
-			$names = array_column($columns, 'column_name');
-
-			if (!in_array('bio', $names, true))
-				$db->Query("ALTER TABLE bit_accounts ADD COLUMN bio VARCHAR(1000) NOT NULL DEFAULT ''");
-
-			if (!in_array('signature', $names, true))
-				$db->Query("ALTER TABLE bit_accounts ADD COLUMN signature VARCHAR(500) NOT NULL DEFAULT ''");
-
-			if (!in_array('viewing_type', $names, true))
-				$db->Query("ALTER TABLE bit_accounts ADD COLUMN viewing_type VARCHAR(16) NOT NULL DEFAULT ''");
-
-			if (!in_array('viewing_id', $names, true))
-				$db->Query('ALTER TABLE bit_accounts ADD COLUMN viewing_id INT(6) UNSIGNED NOT NULL DEFAULT 0');
-		}
-		catch (\Throwable $e)
-		{
-			error_log('BitBoard account schema check failed: ' . $e->getMessage());
-		}
-	}
 
 	/**
 	 * Get one account together with its rank name and flags.

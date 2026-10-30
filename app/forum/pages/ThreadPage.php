@@ -225,7 +225,6 @@ class ThreadPage extends PageBase implements PageInterface
             (int) $thread['user_id']
         ));
 
-        LikeController::EnsureSchema($this->database);
         $userId = $this->canLike ? (int) $_SESSION['bitboard_user']->id : null;
         [$threadReactionCounts, $threadUserReaction, $threadReactionTotal] = LikeController::GetThreadReactions(
             $this->database,
@@ -267,8 +266,6 @@ class ThreadPage extends PageBase implements PageInterface
 
         if (count($posts) <= 0)
             return;
-
-        LikeController::EnsureSchema($this->database);
 
         $postIDs = array_map('intval', array_column($posts, 'id'));
         $userId = $this->canLike ? (int) $_SESSION['bitboard_user']->id : null;

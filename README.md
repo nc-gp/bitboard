@@ -47,6 +47,7 @@ npm, or build step. Tabler Icons is the only external front-end asset and is pin
 - Account settings for email, password, bio, signature, and avatar uploads with admin limits.
 - Admin panel: dashboard charts, tabbed settings, categories, forums, prefixes, ranks with a
   permission matrix, user management, and an audit log.
+- Numbered database migrations with automatic, locked upgrades for existing installs.
 - Theme system with the bundled default theme, a light/dark/auto switcher, and an admin theme
   manager for installing, previewing, activating, and deleting themes.
 - SEO slugs and canonical URLs, OpenGraph/Twitter metadata, `/sitemap.xml`, and `/feed.xml`.
@@ -112,6 +113,24 @@ rm app/install/lock app/install/step app/config.php
 
 The database is **not** dropped, so existing tables and seeded rows may conflict with a fresh
 install. Only reinstall on a development copy.
+
+### Upgrading
+
+Database changes ship as numbered migrations in `app/migrations/`. After replacing the application
+files, the next request applies any pending migrations automatically and records them in
+`bit_migrations`; no manual SQL or reinstall is needed.
+
+Back up the database before upgrading. If a migration fails, the request stops before rendering a
+page and the error is written to the PHP error log, so the forum does not silently run against a
+partially upgraded schema. `App\Classes\Migrator::Status($db)` lists applied and pending versions
+for diagnostics.
+
+The database user needs `CREATE`/`ALTER` privileges while an upgrade runs; you can revoke them
+again afterwards if your host allows it.
+
+To add a migration, create the next sequential `NNN_description.php` file returning `version`,
+`name`, and an `up` callable. Keep migrations idempotent so they are safe on databases that already
+received an earlier in-place upgrade.
 
 ### Manual configuration
 
@@ -188,6 +207,7 @@ app/
   forum/                  Controllers, pages, structs, and widgets
   install/                Web installer and access guard
   interfaces/             Page and installer step contracts
+  migrations/             Numbered database upgrades, applied automatically
 Api/                      API bootstrap and POST endpoints
 assets/                   Global CSS/JS and installer assets
 themes/default/           Templates, styles, and images for the default theme

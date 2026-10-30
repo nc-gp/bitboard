@@ -26,7 +26,7 @@ use App\Forum\Controllers\AuditController;
 use App\Forum\Controllers\ForumSubscriptionController;
 use App\Forum\Controllers\SubscriptionController;
 use App\Forum\Controllers\ThreadReadController;
-use App\Classes\Schema;
+use App\Classes\Migrator;
 
 use Exception;
 
@@ -165,7 +165,7 @@ class Step_3 extends StepBase implements StepInterface
 			PrefixController::Create($InstallDatabase, 'Closed', 'prclose');
 			PrefixController::Create($InstallDatabase, 'Pinned', 'prpinned');
 
-			Schema::EnsureCore($InstallDatabase);
+			Migrator::Run($InstallDatabase);
 
 			$InstallDatabase->Close();
 		}

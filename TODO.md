@@ -139,14 +139,17 @@ Items marked **good first issue** are small and self-contained.
   handle lock/deadlock cases.
 - [x] **Protect against nested queries.** The single-active-statement restriction is documented
   on `Database`, and fetching without an active result throws a clear `DatabaseException`.
-- [x] **Add the remaining indexes and column defaults.** `Schema::EnsureCore()` adds unique
-  indexes on account username/email, indexes for last activity, thread forums/users, and post
+- [x] **Add the remaining indexes and column defaults.** Migration 15 adds unique indexes
+  on account username/email, indexes for last activity, thread forums/users, and post
   threads/users, plus defaults for thread flags/prefix/like counters and post like counters.
   Fresh installs receive the same definitions in their `CREATE TABLE` statements.
 - [ ] **Add foreign keys with deliberate `ON DELETE` behavior.** Cascade deletion is still
   handled in application code.
-- [ ] **Add a migration system.** The installer creates the schema only once. Add numbered
-  migrations with a small in-house runner so existing forums can upgrade without reinstalling.
+- [x] **Add a migration system.** `app/migrations/` contains numbered migrations and
+  `Migrator` records applied versions in `bit_migrations`. Pending upgrades run once on the
+  next request, guarded by a MySQL advisory lock; fresh installs run the same migrations after
+  the installer creates the baseline schema. The per-request `EnsureSchema()` checks and
+  `Schema::EnsureCore()` have been removed.
 - [ ] **Remove magic row IDs.** `bit_settings.id = 0` and the implicit admin rank ID `1` are
   brittle. Use a key/value settings table or a single-row constraint, and look up ranks by
   name/slug.

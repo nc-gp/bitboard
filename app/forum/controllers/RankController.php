@@ -2,8 +2,6 @@
 
 namespace App\Forum\Controllers;
 
-use Throwable;
-
 use App\Classes\Database;
 
 class RankController
@@ -20,41 +18,9 @@ class RankController
     public const BANNED_POSITION = 0;
     public const MAX_CUSTOM_POSITION = 99;
 
-    private static bool $schemaChecked = false;
-
     public static function IsBuiltIn(int $rankID): bool
     {
         return in_array($rankID, self::BUILT_IN_IDS, true);
-    }
-
-    /**
-     * Add rank_position to installations created before the hierarchy existed.
-     */
-    public static function EnsureSchema(Database $db): void
-    {
-        if (self::$schemaChecked)
-            return;
-
-        self::$schemaChecked = true;
-
-        try
-        {
-            $column = $db->Query("SELECT COUNT(*) AS column_count FROM information_schema.columns
-                WHERE table_schema = DATABASE() AND table_name = 'bit_ranks' AND column_name = 'rank_position'")->FetchArray();
-
-            if ((int) ($column['column_count'] ?? 0) === 1)
-                return;
-
-            $db->Query('ALTER TABLE bit_ranks ADD COLUMN rank_position INT(6) NOT NULL DEFAULT 0');
-            $db->Query('UPDATE bit_ranks SET rank_position = ' . self::ADMIN_POSITION . ' WHERE id = 1');
-            $db->Query('UPDATE bit_ranks SET rank_position = ' . self::USER_POSITION . ' WHERE id = 2');
-            $db->Query('UPDATE bit_ranks SET rank_position = ' . self::BANNED_POSITION . ' WHERE id = 3');
-            $db->Query('UPDATE bit_ranks SET rank_position = 10 WHERE id > 3 AND rank_position = 0');
-        }
-        catch (Throwable $e)
-        {
-            error_log('BitBoard rank schema check failed: ' . $e->getMessage());
-        }
     }
 
     /**

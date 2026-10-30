@@ -9,61 +9,6 @@ use App\Classes\Reactions;
 
 class LikeController
 {
-    private static bool $schemaChecked = false;
-
-    /**
-     * Add the reaction column and one-like-per-user indexes to older installs.
-     */
-    public static function EnsureSchema(Database $db): void
-    {
-        if (self::$schemaChecked)
-            return;
-
-        self::$schemaChecked = true;
-
-        try
-        {
-            $column = $db->Query("SELECT COUNT(*) AS column_count FROM information_schema.columns
-                WHERE table_schema = DATABASE() AND table_name = 'bit_posts_likes' AND column_name = 'reaction'")->FetchArray();
-
-            if ((int) ($column['column_count'] ?? 0) === 0)
-                $db->Query("ALTER TABLE bit_posts_likes ADD COLUMN reaction VARCHAR(16) NOT NULL DEFAULT 'heart' AFTER post_id");
-
-            $threadColumn = $db->Query("SELECT COUNT(*) AS column_count FROM information_schema.columns
-                WHERE table_schema = DATABASE() AND table_name = 'bit_threads_likes' AND column_name = 'reaction'")->FetchArray();
-
-            if ((int) ($threadColumn['column_count'] ?? 0) === 0)
-                $db->Query("ALTER TABLE bit_threads_likes ADD COLUMN reaction VARCHAR(16) NOT NULL DEFAULT 'heart' AFTER thread_id");
-
-            $indexes = $db->Query("SELECT table_name, index_name FROM information_schema.statistics
-                WHERE table_schema = DATABASE() AND index_name IN ('uniq_thread_like', 'uniq_post_like')")->FetchAll();
-
-            $existing = [];
-            foreach ($indexes as $index)
-                $existing[$index['table_name'] . '.' . $index['index_name']] = true;
-
-            if (!isset($existing['bit_threads_likes.uniq_thread_like']))
-            {
-                $db->Query('DELETE l1 FROM bit_threads_likes AS l1
-                    JOIN bit_threads_likes AS l2
-                        ON l1.user_id = l2.user_id AND l1.thread_id = l2.thread_id AND l1.id > l2.id');
-                $db->Query('ALTER TABLE bit_threads_likes ADD UNIQUE INDEX uniq_thread_like (user_id, thread_id)');
-            }
-
-            if (!isset($existing['bit_posts_likes.uniq_post_like']))
-            {
-                $db->Query('DELETE l1 FROM bit_posts_likes AS l1
-                    JOIN bit_posts_likes AS l2
-                        ON l1.user_id = l2.user_id AND l1.post_id = l2.post_id AND l1.id > l2.id');
-                $db->Query('ALTER TABLE bit_posts_likes ADD UNIQUE INDEX uniq_post_like (user_id, post_id)');
-            }
-        }
-        catch (Throwable $e)
-        {
-            error_log('BitBoard like schema check failed: ' . $e->getMessage());
-        }
-    }
-
     /**
      * Get per-reaction counts and the current user's reactions for several posts.
      *

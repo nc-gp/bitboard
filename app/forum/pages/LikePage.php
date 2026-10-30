@@ -117,8 +117,6 @@ class LikePage extends PageBase implements PageInterface
             UrlManager::Redirect($this->serverPath);
         }
 
-        LikeController::EnsureSchema($this->database);
-
         $userId = (int) $_SESSION['bitboard_user']->id;
         $threadUrl = UrlManager::ThreadUrl($threadID, Slug::FromTitle($target['thread_title']), $page);
 

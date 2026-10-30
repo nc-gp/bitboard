@@ -21,31 +21,6 @@ class ReportController
 
     public const STATUSES = ['open', 'resolved', 'dismissed'];
 
-    private static bool $schemaChecked = false;
-
-    public static function EnsureSchema(Database $db): void
-    {
-        if (self::$schemaChecked)
-            return;
-
-        self::$schemaChecked = true;
-
-        try
-        {
-            $state = $db->Query("SELECT COUNT(*) AS table_count FROM information_schema.tables
-                WHERE table_schema = DATABASE() AND table_name = 'bit_reports'")->FetchArray();
-
-            if ((int) ($state['table_count'] ?? 0) === 1)
-                return;
-
-            self::CreateTable($db);
-        }
-        catch (Throwable $e)
-        {
-            error_log('BitBoard report schema check failed: ' . $e->getMessage());
-        }
-    }
-
     public static function CreateTable(Database $db): void
     {
         $db->Query('CREATE TABLE IF NOT EXISTS bit_reports (

@@ -14,52 +14,6 @@ use App\Classes\SessionManager;
  */
 class ContentController
 {
-    private static bool $schemaChecked = false;
-
-    /**
-     * Create the edit history tables for older installations.
-     */
-    public static function EnsureSchema(Database $db): void
-    {
-        if (self::$schemaChecked)
-            return;
-
-        self::$schemaChecked = true;
-
-        try
-        {
-            $state = $db->Query("SELECT COUNT(*) AS table_count FROM information_schema.tables
-                WHERE table_schema = DATABASE()
-                  AND table_name IN ('bit_thread_edits', 'bit_post_edits')")->FetchArray();
-
-            if ((int) ($state['table_count'] ?? 0) === 2)
-                return;
-
-            $db->Query('CREATE TABLE IF NOT EXISTS bit_thread_edits (
-                id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                thread_id INT(6) NOT NULL,
-                user_id INT(6) NOT NULL,
-                thread_title VARCHAR(128) NOT NULL,
-                thread_content VARCHAR(4096) NOT NULL,
-                edited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                KEY thread_edits_thread (thread_id)
-            )');
-
-            $db->Query('CREATE TABLE IF NOT EXISTS bit_post_edits (
-                id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-                post_id INT(6) NOT NULL,
-                user_id INT(6) NOT NULL,
-                post_content VARCHAR(4096) NOT NULL,
-                edited_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                KEY post_edits_post (post_id)
-            )');
-        }
-        catch (Throwable $e)
-        {
-            error_log('BitBoard content schema check failed: ' . $e->getMessage());
-        }
-    }
-
     public static function CanEditThread(int $authorID): bool
     {
         return SessionManager::HasPermission(Permissions::EDITING_THREADS)

@@ -92,8 +92,12 @@ class Database
      */
     public function Query($query)
     {
-        if (!$this->query_closed)
+        if (!$this->query_closed && $this->query !== null)
             $this->query->close();
+
+        // The previous statement is gone even if this one fails to prepare.
+        $this->query = null;
+        $this->query_closed = true;
 
         try
         {
@@ -146,6 +150,17 @@ class Database
         }
         catch (mysqli_sql_exception $e)
         {
+            try
+            {
+                $this->query->close();
+            }
+            catch (\Throwable $ignored)
+            {
+            }
+
+            $this->query = null;
+            $this->query_closed = true;
+
             throw new DatabaseException(
                 'Unable to process MySQL query: ' . $e->getMessage(),
                 (int) $e->getCode(),
