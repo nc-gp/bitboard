@@ -22,6 +22,7 @@ use App\Forum\Controllers\PrefixController;
 use App\Forum\Controllers\SubscriptionController;
 use App\Forum\Controllers\ThreadController;
 use App\Forum\Controllers\ThreadReadController;
+use App\Forum\Widgets\EditorWidget;
 
 use App\Interfaces\PageInterface;
 
@@ -508,6 +509,16 @@ class PostPage extends PageBase implements PageInterface
         return $template->template;
     }
 
+    private function BuildDraftKey(): string
+    {
+        $userID = (int) ($_SESSION['bitboard_user']->id ?? 0);
+
+        if ($this->mode === 'thread')
+            return 'u' . $userID . '-thread-' . $this->forumID . '-' . max(0, $this->subforumID);
+
+        return 'u' . $userID . '-reply-' . $this->threadID;
+    }
+
     private function BuildTitleField(): string
     {
         if ($this->mode !== 'thread')
@@ -542,6 +553,8 @@ class PostPage extends PageBase implements PageInterface
         $this->template->AddEscapedEntry('{submit_label}', $this->submitLabel);
         $this->template->AddEscapedEntry('{cancel_url}', $this->cancelUrl);
         $this->template->AddEscapedEntry('{content}', $this->contentValue);
+        $this->template->AddEscapedEntry('{draft_key}', $this->BuildDraftKey());
+        $this->template->AddEntry('{editor_toolbar}', (new EditorWidget())->Template);
         $this->template->AddEntry('{title_field}', $this->BuildTitleField());
         $this->template->AddEntry('{prefix_field}', $this->BuildPrefixField());
         $this->template->AddEntry('{context_fields}', $this->BuildContextFields());

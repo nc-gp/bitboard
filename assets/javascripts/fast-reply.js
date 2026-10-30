@@ -65,6 +65,8 @@
                 return;
             }
 
+            document.dispatchEvent(new CustomEvent('bb:post-posted'));
+
             if (!data.post_id || !data.post_url) {
                 window.location.reload();
                 return;

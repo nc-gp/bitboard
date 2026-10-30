@@ -8,8 +8,15 @@
     {prefix_field}
 
     <label for="edit-content">Message</label>
-    <textarea id="edit-content" name="content" maxlength="4000" required>{content}</textarea>
-    <p class="post-hint">Line breaks are preserved. HTML is displayed as text. Start a line with <code>&gt;</code> to quote, and use <code>@username</code> to mention a member.</p>
+    <div class="bb-editor" data-editor data-draft-key="{draft_key}" data-preview-url="{server_url}preview">
+        {editor_toolbar}
+        <textarea id="edit-content" name="content" maxlength="4000" required>{content}</textarea>
+    </div>
+    <p class="post-hint">
+        Markdown is supported: <strong>**bold**</strong>, <em>*italic*</em>, <code>`code`</code>,
+        <code>&gt;</code> quotes, lists, links, and images. Raw HTML is shown as text.
+        Use <code>@username</code> to mention a member.
+    </p>
 
     <div class="post-actions">
         <button type="submit">Save changes</button>

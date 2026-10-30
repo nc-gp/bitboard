@@ -16,7 +16,7 @@ Items marked **good first issue** are small and self-contained.
 - [x] **Replace the autoloader with a PSR-4-style implementation.** `auto_loader.php` now maps
   explicit namespace prefixes (`App\Classes\`, `App\Forum\*`, `App\Install\`, `App\Interfaces\`,
   `Api\Classes\`, `Api\POST\`) to directories with `__DIR__`, converts `\` to `/`, and uses
-  `require_once`. Composer autoloading remains a P3 item.
+  `require_once`. The autoloader stays dependency-free.
 - [x] **Remove remaining backslash paths in URLs.** Avatar, footer script, admin script, and
   `ELEMENTS.html` asset URLs now use forward slashes on all platforms.
 - [x] **Normalize the application base URL.** `UrlManager::GetPath()` uses `SCRIPT_NAME`, converts
@@ -69,11 +69,11 @@ Items marked **good first issue** are small and self-contained.
   `ForumPage`, `SubforumPage`, and `ThreadPage`. Users without
   `Permissions::VIEWING_FORUM_LOCKED` are redirected to the forum index, and a locked
   parent forum also protects its subforums and their threads. The current API exposes
-  only settings/prefix routes, so there is no forum-content API surface yet; future
-  forum endpoints must apply the same check.
+  only settings, avatar, and prefix routes, so there is no forum-content API surface yet;
+  future forum endpoints must apply the same check.
 - [x] **Use granular API permissions.** `ApiMain` now resolves a route before applying its
-  declared permission. Settings and prefix updates require both `ADMIN_PANEL_ACCESS` and
-  `MANAGING_SETTINGS`; guests receive `401`, authenticated users without the required
+  declared permission. Settings, avatar, and prefix requests require both `ADMIN_PANEL_ACCESS`
+  and `MANAGING_SETTINGS`; guests receive `401`, authenticated users without the required
   permission receive `403`.
 - [x] **Harden the installer and remove it from the public path after setup.** The installer
   now rejects posted steps that do not match the current step, verifies a CSRF token, and
@@ -103,8 +103,8 @@ Items marked **good first issue** are small and self-contained.
   passing the database name as the charset and calls `SelectDatabase($config['name'])`.
 - [x] **Validate API routes.** `ApiMain::HandleURL()` now uses an explicit method/route/class
   allowlist, rejects non-string or unknown routes before `class_exists()`/autoloading, and
-  exposes `api/settings` plus the prefix edit/delete routes. New endpoints must be added to
-  the allowlist.
+  exposes `api/settings`, `api/avatars`, plus the prefix edit/delete routes. New endpoints must
+  be added to the allowlist.
 - [x] **Fix `Api/POST/Prefixes.php`.** The file now declares `class Prefixes` and implements
   edit/delete with route-authoritative IDs, prepared statements, name/class length and CSS
   class validation, built-in-prefix protection, not-found handling, and a conflict check when
@@ -138,15 +138,16 @@ Items marked **good first issue** are small and self-contained.
 - [ ] **Protect against nested queries.** `Database` keeps a single active statement and
   closes the previous one on every `Query()`. Either document the restriction or return a
   separate result object.
-- [ ] **Add schema constraints and indexes.**
+- [ ] **Add the remaining schema constraints and indexes.** Unique indexes already cover
+  reactions, subscriptions, forum watches, and read positions, and regular indexes cover
+  notifications, audit entries, reports, and edit history. Still missing:
   - Foreign keys with deliberate `ON DELETE` behavior.
   - Unique indexes on `bit_accounts.username` and `bit_accounts.email`.
   - Indexes on `bit_threads(forum_id, subforum_id)`, `bit_posts(thread_id)`,
     `bit_posts(user_id)`, `bit_threads(user_id)`, and `bit_accounts(last_active)`.
   - Defaults for `is_closed`, `is_pinned`, `prefix_id`, and like counters.
 - [ ] **Add a migration system.** The installer creates the schema only once. Add numbered
-  migrations (Phinx, Doctrine Migrations, or a small in-house runner) so existing forums can
-  upgrade without reinstalling.
+  migrations with a small in-house runner so existing forums can upgrade without reinstalling.
 - [ ] **Remove magic row IDs.** `bit_settings.id = 0` and the implicit admin rank ID `1` are
   brittle. Use a key/value settings table or a single-row constraint, and look up ranks by
   name/slug.
@@ -211,8 +212,8 @@ Items marked **good first issue** are small and self-contained.
   and GitHub footer for the default theme.
 - [x] **Make the credits optional.** Added the `forum_credits` setting to the installer,
   admin form/API, and footer widget.
-- [x] **Pin front-end dependencies.** Tabler Icons 3.49.0 is pinned on jsDelivr with a
-  SHA-384 integrity hash.
+- [x] **Pin the single front-end asset dependency.** Tabler Icons 3.49.0 is pinned on jsDelivr
+  with a SHA-384 integrity hash. Everything else is local and dependency-free.
 - [x] **Remove Microtip.** Replaced it with local `tooltip.css` using
   `data-tooltip-position`.
 - [x] **Remove duplicate request helper.** Removed the unused `request.js`; `main.js` keeps
@@ -237,9 +238,11 @@ Items marked **good first issue** are small and self-contained.
   and length limits.
 - [x] Account settings for avatar uploads with image type/size validation, custom avatar storage,
   preview, and removal.
-- [x] Avatar upload limits are configurable from a dedicated Avatars tab inside Forum Settings:
-  uploads enabled/disabled, maximum file size, allowed formats, and optional dimension limits,
-  enforced in account settings.
+- [x] Forum Settings uses General/Avatars tabs with active states, a shared tab template, and
+  concise per-field help text linked with `aria-describedby`.
+- [x] Avatar upload limits are configurable from the Avatars tab: uploads enabled/disabled,
+  maximum file size, allowed formats, and optional dimension limits, enforced in account
+  settings.
 - [ ] Optional two-factor authentication (TOTP) after the core is stable.
 - [ ] Ban/suspension records with reasons and expiry instead of only the "Banned" rank.
 
@@ -276,7 +279,9 @@ Items marked **good first issue** are small and self-contained.
   notifications.
 - [x] Show custom thread prefixes on the thread page and let thread editors choose them when
   creating or editing a thread. Pin/lock statuses stay separate from custom prefixes.
-- [ ] Rich editor with preview, drafts, and a Markdown/HTML policy.
+- [x] Rich Markdown editor with a formatting toolbar, live AJAX preview, and browser-local
+  drafts. Policy: input is a Markdown subset, raw HTML is escaped, and rendered output is
+  sanitized before storage. Existing HTML posts are converted back to Markdown when edited.
 - [ ] Attachments/uploads with extension/MIME/size validation and private storage.
 - [x] Thread subscriptions: subscribe/unsubscribe from the thread page, with a reply
   notification (including a direct post anchor) for every new reply by another member.
@@ -309,7 +314,8 @@ Items marked **good first issue** are small and self-contained.
 - [x] Admin user management: searchable and rank-filtered user list, pagination, rank
   assignment, ban/unban, reputation adjustments, and rank-hierarchy enforcement so lower
   ranks cannot modify users or ranks at or above their own position.
-- [ ] Rank/permission matrix editor with readable labels for every bit flag.
+- [x] Rank/permission matrix editor: grouped, labelled checkboxes generated from
+  `Permissions::GROUPS`, with built-in rank protections and disabled states for read-only ranks.
 - [x] Audit log for admin and moderator actions: persistent `bit_audit_log`, a permission-gated
   admin page with actor/action filters and pagination, and entries for settings, categories,
   forums, subforums, prefixes, ranks, users, thread pin/lock/move/edit/delete, post edits/deletes,
@@ -367,7 +373,7 @@ Items marked **good first issue** are small and self-contained.
   `data-theme="dark"` layouts so every page uses the shared theme switcher.
 - [x] Responsive pass for mobile and tablet: header/nav wrapping, index forum rows,
   forum/subforum thread rows, thread/post author headers, pagination, viewing chips, and
-  login/register spacing at 760px and 480px.
+  login/register spacing at 1000px, 900px, 760px, and 480px breakpoints.
 - [ ] Accessibility pass: landmarks, labels, focus states, contrast, keyboard navigation.
 - [ ] Loading, empty, and error states for every page.
 - [ ] i18n/locale files, timezone-aware dates, and RTL support.
@@ -383,6 +389,7 @@ work is finished.
 - [ ] Account settings for timezone and notification preferences.
 - [ ] Account deletion with explicit content reassignment or removal rules.
 - [ ] Audit log retention/pruning and CSV export.
+- [ ] Optional server-side draft sync across devices (drafts are currently browser-local).
 
 ---
 
@@ -390,18 +397,16 @@ work is finished.
 
 ### Tooling
 
-- [ ] Add `composer.json` with PSR-4 autoloading, dev dependencies, and scripts.
-- [ ] Add PHPUnit tests for `PasswordUtils`, `EmailUtils`, `UsernameUtils`,
+- [ ] Add dependency-free test scripts for `PasswordUtils`, `EmailUtils`, `UsernameUtils`,
   `RelativeTime`, `Permissions`, `Template`, and `PaginationWidget`.
 - [ ] Add a template icon audit that verifies every `ti-*` class exists in the pinned Tabler
   release.
-- [ ] Add integration tests for installer, login, permissions, routing, and API auth.
-- [ ] Add PHPStan/Psalm at a sensible level and PHP-CS-Fixer/PHP_CodeSniffer.
-- [ ] Add GitHub Actions: lint on PHP 8.0-8.3, static analysis, unit tests, and a smoke test
-  against MySQL/MariaDB.
-- [ ] Add a `docker-compose.yml` for Apache + PHP + MariaDB and seed a demo forum.
-- [ ] Add `config.example.php` and `.env.example`, and support environment variables.
-- [ ] Add structured logging (PSR-3) and an error handler that renders a friendly 500 page.
+- [ ] Add dependency-free integration scripts for installer, login, permissions, routing, and
+  API auth.
+- [ ] Add GitHub Actions to lint on PHP 8.0-8.3 and run the smoke scripts against MySQL/MariaDB.
+- [ ] Add `config.example.php` (also listed under good first issues) and optional `.env`
+  support using `getenv()`, without extra libraries.
+- [ ] Add a small logging helper and an error handler that renders a friendly 500 page.
 - [ ] Add database backup/restore and health-check commands.
 - [ ] Add a CLI installer for automated deployments.
 - [ ] Add `CHANGELOG.md`, semantic version tags, and release notes.
@@ -411,41 +416,44 @@ work is finished.
 - [ ] Add `declare(strict_types=1);` and consistent typing across classes.
 - [ ] Normalize code style (tabs vs spaces, brace placement, `static public` vs
   `public static`).
-- [ ] Remove unused imports and dead code (`App\BB`, `App\Classes\Avatar`, etc.).
+- [ ] Remove unused imports and dead references (for example `use App\BB;` in
+  `Template.php` and `use App\Classes\Avatar;` in `ForumPage.php`).
 - [ ] Add structured request/response objects instead of passing `$_GET`, `$_POST`, and
   `$_SESSION` through page constructors.
 - [ ] Extract a router and shared URL validation; the `UrlHandler()` logic is duplicated in
   every page.
-- [ ] Add `NotFound`/`Forbidden`/`BadRequest` HTTP exceptions and map them centrally.
+- [ ] Add `NotFound`/`Forbidden`/`BadRequest` HTTP exceptions and map them centrally; the 404
+  path exists, but 403 responses are still hand-rolled in several pages.
 - [ ] Add pagination and query-count tests; expose `Database::$query_count` in debug mode.
 - [ ] Add validation for struct construction (reject unknown keys, avoid dynamic properties
   on PHP 8.2+).
 
 ### Repository hygiene
 
-- [ ] Extend `.gitignore` with `.env`, IDE/OS files, uploads, logs, and local dumps.
-- [ ] Add `CONTRIBUTING.md`, `SECURITY.md`, issue templates, and a pull-request template.
-- [ ] Add a `CODE_OF_CONDUCT.md` if the project wants one.
+- [ ] Extend `.gitignore` with `.env`, IDE/OS files, and log files (avatars, install
+  controls, and `dumps/` are already ignored).
+- [ ] Add issue and pull-request templates.
 - [ ] Document the database schema (ER diagram) and template variables.
-- [ ] Add screenshots/GIFs to the README and a short "request flow" diagram.
-- [ ] Keep the README feature list honest: mark WIP features explicitly (see README).
-- [ ] Update `cntlines.py -m` to match the new README layout (or replace it with a small
-  script that updates a dedicated line-count marker).
-- [ ] Add a `make`/npm-free task runner for lint, test, and line-count commands.
+- [ ] Add screenshots or a short GIF to the README.
+- [x] Keep the README feature list honest: the README now reflects the implemented features,
+  pending work, dependency-free constraint, and current installation flow.
+- [ ] Remove the unused `-m` README updater from `cntlines.py`; the README no longer includes
+  a generated line-count marker.
+- [ ] Add a small script-based task runner for lint, test, and line-count commands.
 
 ---
 
 ## Good first issues
 
 - [x] Replace Toastify with the local `spell_alert` notification library.
-- [ ] Remove the "CSS ELEMENTS" link from the production navigation.
-- [ ] Fix backslashes in `AvatarUtils`, `footer/end.html`, and `admin.html`.
+- [x] Remove the "CSS ELEMENTS" link from the production navigation.
+- [x] Fix backslashes in `AvatarUtils`, `footer/end.html`, and `admin.html`.
 - [x] Fix `Template::AddEntries()` count comparison and initialize arrays.
 - [x] Fix `Step_5` `strlen($value <= 0)` validation.
 - [x] Fix `RankController::Create()` default flags (`0000000000` is octal zero; use `0`).
 - [x] Remove the leftover `{top_stats}` placeholder.
 - [ ] Add `config.example.php`.
-- [ ] Replace the four "Test" footer links.
+- [x] Replace the four "Test" footer links.
 - [x] Remove `Console::Log()` debug calls from `ThreadPage` and `Setup`.
 
 ---

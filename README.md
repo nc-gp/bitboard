@@ -8,14 +8,14 @@
   <img src="https://img.shields.io/badge/License-GPL_3.0-green" alt="License: GPL 3.0" />
   <img src="https://img.shields.io/badge/PHP-8.0%2B-blue" alt="PHP 8.0+" />
   <img src="https://img.shields.io/badge/Database-MySQL%20%2F%20MariaDB-orange" alt="MySQL / MariaDB" />
+  <img src="https://img.shields.io/badge/Dependencies-none-brightgreen" alt="No dependencies" />
   <img src="https://img.shields.io/badge/Status-early%20development-red" alt="Early development" />
 </div>
 
-<h4 align="center">A lightweight, self-hosted forum engine written in PHP.</h4>
+<h4 align="center">A lightweight, self-hosted forum engine in plain PHP.</h4>
 
 > **BitBoard is in early development.** It is not production-ready yet. Expect unfinished
-> features, breaking changes, and missing security hardening. See the
-> [roadmap](#roadmap) and [TODO.md](TODO.md) for what is being worked on.
+> features, breaking changes, and missing hardening. See [TODO.md](TODO.md) for the backlog.
 
 <p align="center">
   <a href="#features">Features</a> •
@@ -29,67 +29,36 @@
 
 ## Features
 
-### Working today
+BitBoard is dependency-free: plain PHP, MySQLi, and vanilla JavaScript. There is no Composer,
+npm, or build step. Tabler Icons is the only external front-end asset and is pinned via CDN.
 
 - Six-step web installer (database, admin account, forum settings).
-- Page/controller/widget/template architecture with a bundled default theme.
-- Categories → forums → subforums browsing.
-- Thread and post viewing with relative timestamps.
-- Locked forums/subforums and their threads require the `VIEWING_FORUM_LOCKED` permission.
-- User login/logout with bcrypt password hashes, username or email login, and bitmask-based
-  ranks/permissions.
-- Session idle/absolute timeouts (30 minutes idle, 12 hours absolute) with re-login notices.
-- Login rate limiting (10 failures per IP or 5 per account in a 15-minute window) with
-  failed-attempt logging.
-- Members list with online/offline state.
-- Thread and post search with forum/prefix/author/date filters, relevance/newest sorting, and
-  pagination.
-- Online members list and an online preview on the forum index.
-- SEO-friendly thread URLs with generated slugs and canonical links; legacy thread URLs
-  redirect permanently to the current slug.
-- OpenGraph/Twitter metadata, a public sitemap at `/sitemap.xml`, and an Atom feed at
-  `/feed.xml`.
-- Admin panel with forum settings, category management, and prefix management (edit/delete).
-- Theme system with the bundled `default` theme and light/dark/auto switcher.
-- Offline mode with a staff-only banner and browsing bypass, force-login mode, banned page, and
-  a 404 page with a real 404 status.
-- Output escaping for user-controlled text and allowlist sanitization for rich thread/post HTML.
-- Creating threads and replying to threads with permission checks, CSRF protection,
-  plain-text-to-HTML formatting, and an inline fast-reply form. Replies render oldest to
-  newest.
-- Thread and post reactions (heart, sad, funny, what?, angry) with one reaction per user,
-  a combined total indicator, cached counters, a vertical hover/click picker, AJAX
-  toggling, and a normal POST fallback.
-- Quote and multi-quote replies. Quote buttons insert a `> author wrote:` block into the
-  inline fast reply or prefill the full reply page; multi-quote selections persist per
-  thread in the browser session.
-- `@username` mentions with profile links, plus reaction notifications. A header bell shows
-  the unread count and opens an AJAX panel with read tracking, "mark all as read", periodic
-  refresh, and an optional notification chime.
-- Thread subscriptions: subscribe from the thread page and receive a notification for each
-  new reply by another member.
-- Thread and reply reporting for members, plus a staff report queue with open/resolved/
-  dismissed filters, optional notes, and resolve/dismiss actions.
-- Staff can pin, lock, and move threads. Moving uses a destination picker for forums and
-  subforums; pinned/locked statuses, replies, reactions, subscriptions, and edit history stay
-  attached.
-- Custom thread prefixes/tags are visible on thread pages and can be chosen when creating or
-  editing a thread; pin and lock remain separate staff controls.
-- Thread/post editing with revision history and permission-based permanent deletion.
-  Deleting a thread also removes every post inside it.
+- Categories → forums → subforums, with locked-forum permissions.
+- Threads and replies with a Markdown editor, live preview, local drafts, CSRF protection,
+  edit history, and permanent deletion.
+- Inline fast reply with AJAX append and a normal POST fallback.
+- Reactions, quotes, multi-quote, `@mentions`, and a header notification bell.
+- Thread subscriptions and forum/subforum watch notifications.
+- Per-user read tracking, pagination-preserving last-post links, and “who is viewing”.
+- Custom thread prefixes, pin/lock, and move-between-forums moderation.
+- Thread and reply reporting with a staff queue (open, resolved, dismissed).
+- Search with forum, prefix, author, and date filters.
+- Member directory, online list, and public profiles with avatar, bio, and signature.
+- Account settings for email, password, bio, signature, and avatar uploads with admin limits.
+- Admin panel: dashboard charts, tabbed settings, categories, forums, prefixes, ranks with a
+  permission matrix, user management, and an audit log.
+- Theme system with the bundled default theme and a light/dark/auto switcher.
+- SEO slugs and canonical URLs, OpenGraph/Twitter metadata, `/sitemap.xml`, and `/feed.xml`.
+- Responsive layouts for desktop, tablet, and phone.
 
-### Incomplete or not implemented yet
+Email verification, password reset, anti-bot registration, attachments, thread merges/splits,
+the public API, and a theme manager are not implemented yet. See [TODO.md](TODO.md) for details.
 
-- **Admin JSON API** — session auth, CSRF, route allowlisting, granular permission checks,
-  and the settings and prefix edit/delete endpoints work. There is no prefix creation UI yet.
-- **Registration** — basic registration works; terms acceptance, anti-bot protection, email-domain policy, rate limiting, and email verification are still pending.
-- **Profiles** — basic public profiles show avatar, rank, reputation, join date, online state, and recent threads/posts; bio and customization are still pending.
-- **Account settings** — email/password settings work; avatar, bio, signature, timezone, and notification preferences are still pending.
-- **Admin CRUD** — categories are manageable; forums, subforums, users, and ranks are not yet, and prefix creation still needs a UI.
-- **Prefix creation** — existing custom prefixes can be edited/deleted, but there is no create UI yet.
-- **Thread merges/splits (future plugin), avatars/uploads, and notification preferences.**
-- **Email verification and password reset.**
-- **Tests, CI, Composer, migrations, and a documented public API.**
+### Content format
+
+Posts use a safe Markdown subset: headings, bold, italic, strikethrough, inline and fenced code,
+quotes, lists, links, and images. Raw HTML is escaped, and the rendered result is sanitized before
+it is stored. Drafts stay in the browser’s local storage.
 
 ## Requirements
 
@@ -98,66 +67,47 @@
 | PHP | 8.0+ (8.1+ recommended), with the `mysqli` extension |
 | Database | MySQL 5.7+ or MariaDB 10.2+ |
 | Web server | Apache 2.4+ with `mod_rewrite`, or Nginx with an equivalent rewrite rule |
-| Filesystem | Temporary write access to `app/` during installation for `config.php` and the installer state files |
+| Filesystem | Temporary write access to `app/` during installation for `config.php` and installer state files |
 
-### Platform note
-
-BitBoard runs on Windows and Linux. The autoloader maps namespaces to directories with
-forward slashes, and `UrlManager::GetPath()` returns a normalized base URL with exactly one
-trailing slash, so root and subdirectory installs both work. Apache with `mod_rewrite` is the
-supported setup.
+BitBoard runs on Windows and Linux. Root and subdirectory installs are both supported.
 
 ## Installation
 
 1. Download or clone the repository into your web root. Prefer keeping `app/` outside the
    document root when your host supports it.
-2. Make sure Apache has `AllowOverride All` (or the equivalent) so `.htaccess` is honored.
-3. Make `app/` writable by the web server **only during installation**. The installer writes
-   `app/config.php` and `app/install/lock` / `app/install/step` there.
-4. Open the site in your browser and follow the six installer steps.
-5. When installation finishes, the installer creates `app/install/lock`.
-6. Remove write access from `app/install` (and preferably `app/config.php`) after setup. The
-   installer needs write access only while installing. On Unix-like hosts, for example:
+2. Enable `.htaccess` (for Apache, `AllowOverride All`).
+3. Make `app/` writable by the web server **only during installation**.
+4. Open the site in your browser and complete the six installer steps.
+5. After installation, remove write access again. The installer writes `app/config.php` and
+   `app/install/lock` / `app/install/step`:
 
    ```bash
    chmod -R a-w app/install
    chmod a-w app/config.php
    ```
 
-7. Keep `app/` out of public reach. The bundled root `.htaccess` blocks `/app/...`, and the
-   Nginx example below does the same. If your server honors neither, move `app/` outside the
-   document root or add an equivalent deny rule.
+6. Keep `app/` out of public reach. The bundled root `.htaccess` blocks `/app/...`; use the
+   Nginx rules below or move `app/` outside the document root if your server ignores it.
 
-`app/install/lock` and `app/install/step` are sensitive installer control files. Do not
-expose, edit, or delete them except when intentionally reinstalling on a development copy.
-
-The installer also creates a default category, forum, welcome thread, three ranks, two
-prefixes, and the `BitBot` system account.
+`app/install/lock` and `app/install/step` are sensitive control files. Do not expose, edit, or
+delete them except when intentionally reinstalling on a development copy.
 
 ### Reinstalling
 
-Restore write access to `app/install` and `app/config.php` first. On Unix-like hosts:
+Restore write access, delete the installer state and config, then reload the site:
 
 ```bash
 chmod -R u+w app/install
 chmod u+w app/config.php
+rm app/install/lock app/install/step app/config.php
 ```
 
-Then delete the following files and reload the site:
-
-```text
-app/install/lock
-app/install/step
-app/config.php
-```
-
-The `step` file exists only while an installation is in progress. Only reinstall on a
-development installation. Deleting the lock does **not** drop the database, so existing
-tables and the seeded rows may conflict with a fresh install.
+The database is **not** dropped, so existing tables and seeded rows may conflict with a fresh
+install. Only reinstall on a development copy.
 
 ### Manual configuration
 
-The installer generates `app/config.php`. If you prefer to create it by hand:
+The installer generates `app/config.php`. To create it by hand:
 
 ```php
 <?php
@@ -172,7 +122,7 @@ $config['name'] = 'bitboard';
 
 ### Nginx
 
-Apache is the supported server. If you use Nginx, add rewrites equivalent to `.htaccess`:
+Apache is the supported server. For Nginx, mirror the `.htaccess` behavior:
 
 ```nginx
 location / {
@@ -185,13 +135,11 @@ location @bitboard {
 }
 
 location ^~ /api/ {
-    # ApiMain expects the "api/" prefix in data, for example data=api/settings
-    # or data=api/prefixes/edit/3.
+    # ApiMain expects the "api/" prefix in data, e.g. data=api/settings.
     rewrite ^/api/(.*)$ /api.php?data=api/$1 last;
 }
 
 location ^~ /app/ {
-    # Includes app/config.php and the app/install/ state files.
     deny all;
 }
 ```
@@ -199,120 +147,45 @@ location ^~ /app/ {
 ## Project Structure
 
 ```text
-index.php                 Front controller (all forum pages)
+index.php                 Front controller (forum pages)
 api.php                   JSON API front controller
-auto_loader.php           Class autoloader (PSR-4-style prefix mapping)
-.htaccess                 Pretty URLs and API routing
+auto_loader.php           Dependency-free PSR-4-style class loader
 app/
   BitBoard.php            Bootstrap: install check, config, DB, routing
   Classes/                Database, Template, permissions, sessions, utilities
-  forum/
-    controllers/          Data access / domain helpers
-    pages/                Page classes rendered by PageFactory
-    structs/              Lightweight data objects
-    widgets/              Reusable page fragments (header, footer, pagination…)
-  install/                Web installer steps, HTML templates, and access guard
+  forum/                  Controllers, pages, structs, and widgets
+  install/                Web installer and access guard
   interfaces/             Page and installer step contracts
-Api/
-  Classes/                API bootstrap, response, status codes
-  POST/                   POST endpoints (settings, prefixes)
+Api/                      API bootstrap and POST endpoints
 assets/                   Global CSS/JS and installer assets
 themes/default/           Templates, styles, and images for the default theme
 ```
 
-### Request flow
-
-```text
-.htaccess ──> index.php ──> BitBoard::Run()
-                               ├─ install not finished? → App\Install\Setup
-                               ├─ load app/config.php + settings
-                               ├─ session / online / banned checks
-                               └─ PageFactory → App\Forum\Pages\*Page::Do()
-                                                    └─ Template + widgets → HTML
-```
-
-`api.php` follows a parallel path through `Api\Classes\ApiMain` and `Api\POST\*`, requiring
-a logged-in session with `ADMIN_PANEL_ACCESS`.
-
 ## Roadmap
 
-The full, file-level backlog lives in [TODO.md](TODO.md). The short version:
+The full backlog lives in [TODO.md](TODO.md). Next up:
 
-### Now — correctness and security
-
-- [x] Replace the autoloader with PSR-4-style mapping and use forward slashes in URLs/paths (Linux support).
-- [x] Fix the page lifecycle so pages are not rendered twice (`PageFactory` + `IndexPage`).
-- [x] Add CSRF protection to login and admin API requests.
-- [x] Escape user-controlled output and sanitize rich post content.
-- [x] Harden sessions: regenerate ID on login, cookie flags, proper logout.
-- [x] Add an idle/absolute session timeout (30 minutes idle, 12 hours absolute).
-- [x] Fix installer validation and escape values written to `app/config.php`.
-- [x] Fix the API database connection.
-- [x] Validate API route/class names against an explicit allowlist.
-- [x] Add granular API permissions and finish settings/prefix validation.
-- [x] Fix pagination bugs (threads, members, subforums, previous pages).
-- [x] Replace Toastify with local SpellAlert notifications.
-- [x] Use generic login errors and support username or email login; remove the ignored "remember me" option.
-- [x] Add login rate limiting and failure logging.
-- [x] Enforce locked forum/subforum permissions.
-- [x] Remove `eval()` from the modal helper; confirmations now use callbacks or a custom event.
-- [x] Harden installer access and remove it from the public path after setup.
-
-### Next — a usable forum
-
-- [x] Basic registration and email/password account settings.
-- [x] Basic public profile pages with recent activity.
-- [x] Create threads and reply to threads.
-- [x] Edit and delete threads/posts with history and cascade deletion.
-- [x] Reactions for threads and posts.
-- [x] Quote and multi-quote replies.
-- [x] Mentions and live notifications.
-- [x] Thread subscriptions and reply notifications.
-- [x] Staff can reply to closed threads and see an offline-mode banner.
-- [x] Admin category management.
-- [ ] Admin CRUD for forums, subforums, prefix creation, users, and ranks.
-- [x] Thread and post search with forum/prefix/author/date filters.
-- [x] Online members list with an index preview.
-- [x] SEO-friendly thread slugs and canonical URLs.
-- [x] OpenGraph/Twitter metadata, sitemap, and Atom feed.
-- [x] Pin and lock threads.
-- [x] Move threads between forums and subforums.
-- [x] Thread prefix display and editing.
-- [x] Report queue with resolve/dismiss notes.
-- [ ] Merge and split threads (deferred to a future moderation plugin).
-- [ ] Avatar uploads and profile customization.
-- [ ] Email verification and password reset.
-- [ ] Stable, documented API (v1) with token auth.
-
-### Later — polish and ecosystem
-
-- [ ] Composer, PHPUnit, PHPStan/Psalm, PHP-CS-Fixer.
-- [ ] GitHub Actions CI (lint + tests) and a Docker development environment.
-- [ ] Database migrations instead of installer-only schema creation.
-- [ ] i18n, timezones, accessibility pass, and SEO metadata.
-- [ ] Theme manager.
-- [x] Optional "Powered by BitBoard" credit setting.
-- [ ] Plugin/hook system and a public extension API.
+- Configurable admin panel path.
+- Email verification, password reset, and anti-bot registration.
+- Rich editor, attachments, and thread merge/split.
+- Public API v1 and an event/hook system.
+- Accessibility and i18n passes.
 
 ## Contributing
 
-Contributions are welcome. To keep changes reviewable:
-
-1. Pick an item from [TODO.md](TODO.md) or open an issue to discuss a new feature.
-2. Fork the repository and create a focused branch.
-3. Follow the existing page/controller/widget/template structure and code style.
-4. Test manually on a fresh installation and include before/after screenshots for UI changes.
-5. Open a pull request describing the problem, the change, and how you tested it.
-
-There is no automated test suite yet, so manual verification steps in pull requests are
-especially important. Good first issues are marked in [TODO.md](TODO.md).
+1. Pick an item from [TODO.md](TODO.md) or open an issue first.
+2. Keep the project dependency-free: plain PHP, MySQLi, and vanilla JavaScript. Do not add
+   Composer or npm packages.
+3. Follow the existing controller/page/widget/template structure.
+4. Test on a fresh installation and describe the manual verification steps in your pull request.
+   There is no automated test suite yet.
 
 ## Security
 
-BitBoard is **not production-ready**. Do not expose it to untrusted users until the P0 items
-in [TODO.md](TODO.md) are resolved.
+BitBoard is **not production-ready**. Do not expose it to untrusted users until the P0 items in
+[TODO.md](TODO.md) are resolved.
 
-Please report security issues privately through
+Report security issues privately through
 [GitHub Security Advisories](https://github.com/bit-paper/bitboard/security/advisories/new)
 instead of opening a public issue with exploit details.
 
@@ -322,18 +195,9 @@ instead of opening a public issue with exploit details.
   <img src="https://contrib.rocks/image?repo=bit-paper/bitboard" alt="Contributors" />
 </a>
 
-Built with PHP, MySQLi, and a small vanilla JavaScript layer. Tabler Icons 3.49.0 is pinned;
-tooltips use the project’s local CSS.
-
-This README counts roughly **8,052 lines across 175 counted source files**. The count comes
-from `python cntlines.py -v`; re-run it after large changes. (The script still needs a small
-update before its `-m` README updater matches this layout — see [TODO.md](TODO.md).)
+Built with PHP, MySQLi, and vanilla JavaScript. [Tabler Icons](https://tabler.io/icons) 3.49.0
+is the only external front-end asset; tooltips, notifications, and the editor helpers are local.
 
 ## License
 
 BitBoard is licensed under the [GNU General Public License v3.0](LICENSE).
-
-## Note
-
-BitBoard is currently in the early stages of development. APIs, database schemas, template
-variables, and directory layout may change without notice.

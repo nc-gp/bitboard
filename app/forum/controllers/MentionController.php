@@ -36,6 +36,8 @@ class MentionController
      */
     public static function Extract(string $text, bool $ignoreQuotes = false): array
     {
+        $text = self::StripMarkdownNoise($text);
+
         if ($ignoreQuotes)
         {
             $lines = preg_split('/\n/', $text) ?: [];
@@ -67,6 +69,20 @@ class MentionController
         }
 
         return array_values($handles);
+    }
+
+    /**
+     * Remove code spans, code blocks, and URL targets before looking for
+     * mentions, so Markdown syntax cannot create false notifications.
+     */
+    private static function StripMarkdownNoise(string $text): string
+    {
+        $text = preg_replace('/^ {0,3}(`{3,}|~{3,})[^\n]*\n.*?(?:^ {0,3}\1\s*$|\z)/ms', '', $text) ?? $text;
+        $text = preg_replace('/`[^`\n]*`/', '', $text) ?? $text;
+        $text = preg_replace('/!\[[^\]]*\]\([^)\s]*\)/', '', $text) ?? $text;
+        $text = preg_replace('/\[([^\]]*)\]\([^)\s]*\)/', '$1', $text) ?? $text;
+
+        return $text;
     }
 
     /**

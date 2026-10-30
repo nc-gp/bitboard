@@ -1,0 +1,192 @@
+.bb-editor {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.bb-editor-toolbar {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 4px;
+    padding: 6px;
+    border: 1px solid var(--opposite-x2);
+    border-radius: var(--border-radius);
+    background: var(--opposite);
+}
+
+.bb-editor-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    margin: 0;
+    padding: 0 !important;
+    border: 0;
+    border-radius: var(--border-radius);
+    background: transparent;
+    color: gray;
+    font-size: 0.8rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+.bb-editor-button:hover,
+.bb-editor-button:focus-visible {
+    background: var(--opposite-x2);
+    color: var(--primary-hover);
+}
+
+.bb-editor-button.is-active {
+    background: var(--primary-focus);
+    color: var(--primary-hover);
+}
+
+.bb-editor-button i {
+    font-size: 1.05rem;
+}
+
+.bb-editor-spacer {
+    flex: 1 1 auto;
+}
+
+.bb-editor-status {
+    color: gray;
+    font-size: 0.75rem;
+    white-space: nowrap;
+}
+
+.bb-editor-draft {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
+    border: 1px dashed var(--primary);
+    border-radius: var(--border-radius);
+    background: var(--primary-focus);
+    color: var(--primary-hover);
+    font-size: 0.82rem;
+}
+
+.bb-editor-draft[hidden] {
+    display: none;
+}
+
+.bb-editor-draft i {
+    font-size: 1rem;
+}
+
+.bb-editor-draft .bb-editor-button {
+    width: auto;
+    height: auto;
+    margin: 0;
+    padding: 3px 9px !important;
+    border: 1px solid currentColor;
+    font-size: 0.75rem;
+}
+
+.bb-editor-preview {
+    min-height: 240px;
+    padding: 15px;
+    border: 1px solid var(--opposite-x2);
+    border-radius: var(--border-radius);
+    background: var(--opposite);
+    overflow-wrap: anywhere;
+}
+
+.bb-editor-preview[hidden] {
+    display: none;
+}
+
+.bb-editor-preview > :first-child {
+    margin-top: 0;
+}
+
+.bb-editor-preview > :last-child {
+    margin-bottom: 0;
+}
+
+.bb-editor-preview p {
+    margin: 0.6em 0;
+}
+
+.bb-editor-preview h1,
+.bb-editor-preview h2,
+.bb-editor-preview h3,
+.bb-editor-preview h4,
+.bb-editor-preview h5,
+.bb-editor-preview h6 {
+    margin: 0.8em 0 0.4em;
+    line-height: 1.3;
+}
+
+.bb-editor-preview ul,
+.bb-editor-preview ol {
+    margin: 0.5em 0 0.5em 1.4em;
+    padding: 0;
+}
+
+.bb-editor-preview li {
+    margin: 0.2em 0;
+}
+
+.bb-editor-preview code {
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: var(--opposite-x2);
+    font-size: 0.9em;
+}
+
+.bb-editor-preview pre {
+    margin: 0.7em 0;
+    padding: 12px;
+    border-radius: var(--border-radius);
+    background: var(--opposite-x2);
+    overflow-x: auto;
+}
+
+.bb-editor-preview pre code {
+    padding: 0;
+    background: transparent;
+    white-space: pre;
+}
+
+.bb-editor-preview img {
+    max-width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+}
+
+.bb-editor-preview hr {
+    margin: 1em 0;
+    border: 0;
+    border-top: 1px solid var(--opposite-x2);
+}
+
+.bb-editor-preview-empty {
+    margin: 0;
+    color: gray;
+    font-size: 0.9rem;
+}
+
+.bb-editor.is-previewing textarea {
+    display: none;
+}
+
+@media (max-width: 620px) {
+    .bb-editor-toolbar {
+        gap: 3px;
+    }
+
+    .bb-editor-button {
+        width: 30px;
+        height: 30px;
+    }
+
+    .bb-editor-status {
+        display: none;
+    }
+}

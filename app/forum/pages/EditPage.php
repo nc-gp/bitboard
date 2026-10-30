@@ -21,6 +21,7 @@ use App\Forum\Controllers\ContentController;
 use App\Forum\Controllers\MentionController;
 use App\Forum\Controllers\PrefixController;
 use App\Forum\Controllers\AuditController;
+use App\Forum\Widgets\EditorWidget;
 
 use App\Interfaces\PageInterface;
 
@@ -415,6 +416,8 @@ class EditPage extends PageBase implements PageInterface
         $form->AddEscapedEntry('{id}', $this->id);
         $form->AddEscapedEntry('{content}', $this->contentValue);
         $form->AddEscapedEntry('{cancel_url}', $this->cancelUrl);
+        $form->AddEscapedEntry('{draft_key}', 'u' . (int) ($_SESSION['bitboard_user']->id ?? 0) . '-edit-' . $this->type . '-' . $this->id);
+        $form->AddEntry('{editor_toolbar}', (new EditorWidget())->Template);
         $form->AddEntry('{title_field}', $titleField);
         $form->AddEntry('{prefix_field}', $this->BuildPrefixField());
         $form->Replace();

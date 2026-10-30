@@ -2,6 +2,11 @@
 
 namespace App\Classes;
 
+use DOMDocument;
+use DOMElement;
+use DOMNode;
+use DOMXPath;
+
 /**
  * Small text helpers used by search results, feeds, metadata, and posting forms.
  */
@@ -28,90 +33,53 @@ class Text
     }
 
     /**
-     * Convert stored HTML back into editable plain text.
+     * Convert stored HTML back into editable Markdown.
      */
     public static function FromHtml(string $html): string
     {
-        $text = preg_replace_callback('/<blockquote\b[^>]*>(.*?)<\/blockquote>/is',
-            static function (array $match): string
-            {
-                $inner = preg_replace('/<br\s*\/?>/i', "\n", $match[1]) ?? '';
-                $inner = preg_replace('/<\/(?:p|div|li)\s*>/i', "\n", $inner) ?? '';
-                $inner = preg_replace('/<[^>]+>/', '', $inner) ?? '';
-                $inner = html_entity_decode($inner, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-                $inner = preg_replace("/[ \t]+\n/", "\n", $inner) ?? '';
-                $inner = trim($inner);
+        $html = trim($html);
 
-                if ($inner === '')
-                    return '';
+        if ($html === '')
+            return '';
 
-                $lines = explode("\n", $inner);
-                $quoted = [];
+        if (!class_exists(DOMDocument::class))
+            return self::FromHtmlFallback($html);
 
-                foreach ($lines as $line)
-                    $quoted[] = trim($line) === '' ? '>' : '> ' . rtrim($line);
+        $document = new DOMDocument('1.0', 'UTF-8');
+        $previous = libxml_use_internal_errors(true);
 
-                return "\n" . implode("\n", $quoted) . "\n";
-            },
-            $html
-        ) ?? '';
+        $loaded = $document->loadHTML(
+            '<?xml encoding="UTF-8"><div id="bb-editor-root">' . $html . '</div>',
+            LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD
+        );
 
-        $text = preg_replace('/<br\s*\/?>/i', "\n", $text) ?? '';
-        $text = preg_replace('/<\/p\s*>/i', "\n\n", $text) ?? '';
-        $text = preg_replace('/<\/h[1-6]\s*>/i', "\n\n", $text) ?? '';
-        $text = preg_replace('/<[^>]+>/', '', $text) ?? '';
-        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
-        $text = preg_replace("/[ \t]+\n/", "\n", $text) ?? '';
-        $text = preg_replace("/\n{3,}/", "\n\n", $text) ?? '';
+        libxml_clear_errors();
+        libxml_use_internal_errors($previous);
+
+        if (!$loaded)
+            return self::FromHtmlFallback($html);
+
+        $root = (new DOMXPath($document))->query('//*[@id="bb-editor-root"]')->item(0);
+
+        if (!$root instanceof DOMElement)
+            return self::FromHtmlFallback($html);
+
+        $text = self::NodeToMarkdown($root);
+        $text = preg_replace("/[ \t]+\n/", "\n", $text) ?? $text;
+        $text = preg_replace("/\n{3,}/", "\n\n", $text) ?? $text;
 
         return trim($text);
     }
 
     /**
-     * Convert plain text from a posting form into safe HTML paragraphs.
+     * Convert Markdown from a posting form into safe HTML.
      *
-     * Lines starting with ">" become a blockquote. A leading "name wrote:"
-     * line is treated as the quote attribution and rendered in bold.
-     *
-     * @param string $text The submitted text.
-     *
-     * @return string Safe HTML.
+     * Raw HTML is escaped by the renderer, and the stored result is sanitized
+     * again before it reaches the database.
      */
     public static function ToHtml(string $text): string
     {
-        $text = str_replace(["\r\n", "\r"], "\n", $text);
-        $text = trim($text);
-
-        if ($text === '')
-            return '';
-
-        $paragraphs = preg_split('/\n{2,}/', $text) ?: [];
-        $html = '';
-
-        foreach ($paragraphs as $paragraph)
-        {
-            $paragraph = trim($paragraph);
-
-            if ($paragraph === '')
-                continue;
-
-            $lines = explode("\n", $paragraph);
-
-            if (self::IsQuoteParagraph($lines))
-            {
-                $quote = self::QuoteToHtml($lines);
-
-                if ($quote !== '')
-                    $html .= $quote;
-
-                continue;
-            }
-
-            $paragraph = htmlspecialchars($paragraph, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
-            $html .= '<p>' . nl2br($paragraph, false) . '</p>';
-        }
-
-        return $html;
+        return Markdown::ToHtml($text);
     }
 
     /**
@@ -146,64 +114,166 @@ class Text
     }
 
     /**
-     * Check whether every line in a paragraph starts with a quote marker.
+     * Recursively convert an HTML node tree into Markdown.
      */
-    private static function IsQuoteParagraph(array $lines): bool
+    private static function NodeToMarkdown(DOMNode $node): string
     {
-        $found = false;
+        $output = '';
 
-        foreach ($lines as $line)
+        foreach ($node->childNodes as $child)
         {
-            if (trim($line) === '')
+            if ($child instanceof \DOMText)
+            {
+                $output .= $child->nodeValue;
+                continue;
+            }
+
+            if (!$child instanceof DOMElement)
                 continue;
 
-            if (!str_starts_with(ltrim($line), '>'))
-                return false;
+            $tag = strtolower($child->tagName);
 
-            $found = true;
+            switch ($tag)
+            {
+                case 'br':
+                    $output .= "\n";
+                    break;
+
+                case 'p':
+                case 'div':
+                    $output .= self::NodeToMarkdown($child) . "\n\n";
+                    break;
+
+                case 'h1':
+                case 'h2':
+                case 'h3':
+                case 'h4':
+                case 'h5':
+                case 'h6':
+                    $level = (int) substr($tag, 1);
+                    $output .= str_repeat('#', $level) . ' ' . trim(self::NodeToMarkdown($child)) . "\n\n";
+                    break;
+
+                case 'strong':
+                case 'b':
+                    $output .= '**' . self::NodeToMarkdown($child) . '**';
+                    break;
+
+                case 'em':
+                case 'i':
+                    $output .= '*' . self::NodeToMarkdown($child) . '*';
+                    break;
+
+                case 'del':
+                case 's':
+                case 'strike':
+                    $output .= '~~' . self::NodeToMarkdown($child) . '~~';
+                    break;
+
+                case 'code':
+                    $parentTag = $child->parentNode instanceof DOMElement
+                        ? strtolower($child->parentNode->tagName)
+                        : '';
+
+                    $output .= $parentTag === 'pre'
+                        ? $child->textContent
+                        : '`' . $child->textContent . '`';
+                    break;
+
+                case 'pre':
+                    $output .= "```\n" . rtrim($child->textContent, "\n") . "\n```\n\n";
+                    break;
+
+                case 'blockquote':
+                    $inner = trim(self::NodeToMarkdown($child));
+                    $lines = $inner === '' ? [] : explode("\n", $inner);
+                    $quoted = [];
+
+                    foreach ($lines as $line)
+                        $quoted[] = trim($line) === '' ? '>' : '> ' . rtrim($line);
+
+                    $output .= implode("\n", $quoted) . "\n\n";
+                    break;
+
+                case 'a':
+                    $href = trim($child->getAttribute('href'));
+                    $label = trim(self::NodeToMarkdown($child));
+                    $output .= $href !== '' && $label !== '' ? '[' . $label . '](' . $href . ')' : $label;
+                    break;
+
+                case 'img':
+                    $src = trim($child->getAttribute('src'));
+                    $alt = trim($child->getAttribute('alt'));
+
+                    if ($src !== '')
+                        $output .= '![' . $alt . '](' . $src . ')';
+                    break;
+
+                case 'ul':
+                    $output .= self::ListToMarkdown($child, false) . "\n";
+                    break;
+
+                case 'ol':
+                    $output .= self::ListToMarkdown($child, true) . "\n";
+                    break;
+
+                case 'li':
+                    $output .= trim(self::NodeToMarkdown($child));
+                    break;
+
+                case 'hr':
+                    $output .= "---\n\n";
+                    break;
+
+                default:
+                    $output .= self::NodeToMarkdown($child);
+            }
         }
 
-        return $found;
+        return $output;
     }
 
     /**
-     * Convert quote-marker lines into a safe blockquote.
+     * @param DOMElement $list
      */
-    private static function QuoteToHtml(array $lines): string
+    private static function ListToMarkdown(DOMElement $list, bool $ordered): string
     {
-        $quoteLines = [];
+        $items = '';
+        $index = 1;
 
-        foreach ($lines as $line)
+        foreach ($list->childNodes as $child)
         {
-            $line = preg_replace('/^(?:\s*>\s?)+/', '', $line) ?? '';
-            $quoteLines[] = rtrim($line);
+            if (!$child instanceof DOMElement || strtolower($child->tagName) !== 'li')
+                continue;
+
+            $item = trim(self::NodeToMarkdown($child));
+            $item = preg_replace("/\n{2,}/", "\n", $item) ?? $item;
+
+            $lines = explode("\n", $item);
+            $prefix = $ordered ? ($index++ . '. ') : '- ';
+
+            $items .= $prefix . array_shift($lines);
+
+            foreach ($lines as $line)
+                $items .= "\n  " . $line;
+
+            $items .= "\n";
         }
 
-        $author = '';
+        return rtrim($items, "\n");
+    }
 
-        if (count($quoteLines) > 0 && preg_match('/^.{1,64} wrote:$/u', $quoteLines[0]) === 1)
-            $author = trim(array_shift($quoteLines));
+    /**
+     * Strip HTML when DOMDocument is unavailable.
+     */
+    private static function FromHtmlFallback(string $html): string
+    {
+        $text = preg_replace('/<br\s*\/?>/i', "\n", $html) ?? '';
+        $text = preg_replace('/<\/(?:p|div|li|h[1-6])\s*>/i', "\n", $text) ?? '';
+        $text = preg_replace('/<[^>]+>/', '', $text) ?? '';
+        $text = html_entity_decode($text, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+        $text = preg_replace("/[ \t]+\n/", "\n", $text) ?? $text;
 
-        $body = trim(implode("\n", $quoteLines));
-
-        if ($author === '' && $body === '')
-            return '';
-
-        $content = '';
-
-        if ($author !== '')
-            $content .= '<strong>' . htmlspecialchars($author, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '</strong>';
-
-        if ($body !== '')
-        {
-            if ($content !== '')
-                $content .= '<br>';
-
-            $content .= nl2br(htmlspecialchars($body, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'), false);
-        }
-
-        return '<blockquote><p>' . $content . '</p></blockquote>';
+        return trim($text);
     }
 }
-
-?>

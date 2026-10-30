@@ -28,6 +28,7 @@ use App\Forum\Widgets\PaginationWidget;
 use App\Forum\Widgets\PrefixWidget;
 use App\Forum\Widgets\ReactionWidget;
 use App\Forum\Widgets\ViewingWidget;
+use App\Forum\Widgets\EditorWidget;
 
 class ThreadPage extends PageBase implements PageInterface
 {
@@ -553,9 +554,11 @@ class ThreadPage extends PageBase implements PageInterface
             $replyTemplate = new Template('thread', 'fast_reply');
             $replyTemplate->AddEscapedEntry('{thread_id}', $this->threadID);
             $replyTemplate->AddEscapedEntry('{return_page}', $this->threadPage);
+            $replyTemplate->AddEscapedEntry('{draft_key}', 'u' . (int) ($_SESSION['bitboard_user']->id ?? 0) . '-reply-' . $this->threadID);
+            $replyTemplate->AddEntry('{editor_toolbar}', (new EditorWidget())->Template);
             $replyTemplate->AddEscapedEntry('{hint}', $this->threadClosed
                 ? 'This thread is closed, but staff can still reply.'
-                : 'Post a reply without leaving this thread.');
+                : 'Post a reply without leaving this thread. Markdown supported.');
             $replyTemplate->Replace();
             $this->replyArea = $replyTemplate->template;
         }

@@ -9,8 +9,11 @@
         <input type="hidden" name="thread" value="{thread_id}">
         <input type="hidden" name="page" value="{return_page}">
 
-        <textarea id="fast-reply-content" name="content" maxlength="4000" required
-            aria-label="Reply message" placeholder="Write a reply..."></textarea>
+        <div class="bb-editor" data-editor data-draft-key="{draft_key}" data-preview-url="{server_url}preview">
+            {editor_toolbar}
+            <textarea id="fast-reply-content" name="content" maxlength="4000" required
+                aria-label="Reply message" placeholder="Write a reply..."></textarea>
+        </div>
 
         <div class="fast-reply-quote-bar" hidden>
             <span class="fast-reply-quote-count">0 posts selected</span>
