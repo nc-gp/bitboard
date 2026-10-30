@@ -4,3 +4,7 @@
 /dumps/*
 /assets/images/avatars/*
 !/assets/images/avatars/.gitkeep
+
+# Custom themes are installed locally; only the bundled default theme ships with BitBoard.
+/themes/*
+!/themes/default/

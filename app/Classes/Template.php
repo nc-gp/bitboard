@@ -52,7 +52,15 @@ class Template
         $this->name = $name;
 
         if(!$custom)
-            $this->fullPath = './themes/' . (self::$themeOverride ?? BB_THEME) . '/templates/' . $category_path . '/' . $this->name . '.html';
+        {
+            $theme = self::GetTheme();
+            $templatePath = 'themes/' . $theme . '/templates/' . $category_path . '/' . $this->name . '.html';
+            $this->fullPath = './' . $templatePath;
+
+            // Partial themes can inherit templates they do not override yet.
+            if (!is_file($this->fullPath) && $theme !== 'default')
+                $this->fullPath = './themes/default/templates/' . $category_path . '/' . $this->name . '.html';
+        }
         else
             $this->fullPath = $category_path . $this->name . '.html';
 
@@ -76,6 +84,7 @@ class Template
         // Resolve the global base URL before any page content is injected.
         // Pagination uses its own route-specific placeholder instead.
         $content = str_replace('{server_url}', UrlManager::GetPath(), $content);
+        $content = str_replace('{theme_url}', UrlManager::GetPath() . 'themes/' . rawurlencode(self::GetTheme()) . '/', $content);
 
         if (self::$adminUrl !== '')
             $content = str_replace('{admin_url}', self::$adminUrl, $content);

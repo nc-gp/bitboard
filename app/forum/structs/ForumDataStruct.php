@@ -83,7 +83,7 @@ class ForumDataStruct
      * @var array The array of splitted URL. (/)
      * Note: Can be empty.
      */
-    public array $actionParameters;
+    public array $actionParameters = [];
 
     /**
      * ForumDataStruct constructor.

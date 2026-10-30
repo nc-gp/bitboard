@@ -1,0 +1,19 @@
+<form class="admin-theme-install-form" method="post" action="{admin_url}/themes/create">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
+
+    <label class="admin-theme-file">
+        <span class="admin-theme-file-label">Theme name</span>
+        <input type="text" name="theme_name" maxlength="64" required placeholder="My Theme">
+    </label>
+
+    <label class="admin-theme-file">
+        <span class="admin-theme-file-label">Folder slug</span>
+        <input type="text" name="theme_slug" maxlength="64" placeholder="my-theme (optional)">
+    </label>
+
+    <button type="submit">Create from default</button>
+</form>
+<p class="admin-field-hint">
+    Copies the default theme's templates, styles, and images. Use the folder slug for the
+    <code>themes/</code> directory; it is generated from the name when left empty.
+</p>

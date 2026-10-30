@@ -30,6 +30,8 @@ class HeaderWidget
      */
     private string $offlineNotice = '';
 
+    private string $previewNotice = '';
+
     private Database $database;
 
     /**
@@ -37,11 +39,13 @@ class HeaderWidget
      *
      * @param Database database       The database instance.
      * @param string   offlineNotice  Optional staff-only offline notice.
+     * @param string   previewNotice  Optional admin theme-preview notice HTML.
      */
-    public function __construct(Database $database, string $offlineNotice = '')
+    public function __construct(Database $database, string $offlineNotice = '', string $previewNotice = '')
     {
         $this->database = $database;
         $this->offlineNotice = $offlineNotice;
+        $this->previewNotice = $previewNotice;
         $this->template = new Template('header', 'header');
         $this->Do();
     }
@@ -63,6 +67,7 @@ class HeaderWidget
         }
 
         $this->template->AddEntry('{offline_notice}', $offlineNotice);
+        $this->template->AddEntry('{preview_notice}', $this->previewNotice);
         $this->template->AddEntry('{menu}', $menuTemplate->template);
 
         if (SessionManager::IsLogged())

@@ -20,6 +20,7 @@ use App\Forum\Controllers\RankController;
 use App\Forum\Controllers\ReportController;
 use App\Forum\Controllers\SubscriptionController;
 use App\Forum\Controllers\SettingsController;
+use App\Forum\Controllers\ThemeController;
 use App\Forum\Controllers\ThreadReadController;
 use App\Forum\Controllers\ViewingController;
 
@@ -65,7 +66,7 @@ class BitBoard
 		Schema::EnsureCore($this->database);
 		$this->data = new ForumDataStruct($this->database->Query('SELECT * FROM bit_settings')->FetchArray());
 
-		define('BB_THEME', $this->data->forum_theme);
+		define('BB_THEME', ThemeController::ResolveTheme($this->database, (string) $this->data->forum_theme));
 
 		$this->Do();
 		$this->database->Close();

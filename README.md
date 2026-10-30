@@ -47,12 +47,13 @@ npm, or build step. Tabler Icons is the only external front-end asset and is pin
 - Account settings for email, password, bio, signature, and avatar uploads with admin limits.
 - Admin panel: dashboard charts, tabbed settings, categories, forums, prefixes, ranks with a
   permission matrix, user management, and an audit log.
-- Theme system with the bundled default theme and a light/dark/auto switcher.
+- Theme system with the bundled default theme, a light/dark/auto switcher, and an admin theme
+  manager for installing, previewing, activating, and deleting themes.
 - SEO slugs and canonical URLs, OpenGraph/Twitter metadata, `/sitemap.xml`, and `/feed.xml`.
 - Responsive layouts for desktop, tablet, and phone.
 
 Email verification, password reset, anti-bot registration, attachments, thread merges/splits,
-the public API, and a theme manager are not implemented yet. See [TODO.md](TODO.md) for details.
+and the public API are not implemented yet. See [TODO.md](TODO.md) for details.
 
 ### Content format
 
@@ -91,6 +92,10 @@ BitBoard runs on Windows and Linux. Root and subdirectory installs are both supp
 
 The admin panel route is chosen in installer step 5 (default `/admin`). Pick a non-obvious path
 before exposing the forum publicly.
+
+Installing or deleting themes from the admin panel requires write access to `themes/`. Leave it
+writable if you manage themes from the browser; otherwise remove write access after copying the
+theme folder in manually.
 
 `app/install/lock` and `app/install/step` are sensitive control files. Do not expose, edit, or
 delete them except when intentionally reinstalling on a development copy.
@@ -146,6 +151,30 @@ location ^~ /app/ {
     deny all;
 }
 ```
+
+## Themes
+
+Themes live in `themes/<slug>/` and contain:
+
+```text
+theme.json                Name, description, version, author
+templates/                Page, widget, and layout HTML
+styles/                   CSS
+images/                   Theme images (logo.webp for the default header/footer)
+screenshot.webp           Admin preview image (optional)
+```
+
+Templates that a theme does not override fall back to the default theme. Use `{theme_url}` in
+templates and stylesheets for theme-relative assets.
+
+Only the bundled `themes/default` is tracked by Git. Installed and newly created themes are ignored
+so each deployment can keep its own theme library out of version control.
+
+Admins with settings access can open **Admin → Themes** to preview, activate, install, and delete
+themes, or create a new theme by copying the default theme. Installation accepts a ZIP containing
+`theme.json` and `templates/`, either at the root or inside one top-level folder. Only web asset
+files are accepted; PHP and server configuration files are rejected. The default and active themes
+cannot be deleted.
 
 ## Project Structure
 

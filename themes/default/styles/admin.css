@@ -995,3 +995,193 @@ a.admin-stat:hover {
         grid-template-columns: 1fr;
     }
 }
+
+.admin-theme-install {
+    margin-bottom: 18px;
+    padding: 16px;
+    border: 1px dashed var(--opposite-x2);
+    border-radius: var(--border-radius);
+    background: var(--opposite);
+}
+
+.admin-theme-install h3 {
+    margin: 0 0 10px;
+    font-size: 0.95rem;
+}
+
+.admin-theme-install-form {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-end;
+    gap: 10px;
+    margin: 0;
+    padding: 0 !important;
+}
+
+.admin-theme-file {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+    font-size: 0.78rem;
+    color: gray;
+}
+
+.admin-theme-file input {
+    max-width: 340px;
+    margin: 0;
+}
+
+.admin-theme-file-label {
+    color: inherit;
+    font-weight: 600;
+}
+
+.admin-themes-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 14px;
+}
+
+#admin-main .admin-theme-card {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin: 0;
+    padding: 14px;
+    background: var(--opposite);
+    box-shadow: var(--button-hover-box-shadow, 0 0 0 rgba(0, 0, 0, 0)), 0 0 0 var(--outline-width) var(--primary-focus);
+}
+
+#admin-main .admin-theme-card.is-active {
+    box-shadow: 0 0 0 2px var(--primary);
+}
+
+.admin-theme-shot {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+    background: var(--opposite-x2);
+}
+
+.admin-theme-shot img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.admin-theme-placeholder {
+    color: var(--primary);
+    font-size: 2rem;
+}
+
+.admin-theme-title {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.admin-theme-badges {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 4px;
+}
+
+.admin-theme-badge {
+    padding: 2px 8px;
+    border-radius: 999px;
+    background: var(--opposite-x2);
+    color: gray;
+    font-size: 0.66rem;
+    font-weight: 600;
+}
+
+.admin-theme-badge.is-active {
+    background: rgba(53, 255, 53, 0.14);
+    color: #4fd14f;
+}
+
+.admin-theme-badge.is-preview {
+    background: var(--primary-focus);
+    color: var(--primary-hover);
+}
+
+.admin-theme-badge.is-invalid {
+    background: rgba(255, 53, 53, 0.16);
+    color: #ff8a8a;
+}
+
+.admin-theme-desc {
+    margin: 0;
+    color: gray;
+    font-size: 0.85rem;
+    line-height: 1.45;
+}
+
+.admin-theme-meta {
+    margin: 0;
+    color: gray;
+    font-size: 0.75rem;
+}
+
+.admin-theme-error {
+    margin: 0;
+    color: #ff8a8a;
+    font-size: 0.78rem;
+}
+
+.admin-theme-actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.admin-theme-action-form {
+    margin: 0;
+    padding: 0 !important;
+}
+
+.admin-theme-action-form button {
+    width: auto;
+    margin: 0;
+    padding: 5px 12px;
+    font-size: 0.8rem;
+}
+
+.admin-theme-action-link {
+    display: inline-flex;
+    align-items: center;
+    padding: 5px 12px;
+    border: 1px solid var(--opposite-x2);
+    border-radius: 999px;
+    color: var(--primary-hover);
+    font-size: 0.8rem;
+    text-decoration: none;
+}
+
+.admin-theme-action-link:hover,
+.admin-theme-action-link.is-active {
+    border-color: var(--primary);
+    background: var(--primary-focus);
+}
+
+@media (max-width: 620px) {
+    .admin-themes-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .admin-theme-install-form {
+        align-items: stretch;
+    }
+
+    .admin-theme-file input {
+        max-width: none;
+    }
+}

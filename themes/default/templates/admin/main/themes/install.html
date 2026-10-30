@@ -1,0 +1,14 @@
+<form class="admin-theme-install-form" method="post" action="{admin_url}/themes/install" enctype="multipart/form-data">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
+
+    <label class="admin-theme-file">
+        <span class="admin-theme-file-label">Theme ZIP</span>
+        <input type="file" name="theme_zip" accept=".zip,application/zip" required>
+    </label>
+
+    <button type="submit">Install theme</button>
+</form>
+<p class="admin-field-hint">
+    ZIP must contain <code>theme.json</code> and a <code>templates/</code> folder, either at its root or inside one top-level folder.
+    Maximum upload size: 10 MB. PHP, server configuration, and executable files are rejected.
+</p>

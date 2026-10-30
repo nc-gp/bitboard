@@ -9,6 +9,7 @@ use App\Forum\Widgets\StylesWidget;
 use App\Forum\Widgets\HeaderWidget;
 use App\Forum\Widgets\HeadWidget;
 use App\Forum\Widgets\FooterWidget;
+use App\Forum\Controllers\ThemeController;
 
 class PageBase
 {
@@ -35,6 +36,31 @@ class PageBase
         $this->serverPath = UrlManager::GetPath();
     }
 
+    /**
+     * Build the admin theme-preview notice for front-end pages.
+     */
+    private function BuildPreviewNotice(): string
+    {
+        $preview = ThemeController::PreviewTheme();
+
+        if ($preview === '' || Template::GetTheme() !== $preview)
+            return '';
+
+        $adminRoot = AdminPath::FromSettings($this->forumData);
+        $parameters = $this->forumData->actionParameters;
+
+        if (($parameters[0] ?? '') === $adminRoot)
+            return '';
+
+        $metadata = ThemeController::Metadata($preview);
+        $template = new Template('header', 'preview_notice');
+        $template->AddEscapedEntry('{theme}', $metadata['name']);
+        $template->AddEscapedEntry('{exit_url}', $this->serverPath . $adminRoot . '/themes/preview-exit');
+        $template->Replace();
+
+        return $template->template;
+    }
+
     protected function RenderPage(string $templateCategory): void
     {
         $this->CommonSetup($templateCategory);
@@ -52,7 +78,7 @@ class PageBase
         );
         $ogImage = $this->ogImage !== ''
             ? $this->ogImage
-            : $this->serverPath . 'themes/default/images/logo.webp';
+            : $this->serverPath . 'themes/' . rawurlencode(Template::GetTheme()) . '/images/logo.webp';
 
         $metadata = [
             'description' => $ogDescription,
@@ -78,7 +104,7 @@ class PageBase
                 $offlineNotice .= ' ' . $offlineMessage;
         }
 
-        $headerTemplate = new HeaderWidget($this->database, $offlineNotice);
+        $headerTemplate = new HeaderWidget($this->database, $offlineNotice, $this->BuildPreviewNotice());
         $footerTemplate = new FooterWidget($this->forumData->forum_credits ?? true);
 
         /**

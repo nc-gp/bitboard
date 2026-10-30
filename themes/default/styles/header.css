@@ -16,7 +16,7 @@
 }
 
 header #bg {
-    background: url("/themes/default/images/bg.webp") center center / cover no-repeat;
+    background: url("../images/bg.webp") center center / cover no-repeat;
     min-height: 300px;
     opacity: 0.9;
 }
@@ -474,9 +474,7 @@ header nav a {
 @media (max-width: 760px) {
     header #bg {
         min-height: 170px;
-    }
-
-    header nav {
+    }    header nav {
         height: auto;
         min-height: 62px;
         flex-wrap: wrap;
@@ -519,4 +517,33 @@ header nav a {
         height: 38px;
         margin: 0;
     }
+}
+
+.theme-preview-notice {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-bottom: 1px solid var(--primary);
+    background: var(--primary-focus);
+    color: var(--primary-hover);
+    font-size: 0.88rem;
+    text-align: center;
+}
+
+.theme-preview-notice i {
+    font-size: 1.1rem;
+}
+
+.theme-preview-notice a {
+    color: inherit;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 1px solid currentColor;
+}
+
+.theme-preview-notice a:hover {
+    color: var(--primary);
 }

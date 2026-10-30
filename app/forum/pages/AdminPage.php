@@ -21,6 +21,7 @@ use App\Forum\Controllers\CategoryController;
 use App\Forum\Controllers\ForumController;
 use App\Forum\Controllers\RankController;
 use App\Forum\Controllers\SubForumController;
+use App\Forum\Controllers\ThemeController;
 
 use App\Forum\Widgets\NotifyWidget;
 use App\Forum\Widgets\PaginationWidget;
@@ -91,6 +92,12 @@ class AdminPage extends PageBase implements PageInterface
         if ($option === 'audit' && !SessionManager::HasPermission(Permissions::VIEWING_AUDIT_LOG))
             UrlManager::Redirect($this->AdminUrl());
 
+        if ($option === 'themes' && !SessionManager::HasPermission(Permissions::MANAGING_SETTINGS))
+            UrlManager::Redirect($this->AdminUrl());
+
+        if ($option === 'themes')
+            $this->HandleThemeRequest();
+
         switch($option)
         {
             case 'settings':
@@ -159,6 +166,11 @@ class AdminPage extends PageBase implements PageInterface
             case 'audit':
             {
                 $this->content = $this->BuildAudit();
+                break;
+            }
+            case 'themes':
+            {
+                $this->content = $this->BuildThemes();
                 break;
             }
             default:
@@ -1817,6 +1829,189 @@ class AdminPage extends PageBase implements PageInterface
         return $content->template;
     }
 
+    private function HandleThemeRequest(): void
+    {
+        $parameters = $this->forumData->actionParameters;
+        $action = isset($parameters[2]) && is_string($parameters[2]) ? $parameters[2] : '';
+
+        if ($action === '')
+            return;
+
+        $slug = isset($parameters[3]) && is_string($parameters[3]) ? $parameters[3] : '';
+
+        if ($action === 'preview')
+        {
+            if (!ThemeController::SetPreview($slug))
+            {
+                $this->ThemeFlash('Theme not found.', false);
+                UrlManager::Redirect($this->AdminUrl('themes'));
+            }
+
+            UrlManager::Redirect($this->serverPath);
+        }
+
+        if ($action === 'preview-exit')
+        {
+            ThemeController::ClearPreview();
+            $this->ThemeFlash('Preview mode ended.', true);
+            UrlManager::Redirect($this->AdminUrl('themes'));
+        }
+
+        if (!in_array($action, ['install', 'create', 'activate', 'delete'], true))
+        {
+            $this->ThemeFlash('Unknown theme action.', false);
+            UrlManager::Redirect($this->AdminUrl('themes'));
+        }
+
+        if (($_SERVER['REQUEST_METHOD'] ?? 'GET') !== 'POST')
+            UrlManager::Redirect($this->AdminUrl('themes'));
+
+        if (!SessionManager::ValidateCsrfToken($_POST['csrf_token'] ?? ''))
+        {
+            $this->ThemeFlash('Invalid request. Please try again.', false);
+            UrlManager::Redirect($this->AdminUrl('themes'));
+        }
+
+        if ($action === 'install')
+        {
+            $file = isset($_FILES['theme_zip']) && is_array($_FILES['theme_zip']) ? $_FILES['theme_zip'] : [];
+            $result = ThemeController::Install($file);
+        }
+        elseif ($action === 'create')
+        {
+            $name = isset($_POST['theme_name']) && is_string($_POST['theme_name']) ? $_POST['theme_name'] : '';
+            $slug = isset($_POST['theme_slug']) && is_string($_POST['theme_slug']) ? $_POST['theme_slug'] : '';
+
+            $result = ThemeController::Create(
+                $name,
+                $slug,
+                (string) ($_SESSION['bitboard_user']->username ?? '')
+            );
+        }
+        elseif ($action === 'activate')
+            $result = ThemeController::Activate($this->database, $slug);
+        else
+            $result = ThemeController::Delete($this->database, $slug);
+
+        $this->ThemeFlash($result['message'], $result['ok']);
+        UrlManager::Redirect($this->AdminUrl('themes'));
+    }
+
+    private function ThemeFlash(string $message, bool $success): void
+    {
+        SessionManager::AddInformation(
+            'settings',
+            $message,
+            false,
+            $success ? '53, 255, 53' : '255, 53, 53'
+        );
+    }
+
+    private function BuildThemes(): string
+    {
+        $cards = '';
+
+        foreach (ThemeController::ListThemes($this->database) as $theme)
+            $cards .= $this->BuildThemeCard($theme);
+
+        $content = new Template('admin/main', 'themes');
+        $content->AddEntry('{themes}', $cards);
+        $content->AddEntry('{install_form}', $this->BuildThemeInstallForm());
+        $content->AddEntry('{create_form}', $this->BuildThemeCreateForm());
+        $content->Replace();
+
+        return $content->template;
+    }
+
+    private function BuildThemeCreateForm(): string
+    {
+        $form = new Template('admin/main/themes', 'create');
+        $form->AddEscapedEntry('{csrf_token}', SessionManager::CsrfToken());
+        $form->Replace();
+
+        return $form->template;
+    }
+
+    private function BuildThemeInstallForm(): string
+    {
+        $form = new Template('admin/main/themes', 'install');
+        $form->AddEscapedEntry('{csrf_token}', SessionManager::CsrfToken());
+        $form->Replace();
+
+        return $form->template;
+    }
+
+    private function BuildThemeCard(array $theme): string
+    {
+        $actions = '';
+
+        if (!$theme['active'] && $theme['valid'])
+        {
+            $activate = new Template('admin/main/themes', 'activate_form');
+            $activate->AddEscapedEntry('{csrf_token}', SessionManager::CsrfToken());
+            $activate->AddEscapedEntry('{url}', $this->AdminUrl('themes/activate/' . $theme['slug']));
+            $activate->Replace();
+            $actions .= $activate->template;
+        }
+
+        if ($theme['valid'])
+        {
+            $link = new Template('admin/main/themes', $theme['preview'] ? 'preview_exit_link' : 'preview_link');
+            $link->AddEscapedEntry('{url}', $theme['preview']
+                ? $this->AdminUrl('themes/preview-exit')
+                : $this->AdminUrl('themes/preview/' . $theme['slug']));
+            $link->Replace();
+            $actions .= $link->template;
+        }
+
+        if (!$theme['active'] && $theme['slug'] !== 'default')
+        {
+            $delete = new Template('admin/main/themes', 'delete_form');
+            $delete->AddEscapedEntry('{csrf_token}', SessionManager::CsrfToken());
+            $delete->AddEscapedEntry('{url}', $this->AdminUrl('themes/delete/' . $theme['slug']));
+            $delete->AddEscapedEntry('{confirm}', 'Delete the "' . $theme['name'] . '" theme? This cannot be undone.');
+            $delete->Replace();
+            $actions .= $delete->template;
+        }
+
+        if ($theme['screenshot'] !== '')
+        {
+            $shot = new Template('admin/main/themes', 'screenshot');
+            $shot->AddEscapedEntry('{url}', $theme['screenshot']);
+            $shot->AddEscapedEntry('{name}', $theme['name']);
+            $shot->Replace();
+            $screenshot = $shot->template;
+        }
+        else
+            $screenshot = (new Template('admin/main/themes', 'screenshot_empty'))->template;
+
+        $badges = '';
+
+        if ($theme['active'])
+            $badges .= $this->BuildBadge('admin-theme-badge is-active', 'Active');
+
+        if ($theme['preview'])
+            $badges .= $this->BuildBadge('admin-theme-badge is-preview', 'Preview');
+
+        if (!$theme['valid'])
+            $badges .= $this->BuildBadge('admin-theme-badge is-invalid', 'Invalid');
+
+        $meta = array_filter([$theme['version'], $theme['author']]);
+
+        $card = new Template('admin/main/themes', 'theme');
+        $card->AddEscapedEntry('{name}', $theme['name']);
+        $card->AddEscapedEntry('{desc}', $theme['desc'] !== '' ? $theme['desc'] : 'No description provided.');
+        $card->AddEscapedEntry('{meta}', count($meta) > 0 ? implode(' · ', $meta) : 'Theme');
+        $card->AddEscapedEntry('{active_class}', $theme['active'] ? ' is-active' : '');
+        $card->AddEntry('{badges}', $badges);
+        $card->AddEntry('{screenshot}', $screenshot);
+        $card->AddEntry('{error}', $theme['valid'] ? '' : '<p class="admin-theme-error">' . Template::Escape($theme['error']) . '</p>');
+        $card->AddEntry('{actions}', $actions);
+        $card->Replace();
+
+        return $card->template;
+    }
+
     private function BuildSettings(): string
     {
         $tabs = [
@@ -1899,6 +2094,7 @@ class AdminPage extends PageBase implements PageInterface
         $sections = [
             'home' => ['Dashboard', 'ti-home', ''],
             'settings' => ['Settings', 'ti-settings', 'settings'],
+            'themes' => ['Themes', 'ti-palette', 'themes'],
             'categories' => ['Categories', 'ti-category', 'categories'],
             'forums' => ['Forums', 'ti-messages', 'forums'],
             'prefixes' => ['Prefixes', 'ti-tag', 'prefixes'],

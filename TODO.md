@@ -366,7 +366,10 @@ Items marked **good first issue** are small and self-contained.
 - [ ] Build a dedicated admin theme/layout independent of the default theme.
 - [x] Keep admin dashboard and shared admin controls in templates (stat cards, charts, badges,
   options, buttons, rank/user controls) so admin themes can override them.
-- [ ] Theme manager (install, activate, preview, delete).
+- [x] Theme manager: upload a theme ZIP, create a new theme by copying the default theme, preview
+  it in the current admin session, activate it, and delete non-active themes. Includes metadata
+  cards, screenshot support, template fallback, theme-relative `{theme_url}` assets, and archive
+  path/extension validation.
 - [ ] Child themes and a documented template variable reference.
 - [x] Consistent dark/light/auto handling: removed the remaining hardcoded
   `data-theme="dark"` layouts so every page uses the shared theme switcher.
