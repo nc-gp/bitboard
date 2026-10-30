@@ -8,6 +8,7 @@ use App\Classes\File;
 Use App\Classes\UrlManager;
 use App\Classes\Console;
 use App\Classes\AdminPath;
+use App\Classes\Schema;
 use App\Classes\Permissions;
 use App\Classes\SessionManager;
 use App\Forum\Controllers\AccountController;
@@ -61,6 +62,7 @@ class BitBoard
 		ReportController::EnsureSchema($this->database);
 		RankController::EnsureSchema($this->database);
 		AuditController::EnsureSchema($this->database);
+		Schema::EnsureCore($this->database);
 		$this->data = new ForumDataStruct($this->database->Query('SELECT * FROM bit_settings')->FetchArray());
 
 		define('BB_THEME', $this->data->forum_theme);

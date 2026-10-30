@@ -2,11 +2,14 @@
 
 namespace App\Classes;
 
-use Exception;
 use mysqli;
+use mysqli_sql_exception;
 
 /**
  * The Database class provides methods for interacting with a MySQL database using MySQLi.
+ *
+ * Only one statement is active at a time: Query() closes the previous statement.
+ * Always fetch rows before starting another query.
  */
 class Database
 {
@@ -21,32 +24,62 @@ class Database
      * @param string $dbhost   The database host.
      * @param string $dbuser   The database user.
      * @param string $dbpass   The database password.
-     * @param string $dbname   The database name.
      * @param string $charset  The character set for the database connection.
+     *
+     * @throws DatabaseException When the connection or charset setup fails.
      */
     public function __construct(string $dbhost = 'localhost', string $dbuser = 'root', string $dbpass = '', string $charset = 'utf8')
     {
-        $this->connection = new mysqli($dbhost, $dbuser, $dbpass);
+        // Make mysqli failures explicit on every supported PHP version instead
+        // of relying on the PHP 8.1+ default.
+        mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
 
-        if ($this->connection->connect_error)
-            throw new Exception('Failed to connect: ' . $this->connection->connect_error);
+        try
+        {
+            $this->connection = new mysqli($dbhost, $dbuser, $dbpass);
+        }
+        catch (mysqli_sql_exception $e)
+        {
+            throw new DatabaseException(
+                'Failed to connect to the database: ' . $e->getMessage(),
+                (int) $e->getCode(),
+                $e
+            );
+        }
 
         // The application does not use explicit transactions. Keep autocommit on so
         // short-lived requests never leave row locks behind for the next request.
         if (!$this->connection->autocommit(true))
-            throw new Exception('Failed to enable autocommit: ' . $this->connection->error);
+            throw new DatabaseException('Failed to enable autocommit: ' . $this->connection->error);
 
-        $this->connection->set_charset($charset);
+        if (!$this->connection->set_charset($charset))
+            throw new DatabaseException('Failed to set database charset: ' . $this->connection->error);
     }
 
     /**
      * Select the database to use.
      *
      * @param string $dbname The name of the database to select.
+     *
+     * @throws DatabaseException When the database cannot be selected.
      */
     public function SelectDatabase(string $dbname)
     {
-        $this->connection->select_db($dbname);
+        try
+        {
+            $selected = $this->connection->select_db($dbname);
+        }
+        catch (mysqli_sql_exception $e)
+        {
+            throw new DatabaseException(
+                'Unable to select database "' . $dbname . '": ' . $e->getMessage(),
+                (int) $e->getCode(),
+                $e
+            );
+        }
+
+        if (!$selected)
+            throw new DatabaseException('Unable to select database "' . $dbname . '": ' . $this->connection->error);
     }
 
     /**
@@ -54,13 +87,33 @@ class Database
      *
      * @param string $query The SQL query to execute.
      * @return Database The Database object.
+     *
+     * @throws DatabaseException When preparing or executing the statement fails.
      */
-    public function Query($query) 
+    public function Query($query)
     {
         if (!$this->query_closed)
             $this->query->close();
 
-        if ($this->query = $this->connection->prepare($query))
+        try
+        {
+            $statement = $this->connection->prepare($query);
+        }
+        catch (mysqli_sql_exception $e)
+        {
+            throw new DatabaseException(
+                'Unable to prepare MySQL statement: ' . $e->getMessage(),
+                (int) $e->getCode(),
+                $e
+            );
+        }
+
+        if (!$statement)
+            throw new DatabaseException('Unable to prepare MySQL statement: ' . $this->connection->error);
+
+        $this->query = $statement;
+
+        try
         {
             if (func_num_args() > 1)
             {
@@ -70,15 +123,15 @@ class Database
                 $args_ref = array();
 
                 foreach ($args as $k => &$arg) {
-                    if (is_array($args[$k])) 
+                    if (is_array($args[$k]))
                     {
-                        foreach ($args[$k] as $j => &$a) 
+                        foreach ($args[$k] as $j => &$a)
                         {
                             $types .= $this->_gettype($args[$k][$j]);
                             $args_ref[] = &$a;
                         }
-                    } 
-                    else 
+                    }
+                    else
                     {
                         $types .= $this->_gettype($args[$k]);
                         $args_ref[] = &$arg;
@@ -90,15 +143,18 @@ class Database
             }
 
             $this->query->execute();
+        }
+        catch (mysqli_sql_exception $e)
+        {
+            throw new DatabaseException(
+                'Unable to process MySQL query: ' . $e->getMessage(),
+                (int) $e->getCode(),
+                $e
+            );
+        }
 
-            if ($this->query->errno)
-                throw new Exception('Unable to process MySQL query (check your params) - ' . $this->query->error);
-
-            $this->query_closed = false;
-            $this->query_count++;
-        } 
-        else
-            throw new Exception('Unable to prepare MySQL statement (check your syntax) - ' . $this->connection->error);
+        $this->query_closed = false;
+        $this->query_count++;
 
         return $this;
     }
@@ -109,8 +165,10 @@ class Database
      * @param callable $callback A callback function to process each row.
      * @return array The array of fetched rows.
      */
-    public function FetchAll($callback = null) 
+    public function FetchAll($callback = null)
     {
+        $this->RequireResult();
+
         $params = array();
         $row = array();
         $meta = $this->query->result_metadata();
@@ -121,20 +179,20 @@ class Database
         call_user_func_array(array($this->query, 'bind_result'), $params);
         $result = array();
 
-        while ($this->query->fetch()) 
+        while ($this->query->fetch())
         {
             $r = array();
 
             foreach ($row as $key => $val)
                 $r[$key] = $val;
 
-            if ($callback != null && is_callable($callback)) 
+            if ($callback != null && is_callable($callback))
             {
                 $value = call_user_func($callback, $r);
 
                 if ($value == 'break')
                     break;
-            } 
+            }
             else
                 $result[] = $r;
         }
@@ -150,8 +208,10 @@ class Database
      *
      * @return array The associative array representing the fetched row.
      */
-    public function FetchArray() 
+    public function FetchArray()
     {
+        $this->RequireResult();
+
         $params = array();
         $row = array();
         $meta = $this->query->result_metadata();
@@ -203,6 +263,12 @@ class Database
      */
     public function Close()
     {
+        if (!$this->query_closed && $this->query !== null)
+        {
+            $this->query->close();
+            $this->query_closed = true;
+        }
+
         return $this->connection->close();
     }
 
@@ -213,6 +279,7 @@ class Database
      */
     public function NumRows()
     {
+        $this->RequireResult();
         $this->query->store_result();
         return $this->query->num_rows;
     }
@@ -224,17 +291,27 @@ class Database
      */
     public function AffectedRows()
     {
+        $this->RequireResult();
         return $this->query->affected_rows;
     }
 
     /**
      * Get the last inserted ID from the last query.
      *
-     * @return int The last inserted ID.
+     * @return int|string The last inserted ID.
      */
     public function LastInsertID()
     {
         return $this->connection->insert_id;
+    }
+
+    /**
+     * Ensure a statement is available before reading result metadata.
+     */
+    private function RequireResult(): void
+    {
+        if ($this->query_closed || $this->query === null)
+            throw new DatabaseException('No active query result. Run Query() before fetching rows.');
     }
 
     /**
@@ -245,7 +322,7 @@ class Database
      */
     private function _gettype($var)
     {
-        if (is_string($var)) 
+        if (is_string($var))
             return 's';
 
         if (is_float($var))

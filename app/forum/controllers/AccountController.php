@@ -3,6 +3,7 @@
 namespace App\Forum\Controllers;
 
 use App\Classes\Database;
+use App\Classes\DatabaseException;
 use App\Classes\Permissions;
 
 class AccountController
@@ -197,7 +198,7 @@ class AccountController
         {
             $db->Query('UPDATE bit_accounts SET last_active = ? WHERE id = ?', date("Y-m-d H:i:s"), $userId);
         }
-        catch (\mysqli_sql_exception $e)
+        catch (DatabaseException $e)
         {
             // 1205 = lock wait timeout, 1213 = deadlock. Last-active is
             // non-critical, so do not take the whole page down for these.
@@ -218,7 +219,7 @@ class AccountController
      */
     static public function CreateTable(Database $db)
     {
-        $db->Query('CREATE TABLE IF NOT EXISTS bit_accounts ( id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, username VARCHAR(32) NOT NULL, pass VARCHAR(1024) NOT NULL, email VARCHAR(64) NOT NULL, avatar VARCHAR(255) NULL DEFAULT NULL, bio VARCHAR(1000) NOT NULL DEFAULT \'\', signature VARCHAR(500) NOT NULL DEFAULT \'\', viewing_type VARCHAR(16) NOT NULL DEFAULT \'\', viewing_id INT(6) UNSIGNED NOT NULL DEFAULT 0, reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, reputation INT(6) NOT NULL DEFAULT 0, last_ip VARCHAR(64), last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP, last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP, rank_id INT(6) NOT NULL)');
+        $db->Query('CREATE TABLE IF NOT EXISTS bit_accounts ( id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, username VARCHAR(32) NOT NULL, pass VARCHAR(1024) NOT NULL, email VARCHAR(64) NOT NULL, avatar VARCHAR(255) NULL DEFAULT NULL, bio VARCHAR(1000) NOT NULL DEFAULT \'\', signature VARCHAR(500) NOT NULL DEFAULT \'\', viewing_type VARCHAR(16) NOT NULL DEFAULT \'\', viewing_id INT(6) UNSIGNED NOT NULL DEFAULT 0, reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, reputation INT(6) NOT NULL DEFAULT 0, last_ip VARCHAR(64), last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP, last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP, rank_id INT(6) NOT NULL, UNIQUE KEY uniq_accounts_username (username), UNIQUE KEY uniq_accounts_email (email), KEY accounts_last_active (last_active))');
     }
 
 	/**

@@ -131,23 +131,20 @@ Items marked **good first issue** are small and self-contained.
 
 ### Database layer
 
-- [ ] **Handle `select_db()` failures.** `Database::SelectDatabase()` ignores the return
-  value, so a typo in the database name results in confusing "no database selected" errors.
-  Throw a clear exception.
-- [ ] **Adopt MySQLi exceptions consistently.** On PHP 8.1+, `mysqli` throws by default, so
-  checks like `connect_error` and `$query->errno` may never run. Configure
-  `mysqli_report()` explicitly and translate errors into a project exception.
-- [ ] **Protect against nested queries.** `Database` keeps a single active statement and
-  closes the previous one on every `Query()`. Either document the restriction or return a
-  separate result object.
-- [ ] **Add the remaining schema constraints and indexes.** Unique indexes already cover
-  reactions, subscriptions, forum watches, and read positions, and regular indexes cover
-  notifications, audit entries, reports, and edit history. Still missing:
-  - Foreign keys with deliberate `ON DELETE` behavior.
-  - Unique indexes on `bit_accounts.username` and `bit_accounts.email`.
-  - Indexes on `bit_threads(forum_id, subforum_id)`, `bit_posts(thread_id)`,
-    `bit_posts(user_id)`, `bit_threads(user_id)`, and `bit_accounts(last_active)`.
-  - Defaults for `is_closed`, `is_pinned`, `prefix_id`, and like counters.
+- [x] **Handle `select_db()` failures.** `Database::SelectDatabase()` now checks the result and
+  throws a `DatabaseException` with the database name and driver message.
+- [x] **Adopt MySQLi exceptions consistently.** `Database` calls
+  `mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT)`, wraps connection, prepare, and
+  execute failures in `DatabaseException`, and keeps the original driver code for callers that
+  handle lock/deadlock cases.
+- [x] **Protect against nested queries.** The single-active-statement restriction is documented
+  on `Database`, and fetching without an active result throws a clear `DatabaseException`.
+- [x] **Add the remaining indexes and column defaults.** `Schema::EnsureCore()` adds unique
+  indexes on account username/email, indexes for last activity, thread forums/users, and post
+  threads/users, plus defaults for thread flags/prefix/like counters and post like counters.
+  Fresh installs receive the same definitions in their `CREATE TABLE` statements.
+- [ ] **Add foreign keys with deliberate `ON DELETE` behavior.** Cascade deletion is still
+  handled in application code.
 - [ ] **Add a migration system.** The installer creates the schema only once. Add numbered
   migrations with a small in-house runner so existing forums can upgrade without reinstalling.
 - [ ] **Remove magic row IDs.** `bit_settings.id = 0` and the implicit admin rank ID `1` are
