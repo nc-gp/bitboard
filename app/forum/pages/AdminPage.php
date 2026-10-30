@@ -3,6 +3,7 @@
 namespace App\Forum\Pages;
 
 use App\Classes\AvatarUtils;
+use App\Classes\AdminPath;
 use App\Classes\Console;
 use App\Classes\PageBase;
 use App\Classes\Database;
@@ -30,10 +31,14 @@ class AdminPage extends PageBase implements PageInterface
 {
     private $content = '';
     private string $error = '';
+    private string $adminPath = 'admin';
 
     public function __construct(Database $db, object $data)
     {
         parent::__construct($db, $data);
+
+        $this->adminPath = AdminPath::FromSettings($this->forumData);
+        Template::SetAdminUrl($this->serverPath . $this->adminPath);
 
         // The admin panel is pinned to the default theme so custom forum themes
         // cannot break its templates, header, footer, or assets.
@@ -41,6 +46,20 @@ class AdminPage extends PageBase implements PageInterface
 
         $this->UrlHandler();
         $this->forumDesc = 'Admin panel';
+    }
+
+    /**
+     * Build a URL under the configured admin segment.
+     */
+    private function AdminUrl(string $suffix = ''): string
+    {
+        if ($suffix === '')
+            return $this->serverPath . $this->adminPath;
+
+        if (str_starts_with($suffix, '?'))
+            return $this->serverPath . $this->adminPath . $suffix;
+
+        return $this->serverPath . $this->adminPath . '/' . ltrim($suffix, '/');
     }
 
     private function CheckError()
@@ -64,13 +83,13 @@ class AdminPage extends PageBase implements PageInterface
         $option = isset($this->forumData->actionParameters[1]) ? $this->forumData->actionParameters[1] : 0;
 
         if ($option === 'ranks' && !SessionManager::HasPermission(Permissions::MANAGING_ROLES))
-            UrlManager::Redirect($this->serverPath . 'admin');
+            UrlManager::Redirect($this->AdminUrl());
 
         if ($option === 'users' && !SessionManager::HasPermission(Permissions::MANAGING_USERS))
-            UrlManager::Redirect($this->serverPath . 'admin');
+            UrlManager::Redirect($this->AdminUrl());
 
         if ($option === 'audit' && !SessionManager::HasPermission(Permissions::VIEWING_AUDIT_LOG))
-            UrlManager::Redirect($this->serverPath . 'admin');
+            UrlManager::Redirect($this->AdminUrl());
 
         switch($option)
         {
@@ -197,7 +216,7 @@ class AdminPage extends PageBase implements PageInterface
                     'category',
                     $categoryID
                 );
-                UrlManager::Redirect($this->serverPath . 'admin/categories');
+                UrlManager::Redirect($this->AdminUrl('categories'));
             }
 
             if ($action !== 'create' && $action !== 'edit')
@@ -268,7 +287,7 @@ class AdminPage extends PageBase implements PageInterface
                 );
             }
 
-            UrlManager::Redirect($this->serverPath . 'admin/categories');
+            UrlManager::Redirect($this->AdminUrl('categories'));
         }
         catch (Throwable $e)
         {
@@ -387,7 +406,7 @@ class AdminPage extends PageBase implements PageInterface
                 'forum',
                 $forumID
             );
-            UrlManager::Redirect($this->serverPath . 'admin/forums');
+            UrlManager::Redirect($this->AdminUrl('forums'));
         }
 
         $categoryID = $this->PostedID('category_id');
@@ -458,7 +477,7 @@ class AdminPage extends PageBase implements PageInterface
             );
         }
 
-        UrlManager::Redirect($this->serverPath . 'admin/forums');
+        UrlManager::Redirect($this->AdminUrl('forums'));
     }
 
     private function HandleSubforumAction(string $action): void
@@ -489,7 +508,7 @@ class AdminPage extends PageBase implements PageInterface
                 'subforum',
                 $subforumID
             );
-            UrlManager::Redirect($this->serverPath . 'admin/forums');
+            UrlManager::Redirect($this->AdminUrl('forums'));
         }
 
         $name = $this->PostedString('subforum_name');
@@ -548,7 +567,7 @@ class AdminPage extends PageBase implements PageInterface
             );
         }
 
-        UrlManager::Redirect($this->serverPath . 'admin/forums');
+        UrlManager::Redirect($this->AdminUrl('forums'));
     }
 
     private function BuildCategoryOptions(array $categories, int $selectedID): string
@@ -812,7 +831,7 @@ class AdminPage extends PageBase implements PageInterface
                     'rank',
                     $rankID
                 );
-                UrlManager::Redirect($this->serverPath . 'admin/ranks');
+                UrlManager::Redirect($this->AdminUrl('ranks'));
             }
 
             if ($action === 'edit' && empty($existing))
@@ -931,7 +950,7 @@ class AdminPage extends PageBase implements PageInterface
                 );
             }
 
-            UrlManager::Redirect($this->serverPath . 'admin/ranks');
+            UrlManager::Redirect($this->AdminUrl('ranks'));
         }
         catch (Throwable $e)
         {
@@ -1116,7 +1135,7 @@ class AdminPage extends PageBase implements PageInterface
                     'user',
                     $userID
                 );
-                UrlManager::Redirect($this->serverPath . 'admin/users');
+                UrlManager::Redirect($this->AdminUrl('users'));
             }
 
             $rankID = $this->PostedID('rank_id');
@@ -1183,7 +1202,7 @@ class AdminPage extends PageBase implements PageInterface
                 $userID
             );
 
-            UrlManager::Redirect($this->serverPath . 'admin/users');
+            UrlManager::Redirect($this->AdminUrl('users'));
         }
         catch (Throwable $e)
         {
@@ -1332,7 +1351,7 @@ class AdminPage extends PageBase implements PageInterface
         $queryString = count($filterParameters) > 0 ? '?' . http_build_query($filterParameters) : '';
 
         if ($total > 0 && $page > $totalPages)
-            UrlManager::Redirect($this->serverPath . 'admin/users/page/' . $totalPages . $queryString);
+            UrlManager::Redirect($this->AdminUrl('users/page/' . $totalPages) . $queryString);
 
         $users = $total > 0
             ? AccountController::GetAdminUsers($this->database, $search, $rankFilter, ($page - 1) * $perPage, $perPage)
@@ -1354,7 +1373,7 @@ class AdminPage extends PageBase implements PageInterface
         $pagination = '';
         if ($totalPages > 1)
         {
-            $widget = new PaginationWidget($page, $total, $perPage, 'admin/users/page/', $filterParameters);
+            $widget = new PaginationWidget($page, $total, $perPage, $this->adminPath . '/users/page/', $filterParameters);
             $pagination = $widget->Template->template;
         }
 
@@ -1448,7 +1467,7 @@ class AdminPage extends PageBase implements PageInterface
         foreach ([7, 14, 30] as $days)
         {
             $template = new Template('admin/main/home', 'period_link');
-            $template->AddEscapedEntry('{url}', $this->serverPath . 'admin?days=' . $days);
+            $template->AddEscapedEntry('{url}', $this->AdminUrl('?days=' . $days));
             $template->AddEscapedEntry('{label}', $days . ' days');
             $template->AddEntry('{active_class}', $days === $activeDays ? ' is-active' : '');
             $template->Replace();
@@ -1660,7 +1679,7 @@ class AdminPage extends PageBase implements PageInterface
         $cards .= $this->BuildStatCard('Members', number_format((int) ($stats['members'] ?? 0)), 'users', $this->serverPath . 'members/page/1');
         $cards .= $this->BuildStatCard('Threads', number_format((int) ($stats['threads'] ?? 0)), 'messages', $this->serverPath);
         $cards .= $this->BuildStatCard('Posts', number_format((int) ($stats['posts'] ?? 0)), 'message-2', $this->serverPath);
-        $cards .= $this->BuildStatCard('Forums', number_format((int) ($stats['forums'] ?? 0)), 'layout-grid', $this->serverPath . 'admin/forums');
+        $cards .= $this->BuildStatCard('Forums', number_format((int) ($stats['forums'] ?? 0)), 'layout-grid', $this->AdminUrl('forums'));
 
         if ($canViewReports)
             $cards .= $this->BuildStatCard('Open reports', number_format((int) ($stats['open_reports'] ?? 0)), 'flag', $this->serverPath . 'reports/page/1');
@@ -1692,10 +1711,10 @@ class AdminPage extends PageBase implements PageInterface
             . $this->BuildActivityChart('New members', 'user-plus', 'is-members', $memberCounts, $labels, $this->BuildTrend(array_sum($memberCounts), $memberPrevious));
 
         $usersLink = $canManageUsers
-            ? $this->BuildQuickLink($this->serverPath . 'admin/users', 'users', 'Users')
+            ? $this->BuildQuickLink($this->AdminUrl('users'), 'users', 'Users')
             : '';
         $ranksLink = $canManageRanks
-            ? $this->BuildQuickLink($this->serverPath . 'admin/ranks', 'shield', 'Ranks')
+            ? $this->BuildQuickLink($this->AdminUrl('ranks'), 'shield', 'Ranks')
             : '';
 
         $content = new Template('admin/main', 'home');
@@ -1748,7 +1767,7 @@ class AdminPage extends PageBase implements PageInterface
         $queryString = count($filterParameters) > 0 ? '?' . http_build_query($filterParameters) : '';
 
         if ($total > 0 && $page > $totalPages)
-            UrlManager::Redirect($this->serverPath . 'admin/audit/page/' . $totalPages . $queryString);
+            UrlManager::Redirect($this->AdminUrl('audit/page/' . $totalPages) . $queryString);
 
         $entries = $total > 0
             ? AuditController::GetPage($this->database, $event, $actor, ($page - 1) * $perPage, $perPage)
@@ -1783,7 +1802,7 @@ class AdminPage extends PageBase implements PageInterface
 
         if ($totalPages > 1)
         {
-            $widget = new PaginationWidget($page, $total, $perPage, 'admin/audit/page/', $filterParameters);
+            $widget = new PaginationWidget($page, $total, $perPage, $this->adminPath . '/audit/page/', $filterParameters);
             $pagination = $widget->Template->template;
         }
 
@@ -1804,13 +1823,13 @@ class AdminPage extends PageBase implements PageInterface
             'general' => [
                 'General',
                 'ti-adjustments',
-                'admin/settings',
+                'settings',
                 'Manage the forum name, description, availability, and footer credit.',
             ],
             'avatars' => [
                 'Avatars',
                 'ti-photo',
-                'admin/settings/avatars',
+                'settings/avatars',
                 'Control whether members can upload avatars and how large or which formats are allowed.',
             ],
         ];
@@ -1820,7 +1839,7 @@ class AdminPage extends PageBase implements PageInterface
             : 'general';
 
         if (!array_key_exists($tab, $tabs))
-            UrlManager::Redirect($this->serverPath . 'admin/settings');
+            UrlManager::Redirect($this->AdminUrl('settings'));
 
         $content = new Template('admin/main/settings', $tab);
 
@@ -1860,7 +1879,7 @@ class AdminPage extends PageBase implements PageInterface
         foreach ($tabs as $key => [$label, $icon, $route])
         {
             $item = new Template('admin/main/settings', 'tab_item');
-            $item->AddEscapedEntry('{url}', $this->serverPath . $route);
+            $item->AddEscapedEntry('{url}', $this->AdminUrl($route));
             $item->AddEscapedEntry('{label}', $label);
             $item->AddEscapedEntry('{icon}', $icon);
             $item->AddEscapedEntry('{active_class}', $key === $current ? ' is-active' : '');
@@ -1878,14 +1897,14 @@ class AdminPage extends PageBase implements PageInterface
     private function BuildAdminNav(): string
     {
         $sections = [
-            'home' => ['Dashboard', 'ti-home', 'admin'],
-            'settings' => ['Settings', 'ti-settings', 'admin/settings'],
-            'categories' => ['Categories', 'ti-category', 'admin/categories'],
-            'forums' => ['Forums', 'ti-messages', 'admin/forums'],
-            'prefixes' => ['Prefixes', 'ti-tag', 'admin/prefixes'],
-            'users' => ['Users', 'ti-users', 'admin/users'],
-            'ranks' => ['Ranks', 'ti-shield', 'admin/ranks'],
-            'audit' => ['Audit log', 'ti-history', 'admin/audit'],
+            'home' => ['Dashboard', 'ti-home', ''],
+            'settings' => ['Settings', 'ti-settings', 'settings'],
+            'categories' => ['Categories', 'ti-category', 'categories'],
+            'forums' => ['Forums', 'ti-messages', 'forums'],
+            'prefixes' => ['Prefixes', 'ti-tag', 'prefixes'],
+            'users' => ['Users', 'ti-users', 'users'],
+            'ranks' => ['Ranks', 'ti-shield', 'ranks'],
+            'audit' => ['Audit log', 'ti-history', 'audit'],
         ];
 
         if (!SessionManager::HasPermission(Permissions::MANAGING_USERS))
@@ -1906,7 +1925,7 @@ class AdminPage extends PageBase implements PageInterface
         foreach ($sections as $key => [$label, $icon, $route])
         {
             $item = new Template('admin', 'nav_item');
-            $item->AddEscapedEntry('{url}', $this->serverPath . $route);
+            $item->AddEscapedEntry('{url}', $this->AdminUrl($route));
             $item->AddEscapedEntry('{label}', $label);
             $item->AddEscapedEntry('{icon}', $icon);
             $item->AddEscapedEntry('{active_class}', $key === $current ? ' is-active' : '');

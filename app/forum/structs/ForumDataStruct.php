@@ -75,6 +75,11 @@ class ForumDataStruct
     public int $avatar_max_height = 0;
 
     /**
+     * @var string Configurable admin panel route segment.
+     */
+    public string $admin_path = 'admin';
+
+    /**
      * @var array The array of splitted URL. (/)
      * Note: Can be empty.
      */

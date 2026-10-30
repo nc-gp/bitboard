@@ -5,7 +5,7 @@
         <span class="admin-category-count">{forum_count} forums</span>
     </div>
 
-    <form id="edit-category-{category_id}" class="admin-category-form" method="post" action="{server_url}admin/categories">
+    <form id="edit-category-{category_id}" class="admin-category-form" method="post" action="{admin_url}/categories">
         <input type="hidden" name="csrf_token" value="{csrf_token}">
         <input type="hidden" name="action" value="edit">
         <input type="hidden" name="category_id" value="{category_id}">
@@ -30,7 +30,7 @@
         </div>
     </form>
 
-    <form id="delete-category-{category_id}" class="admin-category-delete" method="post" action="{server_url}admin/categories">
+    <form id="delete-category-{category_id}" class="admin-category-delete" method="post" action="{admin_url}/categories">
         <input type="hidden" name="csrf_token" value="{csrf_token}">
         <input type="hidden" name="action" value="delete">
         <input type="hidden" name="category_id" value="{category_id}">

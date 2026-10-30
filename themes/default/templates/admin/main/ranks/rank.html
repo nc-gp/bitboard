@@ -9,7 +9,7 @@
         {readonly_badge}
     </div>
 
-    <form id="edit-rank-{rank_id}" class="admin-category-form" method="post" action="{server_url}admin/ranks">
+    <form id="edit-rank-{rank_id}" class="admin-category-form" method="post" action="{admin_url}/ranks">
         <input type="hidden" name="csrf_token" value="{csrf_token}">
         <input type="hidden" name="action" value="edit">
         <input type="hidden" name="rank_id" value="{rank_id}">
@@ -36,7 +36,7 @@
         {permissions}
     </form>
 
-    <form id="delete-rank-{rank_id}" class="admin-category-delete" method="post" action="{server_url}admin/ranks">
+    <form id="delete-rank-{rank_id}" class="admin-category-delete" method="post" action="{admin_url}/ranks">
         <input type="hidden" name="csrf_token" value="{csrf_token}">
         <input type="hidden" name="action" value="delete">
         <input type="hidden" name="rank_id" value="{rank_id}">

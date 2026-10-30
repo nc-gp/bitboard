@@ -89,6 +89,9 @@ BitBoard runs on Windows and Linux. Root and subdirectory installs are both supp
 6. Keep `app/` out of public reach. The bundled root `.htaccess` blocks `/app/...`; use the
    Nginx rules below or move `app/` outside the document root if your server ignores it.
 
+The admin panel route is chosen in installer step 5 (default `/admin`). Pick a non-obvious path
+before exposing the forum publicly.
+
 `app/install/lock` and `app/install/step` are sensitive control files. Do not expose, edit, or
 delete them except when intentionally reinstalling on a development copy.
 

@@ -12,7 +12,7 @@
 
     <div class="admin-user-meta">Joined {joined} · Last active {last_active}</div>
 
-    <form id="edit-user-{user_id}" class="admin-category-form" method="post" action="{server_url}admin/users">
+    <form id="edit-user-{user_id}" class="admin-category-form" method="post" action="{admin_url}/users">
         <input type="hidden" name="csrf_token" value="{csrf_token}">
         <input type="hidden" name="action" value="edit">
         <input type="hidden" name="user_id" value="{user_id}">
@@ -29,7 +29,7 @@
         </div>
     </form>
 
-    <form id="moderate-user-{user_id}" class="admin-category-delete" method="post" action="{server_url}admin/users">
+    <form id="moderate-user-{user_id}" class="admin-category-delete" method="post" action="{admin_url}/users">
         <input type="hidden" name="csrf_token" value="{csrf_token}">
         <input type="hidden" name="action" value="{moderation_action}">
         <input type="hidden" name="user_id" value="{user_id}">

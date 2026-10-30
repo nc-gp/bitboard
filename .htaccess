@@ -7,9 +7,9 @@ DirectoryIndex index.php
   # these files from disk, but they must not be reachable over HTTP.
   RewriteRule ^app(?:/|$) - [F,L,NC]
 
-  # Rewrite URLs containing 'api' to api.php
-  RewriteCond %{REQUEST_URI} api
-  RewriteRule ^(.*)$ api.php?data=$1 [QSA,L]
+  # Rewrite API URLs to api.php. Anchor the match so an admin path that
+  # happens to contain "api" is not captured by this rule.
+  RewriteRule ^api(/.*)?$ api.php?data=api$1 [QSA,L,NC]
 
   # Public SEO endpoints
   RewriteRule ^sitemap\.xml$ index.php?action=sitemap [QSA,L]

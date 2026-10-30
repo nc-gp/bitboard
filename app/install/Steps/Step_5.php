@@ -6,6 +6,7 @@ use Exception;
 
 use App\Classes\SessionManager;
 use App\Classes\Template;
+use App\Classes\AdminPath;
 use App\Classes\Install\StepBase;
 use App\Interfaces\Install\StepInterface;
 
@@ -78,13 +79,23 @@ class Step_5 extends StepBase implements StepInterface
 			return;
 		}
 
+		$adminPath = isset($_POST['admin_path']) && is_string($_POST['admin_path'])
+			? AdminPath::Normalize($_POST['admin_path'])
+			: '';
+
+		if(!AdminPath::IsValid($adminPath))
+		{
+			SessionManager::AddInformation('forum', 'Admin panel path must be 3-64 characters using letters, numbers, hyphens, or underscores, and cannot match an existing page.', true);
+			return;
+		}
+
 		require_once './app/config.php';
 
 		try {
 			$db = new Database($config['host'], $config['user'], $config['pass']);
 			$db->SelectDatabase($config['name']);
 
-			$db->Query('UPDATE bit_settings SET forum_name = ?, forum_description = ? WHERE id = ?', $forumName, $forumDesc, 0);
+			$db->Query('UPDATE bit_settings SET forum_name = ?, forum_description = ?, admin_path = ? WHERE id = ?', $forumName, $forumDesc, $adminPath, 0);
 
 			$db->Close();
 		}

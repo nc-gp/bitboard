@@ -8,6 +8,7 @@ use App\Classes\SessionManager;
 use App\Classes\AvatarUtils;
 use App\Classes\Permissions;
 use App\Classes\UrlManager;
+use App\Classes\AdminPath;
 
 use App\Forum\Controllers\NotificationController;
 use App\Forum\Controllers\ReportController;
@@ -109,6 +110,8 @@ class HeaderWidget
         if($_SESSION['bitboard_user']->HasPermission(Permissions::ADMIN_PANEL_ACCESS))
         {
             $userOptions = new Template('header/nav', 'user_menu_admin_panel');
+            $userOptions->AddEscapedEntry('{admin_url}', UrlManager::GetPath() . AdminPath::FromDatabase($this->database));
+            $userOptions->Replace();
             $userOptions = $userOptions->template;
         }
 

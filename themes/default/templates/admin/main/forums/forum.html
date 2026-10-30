@@ -7,7 +7,7 @@
         {locked_badge}
     </div>
 
-    <form id="edit-forum-{forum_id}" class="admin-category-form" method="post" action="{server_url}admin/forums">
+    <form id="edit-forum-{forum_id}" class="admin-category-form" method="post" action="{admin_url}/forums">
         <input type="hidden" name="csrf_token" value="{csrf_token}">
         <input type="hidden" name="entity" value="forum">
         <input type="hidden" name="action" value="edit">
@@ -44,7 +44,7 @@
         </label>
     </form>
 
-    <form id="delete-forum-{forum_id}" class="admin-category-delete" method="post" action="{server_url}admin/forums">
+    <form id="delete-forum-{forum_id}" class="admin-category-delete" method="post" action="{admin_url}/forums">
         <input type="hidden" name="csrf_token" value="{csrf_token}">
         <input type="hidden" name="entity" value="forum">
         <input type="hidden" name="action" value="delete">

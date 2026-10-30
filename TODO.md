@@ -81,10 +81,12 @@ Items marked **good first issue** are small and self-contained.
   `app/install/.htaccess` deny direct `/app/...` access; the Nginx guide does the same. The
   README now documents removing write access from `app/install` after setup and treating
   `lock` / `step` as sensitive control files.
-- [ ] **Allow a configurable admin panel path during installation.** Let the installer choose
-  the `/admin` route segment (for example `/aergrstgservrsdv/`), default it to `admin` for
-  existing installs, validate/store it in settings, and update all admin routing, links,
-  redirects, and web-server guidance to use the configured path.
+- [x] **Allow a configurable admin panel path during installation.** Installer step 5
+  normalizes and validates the secret admin segment (3-64 letters, numbers, `_`, or `-`,
+  lowercased and excluding existing routes), stores it as `bit_settings.admin_path`, defaults
+  existing installs to `admin`, and routes only that segment to `AdminPage`. All admin links,
+  redirects, pagination, settings tabs, header menu, and the privacy fallback use the configured
+  path.
 
 ### Output, input, and API
 

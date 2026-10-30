@@ -47,6 +47,9 @@ class SettingsController
 
             if (!in_array('avatar_max_height', $names, true))
                 $db->Query('ALTER TABLE bit_settings ADD COLUMN avatar_max_height INT(6) NOT NULL DEFAULT 0');
+
+            if (!in_array('admin_path', $names, true))
+                $db->Query("ALTER TABLE bit_settings ADD COLUMN admin_path VARCHAR(64) NOT NULL DEFAULT 'admin'");
         }
         catch (Throwable $e)
         {

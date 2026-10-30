@@ -7,6 +7,7 @@ use App\Classes\PageFactory;
 use App\Classes\File;
 Use App\Classes\UrlManager;
 use App\Classes\Console;
+use App\Classes\AdminPath;
 use App\Classes\Permissions;
 use App\Classes\SessionManager;
 use App\Forum\Controllers\AccountController;
@@ -127,8 +128,16 @@ class BitBoard
 		{
 			$this->data->actionParameters = $SplitedURL;
 
+			$pageName = $firstParameter;
+			$adminPath = AdminPath::FromSettings($this->data);
+
+			if ($firstParameter === $adminPath)
+				$pageName = 'admin';
+			elseif (strtolower($firstParameter) === 'admin')
+				$pageName = '_404';
+
 			try {
-				$instance = PageFactory::CreatePage($firstParameter, $this->database, $this->data);
+				$instance = PageFactory::CreatePage($pageName, $this->database, $this->data);
 			} catch (Exception $e) {
 				Console::Error($e->getMessage());
 			}

@@ -13,6 +13,7 @@ class Template
     private array $variables = [];
     private array $replaces = [];
     private static ?string $themeOverride = null;
+    private static string $adminUrl = '';
 
     /**
      * Force templates to load from a specific theme for the current request.
@@ -21,6 +22,14 @@ class Template
     public static function SetTheme(?string $theme): void
     {
         self::$themeOverride = $theme;
+    }
+
+    /**
+     * Set the base URL for the configured admin panel segment.
+     */
+    public static function SetAdminUrl(string $url): void
+    {
+        self::$adminUrl = rtrim($url, '/');
     }
 
     /**
@@ -67,6 +76,9 @@ class Template
         // Resolve the global base URL before any page content is injected.
         // Pagination uses its own route-specific placeholder instead.
         $content = str_replace('{server_url}', UrlManager::GetPath(), $content);
+
+        if (self::$adminUrl !== '')
+            $content = str_replace('{admin_url}', self::$adminUrl, $content);
 
         $this->template = '<!-- start: ' . $this->name . ' -->';
         $this->template .= $content;
