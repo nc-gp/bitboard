@@ -95,7 +95,7 @@ class Step_5 extends StepBase implements StepInterface
 			$db = new Database($config['host'], $config['user'], $config['pass']);
 			$db->SelectDatabase($config['name']);
 
-			$db->Query('UPDATE bit_settings SET forum_name = ?, forum_description = ?, admin_path = ? WHERE id = ?', $forumName, $forumDesc, $adminPath, 0);
+			$db->Query("UPDATE bit_settings SET forum_name = ?, forum_description = ?, admin_path = ? WHERE settings_key = 'core'", $forumName, $forumDesc, $adminPath);
 
 			$db->Close();
 		}

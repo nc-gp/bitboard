@@ -817,13 +817,15 @@ class AdminPage extends PageBase implements PageInterface
                     return;
                 }
 
-                if (RankController::IsBuiltIn($rankID) && !$actorIsTop)
+                $builtIn = RankController::IsBuiltIn((string) $existing['rank_name']);
+
+                if ($builtIn && !$actorIsTop)
                 {
                     $this->AdminError('Built-in ranks can only be managed by the top rank.');
                     return;
                 }
 
-                if (RankController::IsBuiltIn($rankID))
+                if ($builtIn)
                 {
                     $this->AdminError('Built-in ranks cannot be deleted.');
                     return;
@@ -858,13 +860,13 @@ class AdminPage extends PageBase implements PageInterface
                 return;
             }
 
-            if ($action === 'edit' && RankController::IsBuiltIn($rankID) && !$actorIsTop)
+            if ($action === 'edit' && RankController::IsBuiltIn((string) $existing['rank_name']) && !$actorIsTop)
             {
                 $this->AdminError('Built-in ranks can only be managed by the top rank.');
                 return;
             }
 
-            $builtIn = $action === 'edit' && RankController::IsBuiltIn($rankID);
+            $builtIn = $action === 'edit' && RankController::IsBuiltIn((string) $existing['rank_name']);
 
             $name = $this->PostedString('rank_name');
 
@@ -976,7 +978,7 @@ class AdminPage extends PageBase implements PageInterface
         $rankID = (int) $rank['id'];
         $flags = (int) $rank['rank_flags'];
         $position = (int) $rank['rank_position'];
-        $builtIn = RankController::IsBuiltIn($rankID);
+        $builtIn = RankController::IsBuiltIn((string) $rank['rank_name']);
         $canManage = $this->CanManageRankPosition($actorPosition, $position, $actorIsTop)
             && (!$builtIn || $actorIsTop);
 

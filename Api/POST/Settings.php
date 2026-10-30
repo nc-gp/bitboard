@@ -32,7 +32,7 @@ class Settings
         }
 
         $db->Query(
-            'UPDATE bit_settings SET forum_name = ?, forum_description = ?, forum_online_msg = ?, forum_online = ?, forum_force_login = ?, forum_credits = ? WHERE id = 0',
+            "UPDATE bit_settings SET forum_name = ?, forum_description = ?, forum_online_msg = ?, forum_online = ?, forum_force_login = ?, forum_credits = ? WHERE settings_key = 'core'",
             $forumName,
             $forumDesc,
             $forumOnlineMsg,

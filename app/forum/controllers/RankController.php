@@ -9,7 +9,7 @@ class RankController
     // Ranks created by the installer. Their names are referenced elsewhere
     // (for example registration looks up the "User" rank) and they cannot be
     // renamed or deleted from the admin panel.
-    public const BUILT_IN_IDS = [1, 2, 3];
+    public const BUILT_IN_NAMES = ['admin', 'user', 'banned'];
 
     // Higher positions have more authority. The built-in Admin rank is always
     // the highest, and custom ranks can be placed between Banned and Admin.
@@ -18,9 +18,9 @@ class RankController
     public const BANNED_POSITION = 0;
     public const MAX_CUSTOM_POSITION = 99;
 
-    public static function IsBuiltIn(int $rankID): bool
+    public static function IsBuiltIn(string $rankName): bool
     {
-        return in_array($rankID, self::BUILT_IN_IDS, true);
+        return in_array(strtolower(trim($rankName)), self::BUILT_IN_NAMES, true);
     }
 
     /**
@@ -42,6 +42,13 @@ class RankController
     public static function GetByName(Database $db, string $rankName): array
     {
         return $db->Query('SELECT * FROM bit_ranks WHERE rank_name = ? LIMIT 1', $rankName)->FetchArray();
+    }
+
+    public static function GetIDByName(Database $db, string $rankName): int
+    {
+        $rank = self::GetByName($db, $rankName);
+
+        return (int) ($rank['id'] ?? 0);
     }
 
     public static function MaxPosition(Database $db): int

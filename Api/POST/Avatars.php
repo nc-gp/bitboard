@@ -31,9 +31,9 @@ class Avatars
         }
 
         $db->Query(
-            'UPDATE bit_settings
+            "UPDATE bit_settings
             SET avatar_uploads = ?, avatar_max_size = ?, avatar_formats = ?, avatar_max_width = ?, avatar_max_height = ?
-            WHERE id = 0',
+            WHERE settings_key = 'core'",
             $uploads,
             $maxSize,
             $formats,

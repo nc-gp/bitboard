@@ -110,7 +110,7 @@ class Step_3 extends StepBase implements StepInterface
 			$InstallDatabase->SelectDatabase($config['name']);
 
 			$InstallDatabase->Query('CREATE TABLE IF NOT EXISTS bit_settings (
-				id TINYINT(1) UNSIGNED PRIMARY KEY,
+				settings_key VARCHAR(32) NOT NULL PRIMARY KEY,
 				forum_name VARCHAR(64) NOT NULL,
 				forum_description VARCHAR(256) NOT NULL,
 				forum_online TINYINT(1) NOT NULL,
@@ -127,9 +127,9 @@ class Step_3 extends StepBase implements StepInterface
 			)');
 
 			$InstallDatabase->Query('INSERT INTO bit_settings 
-				(id,forum_name,forum_description,forum_online,forum_online_msg,forum_theme,forum_force_login,forum_credits) 
-				VALUES (?,?,?,?,?,?,?,?)', 
-				array(0, 'Forum', 'Your awesome forum', 1, 'Back soon.', 'default', 0, 1)
+				(settings_key,forum_name,forum_description,forum_online,forum_online_msg,forum_theme,forum_force_login,forum_credits) 
+				VALUES (\'core\',?,?,?,?,?,?,?)', 
+				array('Forum', 'Your awesome forum', 1, 'Back soon.', 'default', 0, 1)
 			);
 
 			CategoryController::CreateTable($InstallDatabase);
@@ -140,8 +140,18 @@ class Step_3 extends StepBase implements StepInterface
 
 			SubForumController::CreateTable($InstallDatabase);
 
+			RankController::CreateTable($InstallDatabase);
+			RankController::Create($InstallDatabase, 'Admin', '<span style="color: #B22222">{username}</span>', Permissions::$All, RankController::ADMIN_POSITION);
+			RankController::Create($InstallDatabase, 'User', '<span style="font-weight: bold">{username}</span>', Permissions::VIEWING_FORUM | Permissions::CREATING_POSTS | Permissions::CREATING_THREADS, RankController::USER_POSITION);
+			RankController::Create($InstallDatabase, 'Banned', '<span style="text-decoration: line-through">{username}</span>', 0, RankController::BANNED_POSITION);
+
+			$adminRankID = RankController::GetIDByName($InstallDatabase, 'Admin');
+
+			if ($adminRankID <= 0)
+				throw new Exception('The built-in Admin rank could not be created.');
+
 			AccountController::CreateTable($InstallDatabase);
-			AccountController::Create($InstallDatabase, 'BitBot', '-', '-', 1);
+			AccountController::Create($InstallDatabase, 'BitBot', '-', '-', $adminRankID);
 
 			LoginThrottle::CreateTable($InstallDatabase);
 
@@ -155,11 +165,6 @@ class Step_3 extends StepBase implements StepInterface
 			AuditController::CreateTable($InstallDatabase);
 			ForumSubscriptionController::CreateTable($InstallDatabase);
 			ThreadReadController::CreateTable($InstallDatabase);
-
-			RankController::CreateTable($InstallDatabase);
-			RankController::Create($InstallDatabase, 'Admin', '<span style="color: #B22222">{username}</span>', Permissions::$All, RankController::ADMIN_POSITION);
-			RankController::Create($InstallDatabase, 'User', '<span style="font-weight: bold">{username}</span>', Permissions::VIEWING_FORUM | Permissions::CREATING_POSTS | Permissions::CREATING_THREADS, RankController::USER_POSITION);
-			RankController::Create($InstallDatabase, 'Banned', '<span style="text-decoration: line-through">{username}</span>', 0, RankController::BANNED_POSITION);
 
 			PrefixController::CreateTable($InstallDatabase);
 			PrefixController::Create($InstallDatabase, 'Closed', 'prclose');

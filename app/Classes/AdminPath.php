@@ -75,7 +75,7 @@ class AdminPath
 
         try
         {
-            $row = $db->Query('SELECT admin_path FROM bit_settings WHERE id = 0')->FetchArray();
+            $row = $db->Query("SELECT admin_path FROM bit_settings WHERE settings_key = 'core'")->FetchArray();
             $path = self::Normalize((string) ($row['admin_path'] ?? ''));
         }
         catch (Throwable $e)

@@ -10,11 +10,6 @@ namespace App\Forum\Structs;
 class ForumDataStruct
 {
     /**
-     * @var int The unique identifier for the forum (nothing important).
-     */
-    public int $id;
-
-    /**
      * @var bool Whether the forum is online or not.
      */
     public bool $forum_online;
@@ -93,7 +88,10 @@ class ForumDataStruct
     public function __construct(array $forumData)
 	{
 		foreach($forumData as $key => $value)
-			$this->{$key} = $value;
+		{
+			if (property_exists($this, $key))
+				$this->{$key} = $value;
+		}
 	}
 }
 

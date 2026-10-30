@@ -12,6 +12,7 @@ use App\Classes\EmailUtils;
 use App\Classes\PasswordUtils;
 
 use App\Forum\Controllers\AccountController;
+use App\Forum\Controllers\RankController;
 use App\Classes\Database;
 use Exception;
 
@@ -90,12 +91,17 @@ class Step_4 extends StepBase implements StepInterface
 			$NewUserDatabase = new Database($config['host'], $config['user'], $config['pass']);
 			$NewUserDatabase->SelectDatabase($config['name']);
 
+			$adminRankID = RankController::GetIDByName($NewUserDatabase, 'Admin');
+
+			if ($adminRankID <= 0)
+				throw new Exception('The built-in Admin rank could not be found.');
+
 			AccountController::Create(
 				$NewUserDatabase,
 				$_POST['username'],
 				PasswordUtils::GetHash($_POST['password']),
 				$_POST['email'],
-				1
+				$adminRankID
 			);
 
 			$NewUserDatabase->Close();

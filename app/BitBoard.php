@@ -45,7 +45,7 @@ class BitBoard
 		$this->database = new Database($config['host'], $config['user'], $config['pass']);
 		$this->database->SelectDatabase($config['name']);
 		Migrator::Run($this->database);
-		$this->data = new ForumDataStruct($this->database->Query('SELECT * FROM bit_settings')->FetchArray());
+		$this->data = new ForumDataStruct($this->database->Query("SELECT * FROM bit_settings WHERE settings_key = 'core'")->FetchArray());
 
 		define('BB_THEME', ThemeController::ResolveTheme($this->database, (string) $this->data->forum_theme));
 

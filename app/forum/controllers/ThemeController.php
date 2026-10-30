@@ -52,7 +52,7 @@ class ThemeController
 
         try
         {
-            $row = $db->Query('SELECT forum_theme FROM bit_settings WHERE id = 0')->FetchArray();
+            $row = $db->Query("SELECT forum_theme FROM bit_settings WHERE settings_key = 'core'")->FetchArray();
             $theme = (string) ($row['forum_theme'] ?? 'default');
         }
         catch (Throwable $e)
@@ -243,7 +243,7 @@ class ThemeController
 
         try
         {
-            $db->Query('UPDATE bit_settings SET forum_theme = ? WHERE id = 0', $slug);
+            $db->Query("UPDATE bit_settings SET forum_theme = ? WHERE settings_key = 'core'", $slug);
             self::ClearPreview();
         }
         catch (Throwable $e)
