@@ -3,6 +3,24 @@
     /* ? */
 }
 
+#thread-content,
+.post-content {
+    overflow-wrap: anywhere;
+}
+
+#thread-content img,
+.post-content img {
+    max-width: 100%;
+    height: auto;
+}
+
+#thread-content table,
+.post-content table {
+    display: block;
+    max-width: 100%;
+    overflow-x: auto;
+}
+
 .bg {
     background: var(--opposite);
     padding: 15px;
@@ -683,4 +701,98 @@
 .reaction-trigger.reaction-angry i,
 .reaction-option.reaction-angry i {
     color: #fa5252;
+}
+
+@media (max-width: 900px) {
+    #content {
+        margin: 20px 16px;
+    }
+
+    #thread-title {
+        font-size: 1.5rem;
+    }
+
+    #prethread,
+    .prepost {
+        grid-template-columns: minmax(0, 1fr);
+        grid-template-areas: none;
+        gap: 0;
+    }
+
+    #thread-author,
+    .post-author {
+        margin: 0 0 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px solid var(--opposite-x2);
+    }
+
+    .post-author {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-areas:
+            "avatar name"
+            "avatar rank";
+        align-items: center;
+        gap: 2px 10px;
+    }
+
+    .post-useravatar,
+    #thread-useravatar {
+        grid-area: avatar;
+        width: 44px;
+        height: 44px;
+        margin: 0;
+    }
+
+    .post-username,
+    #thread-username {
+        grid-area: name;
+        min-width: 0;
+        margin: 0;
+        font-size: 1rem;
+        overflow-wrap: anywhere;
+    }
+
+    .post-userrank,
+    #thread-userrank {
+        grid-area: rank;
+        margin: 0;
+        font-size: 0.8rem;
+    }
+
+    .post-userstats,
+    #thread-author #thread-userstats {
+        display: none;
+    }
+
+    #thread-author {
+        display: block;
+    }
+
+    #thread-author > div {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-areas:
+            "avatar name"
+            "avatar rank";
+        align-items: center;
+        gap: 2px 10px;
+        width: 100%;
+    }
+
+    #thread-footer,
+    .post-footer {
+        grid-column: 1;
+        justify-content: flex-start;
+        padding-bottom: 0;
+    }
+
+    #posts .prepost:first-child {
+        margin-top: 20px;
+    }
+
+    .reaction-form {
+        right: auto;
+        left: 0;
+    }
 }

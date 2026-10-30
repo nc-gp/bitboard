@@ -66,3 +66,24 @@
     color: gray;
     white-space: nowrap;
 }
+
+@media (max-width: 480px) {
+    .viewing {
+        gap: 6px 10px;
+        padding: 10px 12px;
+    }
+
+    .viewing-users {
+        gap: 5px;
+    }
+
+    .viewing-user {
+        max-width: 100%;
+    }
+
+    .viewing-user-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+}

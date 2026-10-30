@@ -26,3 +26,15 @@
 .no-hover:hover {
     background-color: rgba(0,0,0,0) !important;
 }
+
+@media (max-width: 760px) {
+    .pagination {
+        flex-wrap: wrap;
+        gap: 3px;
+        margin: 20px 16px 10px;
+    }
+
+    .pagination-btn {
+        margin-left: 0;
+    }
+}

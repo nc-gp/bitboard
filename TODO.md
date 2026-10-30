@@ -240,7 +240,6 @@ Items marked **good first issue** are small and self-contained.
 - [x] Avatar upload limits are configurable from a dedicated Avatars tab inside Forum Settings:
   uploads enabled/disabled, maximum file size, allowed formats, and optional dimension limits,
   enforced in account settings.
-- [ ] Account settings for timezone and notification preferences.
 - [ ] Optional two-factor authentication (TOTP) after the core is stable.
 - [ ] Ban/suspension records with reasons and expiry instead of only the "Banned" rank.
 
@@ -310,13 +309,11 @@ Items marked **good first issue** are small and self-contained.
 - [x] Admin user management: searchable and rank-filtered user list, pagination, rank
   assignment, ban/unban, reputation adjustments, and rank-hierarchy enforcement so lower
   ranks cannot modify users or ranks at or above their own position.
-- [ ] Account deletion with explicit content reassignment or removal rules.
-- [x] Rank/permission matrix editor with readable labels for every bit flag.
+- [ ] Rank/permission matrix editor with readable labels for every bit flag.
 - [x] Audit log for admin and moderator actions: persistent `bit_audit_log`, a permission-gated
   admin page with actor/action filters and pagination, and entries for settings, categories,
   forums, subforums, prefixes, ranks, users, thread pin/lock/move/edit/delete, post edits/deletes,
   and report resolutions.
-- [ ] Audit log retention/pruning and CSV export.
 - [x] Expanded the admin dashboard with forum statistics, recent threads, newest members, and
   lightweight SVG activity charts for new threads/posts/members, with selectable 7/14/30-day
   periods and previous-period trend labels.
@@ -368,11 +365,24 @@ Items marked **good first issue** are small and self-contained.
 - [ ] Child themes and a documented template variable reference.
 - [x] Consistent dark/light/auto handling: removed the remaining hardcoded
   `data-theme="dark"` layouts so every page uses the shared theme switcher.
-- [ ] Responsive audit on mobile and tablet.
+- [x] Responsive pass for mobile and tablet: header/nav wrapping, index forum rows,
+  forum/subforum thread rows, thread/post author headers, pagination, viewing chips, and
+  login/register spacing at 760px and 480px.
 - [ ] Accessibility pass: landmarks, labels, focus states, contrast, keyboard navigation.
 - [ ] Loading, empty, and error states for every page.
 - [ ] i18n/locale files, timezone-aware dates, and RTL support.
 - [ ] Replace hardcoded English strings in pages/widgets/templates.
+
+---
+
+## Deferred — low priority
+
+Not needed for the first public release. Revisit these after the core moderation and UX
+work is finished.
+
+- [ ] Account settings for timezone and notification preferences.
+- [ ] Account deletion with explicit content reassignment or removal rules.
+- [ ] Audit log retention/pruning and CSV export.
 
 ---
 

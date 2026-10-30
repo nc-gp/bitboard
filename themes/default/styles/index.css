@@ -62,7 +62,7 @@
     align-items: center;
     padding: 15px;
     display: grid;
-    grid-template-columns: 5% 75% 20%;
+    grid-template-columns: 5fr 75fr 20fr;
     grid-template-rows: 1fr;
     gap: 0 10px;
     grid-template-areas: ". .";
@@ -274,4 +274,52 @@
 .stat .userstat .usb-username {
     display: block;
     text-decoration: none;
+}
+
+@media (max-width: 1000px) {
+    .category .category_container .preforum .forum {
+        grid-template-columns: 5fr 68fr 27fr;
+    }
+}
+
+@media (max-width: 760px) {
+    #content {
+        margin: 20px 16px;
+    }
+
+    .category .category_container .preforum .forum {
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-areas:
+            "icon info"
+            "lastpost lastpost";
+        row-gap: 10px;
+    }
+
+    .category .category_container .preforum .forum .forum_icon {
+        grid-area: icon;
+    }
+
+    .category .category_container .preforum .forum .forum_info {
+        grid-area: info;
+        min-width: 0;
+    }
+
+    .category .category_container .preforum .forum .forum_lastpost {
+        grid-area: lastpost;
+    }
+
+    #online-users {
+        margin: 0 16px 20px;
+        padding: 16px;
+    }
+
+    #stats {
+        padding: 30px 16px;
+        gap: 20px;
+    }
+
+    .category .category_container .preforum .forum .forum_lastpost .lastpost_avatar img {
+        width: 42px;
+        height: 42px;
+    }
 }

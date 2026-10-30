@@ -246,3 +246,70 @@
 .thread_subinfo {
   color: #A2A2A2;
 }
+
+@media (max-width: 900px) {
+  #content {
+    margin: 20px 16px;
+  }
+
+  .prethread .thread,
+  .subforum {
+    grid-template-columns: minmax(0, 1fr) auto;
+    grid-template-areas:
+      "info info"
+      "stats lastpost";
+    row-gap: 10px;
+  }
+
+  .prethread .thread .thread_info,
+  .subforum .subforum_info {
+    grid-area: info;
+    min-width: 0;
+  }
+
+  .prethread .thread .stats,
+  .subforum .stats {
+    grid-area: stats;
+    align-self: end;
+    font-size: 0.82rem;
+  }
+
+  .prethread .thread .lastpost,
+  .subforum .lastpost {
+    grid-area: lastpost;
+    justify-self: end;
+  }
+
+  .lastpost_info {
+    margin-left: 8px;
+  }
+
+  .lastpost_avatar img {
+    width: 42px;
+    height: 42px;
+  }
+
+  .info-title i {
+    font-size: 1.6rem;
+  }
+
+  .presubforum {
+    padding: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  .prethread .thread,
+  .subforum {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      "info"
+      "stats"
+      "lastpost";
+  }
+
+  .prethread .thread .lastpost,
+  .subforum .lastpost {
+    justify-self: start;
+  }
+}

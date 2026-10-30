@@ -470,3 +470,53 @@ header nav a {
         animation: none;
     }
 }
+
+@media (max-width: 760px) {
+    header #bg {
+        min-height: 170px;
+    }
+
+    header nav {
+        height: auto;
+        min-height: 62px;
+        flex-wrap: wrap;
+        gap: 2px;
+        padding: 6px 10px;
+    }
+
+    header nav button {
+        max-width: none;
+    }
+
+    nav button {
+        padding: 8px !important;
+    }
+
+    nav i {
+        font-size: 1.4rem;
+    }
+
+    .nav-links {
+        flex-wrap: wrap;
+    }
+
+    #user-managment {
+        gap: 2px;
+    }
+
+    #user-managment .username {
+        display: none;
+    }
+
+    #user-managment img {
+        width: 38px;
+        height: 38px;
+        margin: 0;
+    }
+
+    .notification-bell {
+        width: 38px;
+        height: 38px;
+        margin: 0;
+    }
+}

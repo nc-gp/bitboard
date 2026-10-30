@@ -3,6 +3,7 @@ body {
     font-family: -apple-system, BlinkMacSystemFont, "Avenir Next", Avenir, "Nimbus Sans L", Roboto, "Noto Sans", "Segoe UI", Arial, Helvetica, "Helvetica Neue", sans-serif;
     scroll-behavior: smooth;
     align-content: center;
+    overflow-x: clip;
 }
 
 [role=button]:hover,
@@ -248,4 +249,12 @@ a.mention {
 
 a.mention:hover {
     text-decoration: underline;
+}
+
+.lastpost_avatar {
+    flex: 0 0 auto;
+}
+
+.lastpost_info {
+    min-width: 0;
 }
