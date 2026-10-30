@@ -126,12 +126,10 @@ class ForumController
 
     /**
      * Delete a forum. Callers must ensure it no longer contains threads; its
-     * subforums are removed with it.
+     * subforums and forum watches are removed by the database.
      */
     public static function Delete(Database $db, int $forumID): void
     {
-        ForumSubscriptionController::DeleteForForum($db, $forumID);
-        $db->Query('DELETE FROM bit_subforums WHERE forum_id = ?', $forumID);
         $db->Query('DELETE FROM bit_forums WHERE id = ?', $forumID);
     }
 

@@ -158,6 +158,19 @@ class Migrator
         return (int) ($row['total'] ?? 0) > 0;
     }
 
+    public static function ConstraintExists(Database $db, string $table, string $constraint): bool
+    {
+        $row = $db->Query(
+            'SELECT COUNT(*) AS total FROM information_schema.table_constraints
+                WHERE table_schema = DATABASE() AND table_name = ? AND constraint_name = ?
+                    AND constraint_type = \'FOREIGN KEY\'',
+            $table,
+            $constraint
+        )->FetchArray();
+
+        return (int) ($row['total'] ?? 0) > 0;
+    }
+
     /**
      * @return array<int, array{version: int, name: string, up: callable}>
      */

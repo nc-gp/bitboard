@@ -143,8 +143,12 @@ Items marked **good first issue** are small and self-contained.
   on account username/email, indexes for last activity, thread forums/users, and post
   threads/users, plus defaults for thread flags/prefix/like counters and post like counters.
   Fresh installs receive the same definitions in their `CREATE TABLE` statements.
-- [ ] **Add foreign keys with deliberate `ON DELETE` behavior.** Cascade deletion is still
-  handled in application code.
+- [x] **Add foreign keys with deliberate `ON DELETE` behavior.** Migration 16 cleans orphaned
+  rows, normalizes referenced ID columns to unsigned integers, and adds foreign keys for accounts,
+  categories, forums, subforums, threads, posts, likes, edit history, subscriptions, read
+  positions, reports, and notifications. Content and dependent rows use cascades where safe;
+  authored content, ranks, categories, and forums use restrictive rules. Manual deletes remain
+  only for notification/report targets that use `0` as a sentinel.
 - [x] **Add a migration system.** `app/migrations/` contains numbered migrations and
   `Migrator` records applied versions in `bit_migrations`. Pending upgrades run once on the
   next request, guarded by a MySQL advisory lock; fresh installs run the same migrations after

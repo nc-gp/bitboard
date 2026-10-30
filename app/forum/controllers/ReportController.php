@@ -161,18 +161,6 @@ class ReportController
         );
     }
 
-    public static function DeleteForThread(Database $db, int $threadID): void
-    {
-        try
-        {
-            $db->Query('DELETE FROM bit_reports WHERE thread_id = ?', $threadID);
-        }
-        catch (Throwable $e)
-        {
-            error_log('BitBoard report cleanup failed: ' . $e->getMessage());
-        }
-    }
-
     public static function DeleteForPost(Database $db, int $postID): void
     {
         try

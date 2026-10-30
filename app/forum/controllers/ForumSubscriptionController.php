@@ -104,18 +104,6 @@ class ForumSubscriptionController
         }
     }
 
-    public static function DeleteForForum(Database $db, int $forumID): void
-    {
-        try
-        {
-            $db->Query('DELETE FROM bit_forum_subscriptions WHERE forum_id = ?', $forumID);
-        }
-        catch (Throwable $e)
-        {
-            error_log('BitBoard forum subscription cleanup failed: ' . $e->getMessage());
-        }
-    }
-
     public static function DeleteForSubforum(Database $db, int $subforumID): void
     {
         try

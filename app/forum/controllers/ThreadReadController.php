@@ -73,9 +73,4 @@ class ThreadReadController
 
         return $result;
     }
-
-    public static function DeleteForThread(Database $db, int $threadID): void
-    {
-        $db->Query('DELETE FROM bit_thread_reads WHERE thread_id = ?', $threadID);
-    }
 }

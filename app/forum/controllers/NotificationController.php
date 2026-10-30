@@ -205,7 +205,9 @@ class NotificationController
     {
         try
         {
-            $db->Query('DELETE FROM bit_notifications WHERE thread_id = ?', $threadID);
+            $db->Query('DELETE FROM bit_notifications
+                WHERE thread_id = ?
+                    OR post_id IN (SELECT id FROM bit_posts WHERE thread_id = ?)', $threadID, $threadID);
         }
         catch (Throwable $e)
         {

@@ -83,18 +83,6 @@ class SubscriptionController
             error_log('BitBoard subscription notification failed: ' . $e->getMessage());
         }
     }
-
-    public static function DeleteForThread(Database $db, int $threadID): void
-    {
-        try
-        {
-            $db->Query('DELETE FROM bit_thread_subscriptions WHERE thread_id = ?', $threadID);
-        }
-        catch (Throwable $e)
-        {
-            error_log('BitBoard subscription cleanup failed: ' . $e->getMessage());
-        }
-    }
 }
 
 ?>

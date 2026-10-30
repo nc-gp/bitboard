@@ -100,7 +100,9 @@ class ContentController
     }
 
     /**
-     * Permanently delete a thread, every post inside it, and their related rows.
+     * Permanently delete a thread. Foreign keys cascade to posts, likes, edit
+     * history, subscriptions, read positions, and reports; notifications are
+     * removed explicitly because their target columns use 0 as "none".
      */
     public static function DeleteThread(Database $db, int $threadID): void
     {
@@ -108,25 +110,7 @@ class ContentController
 
         try
         {
-            $postIDs = [];
-            $rows = $db->Query('SELECT id FROM bit_posts WHERE thread_id = ?', $threadID)->FetchAll();
-            foreach ($rows as $row)
-                $postIDs[] = (int) $row['id'];
-
-            if (count($postIDs) > 0)
-            {
-                $placeholders = implode(',', array_fill(0, count($postIDs), '?'));
-                $db->Query('DELETE FROM bit_posts_likes WHERE post_id IN (' . $placeholders . ')', $postIDs);
-                $db->Query('DELETE FROM bit_post_edits WHERE post_id IN (' . $placeholders . ')', $postIDs);
-                $db->Query('DELETE FROM bit_posts WHERE thread_id = ?', $threadID);
-            }
-
-            $db->Query('DELETE FROM bit_threads_likes WHERE thread_id = ?', $threadID);
-            $db->Query('DELETE FROM bit_thread_edits WHERE thread_id = ?', $threadID);
-            $db->Query('DELETE FROM bit_notifications WHERE thread_id = ?', $threadID);
-            $db->Query('DELETE FROM bit_thread_subscriptions WHERE thread_id = ?', $threadID);
-            $db->Query('DELETE FROM bit_thread_reads WHERE thread_id = ?', $threadID);
-            $db->Query('DELETE FROM bit_reports WHERE thread_id = ?', $threadID);
+            NotificationController::DeleteForThread($db, $threadID);
             $db->Query('DELETE FROM bit_threads WHERE id = ?', $threadID);
 
             $db->Commit();
@@ -139,7 +123,8 @@ class ContentController
     }
 
     /**
-     * Permanently delete a post and its related rows.
+     * Permanently delete a post. Likes and edit history cascade; notifications
+     * and reports are removed explicitly.
      */
     public static function DeletePost(Database $db, int $postID): void
     {
@@ -147,11 +132,10 @@ class ContentController
 
         try
         {
-            $db->Query('DELETE FROM bit_posts_likes WHERE post_id = ?', $postID);
-            $db->Query('DELETE FROM bit_post_edits WHERE post_id = ?', $postID);
-            $db->Query('DELETE FROM bit_notifications WHERE post_id = ?', $postID);
-            $db->Query('DELETE FROM bit_reports WHERE post_id = ?', $postID);
+            NotificationController::DeleteForPost($db, $postID);
+            ReportController::DeleteForPost($db, $postID);
             $db->Query('DELETE FROM bit_posts WHERE id = ?', $postID);
+
             $db->Commit();
         }
         catch (Throwable $e)
