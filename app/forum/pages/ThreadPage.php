@@ -27,6 +27,7 @@ use App\Forum\Controllers\ThreadReadController;
 use App\Forum\Widgets\PaginationWidget;
 use App\Forum\Widgets\PrefixWidget;
 use App\Forum\Widgets\ReactionWidget;
+use App\Forum\Widgets\ViewingWidget;
 
 class ThreadPage extends PageBase implements PageInterface
 {
@@ -564,6 +565,7 @@ class ThreadPage extends PageBase implements PageInterface
         $this->template = new Template('thread', 'thread');
         $this->template->AddEscapedEntry('{thread_id}', $this->threadID);
         $this->template->AddEntry('{thread}', $this->thread);
+        $this->template->AddEntry('{viewing}', (new ViewingWidget($this->database, 'thread', $this->threadID))->Template);
         $this->template->AddEntry('{posts}', $this->posts);
         $this->template->AddEntry('{reply_area}', $this->replyArea);
         $this->template->AddEntry('{pagination}', $this->postsCount > $this->maximumResults ? $paginationTemplate->Template->template : '');

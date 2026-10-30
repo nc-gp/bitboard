@@ -19,6 +19,7 @@ use App\Forum\Controllers\ReportController;
 use App\Forum\Controllers\SubscriptionController;
 use App\Forum\Controllers\SettingsController;
 use App\Forum\Controllers\ThreadReadController;
+use App\Forum\Controllers\ViewingController;
 
 use App\Forum\Structs\ForumDataStruct;
 
@@ -101,6 +102,19 @@ class BitBoard
 				if(count($SplitedURL) > 1 || empty($SplitedURL))
 					UrlManager::Redirect(UrlManager::GetPath() . 'banned');
 			}
+
+			// Remember where the member is browsing for the "who is viewing" lists.
+			$viewingType = '';
+			$viewingID = 0;
+
+			if (isset($SplitedURL[1]) && is_numeric($SplitedURL[1])
+				&& in_array($SplitedURL[0] ?? '', ['forum', 'subforum', 'thread'], true))
+			{
+				$viewingType = (string) $SplitedURL[0];
+				$viewingID = (int) $SplitedURL[1];
+			}
+
+			ViewingController::Track($this->database, (int) $_SESSION['bitboard_user']->id, $viewingType, $viewingID);
 		}
 
 		if($this->data->forum_force_login && !SessionManager::IsLogged())

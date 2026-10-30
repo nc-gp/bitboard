@@ -17,6 +17,7 @@ use App\Forum\Controllers\ContentController;
 use App\Forum\Controllers\PostController;
 use App\Forum\Controllers\ThreadReadController;
 use App\Forum\Widgets\WatchWidget;
+use App\Forum\Widgets\ViewingWidget;
 
 use App\Classes\AvatarUtils;
 use App\Classes\RelativeTime;
@@ -254,6 +255,7 @@ class SubforumPage extends PageBase implements PageInterface
             'subforum'
         ))->template);
         $this->template->AddEntry('{new_thread_button}', $newThreadButton);
+        $this->template->AddEntry('{viewing}', (new ViewingWidget($this->database, 'subforum', (int) $this->subforumID))->Template);
         $this->template->AddEntry('{threads}', $this->threads);
         $this->template->AddEntry('{pagination}', $this->threadsCount > $this->maximumResults ? $paginationTemplate->Template->template : '');
 

@@ -26,6 +26,7 @@ use App\Forum\Controllers\PostController;
 use App\Forum\Controllers\ThreadReadController;
 use App\Forum\Widgets\PrefixWidget;
 use App\Forum\Widgets\WatchWidget;
+use App\Forum\Widgets\ViewingWidget;
 
 class ForumPage extends PageBase implements PageInterface
 {
@@ -302,6 +303,7 @@ class ForumPage extends PageBase implements PageInterface
             'forum'
         ))->template);
         $this->template->AddEntry('{new_thread_button}', $newThreadButton);
+        $this->template->AddEntry('{viewing}', (new ViewingWidget($this->database, 'forum', (int) $this->forumID))->Template);
         $this->template->AddEntry('{subforums}', $this->subforums);
         $this->template->AddEntry('{threads}', $this->threads);
         $this->template->AddEntry('{pagination}', $this->threadsCount > $this->maximumResults ? $paginationTemplate->Template->template : '');

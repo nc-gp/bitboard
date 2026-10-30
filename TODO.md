@@ -335,7 +335,8 @@ Items marked **good first issue** are small and self-contained.
 - [x] Member directory filters/sorting. Search by username; sort by newest, oldest,
   username, reputation, posts, or threads; pagination preserves the filters.
 - [x] Online members list with a 15-minute activity window and an index preview.
-- [ ] "Who is viewing" indicators (optional).
+- [x] "Who is viewing" indicators on forums, subforums, and threads, using the existing
+  online window and a per-member viewing location.
 - [x] SEO-friendly thread slugs and canonical URLs. Thread URLs use
   `/thread/{id}/{slug}/page/{page}`, old URLs redirect with a 301, and thread pages
   expose a canonical link.

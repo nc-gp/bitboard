@@ -24,7 +24,7 @@ class AccountController
 		{
 			$columns = $db->Query("SELECT column_name FROM information_schema.columns
 				WHERE table_schema = DATABASE() AND table_name = 'bit_accounts'
-					AND column_name IN ('bio', 'signature')")->FetchAll();
+					AND column_name IN ('bio', 'signature', 'viewing_type', 'viewing_id')")->FetchAll();
 			$names = array_column($columns, 'column_name');
 
 			if (!in_array('bio', $names, true))
@@ -32,6 +32,12 @@ class AccountController
 
 			if (!in_array('signature', $names, true))
 				$db->Query("ALTER TABLE bit_accounts ADD COLUMN signature VARCHAR(500) NOT NULL DEFAULT ''");
+
+			if (!in_array('viewing_type', $names, true))
+				$db->Query("ALTER TABLE bit_accounts ADD COLUMN viewing_type VARCHAR(16) NOT NULL DEFAULT ''");
+
+			if (!in_array('viewing_id', $names, true))
+				$db->Query('ALTER TABLE bit_accounts ADD COLUMN viewing_id INT(6) UNSIGNED NOT NULL DEFAULT 0');
 		}
 		catch (\Throwable $e)
 		{
@@ -142,7 +148,7 @@ class AccountController
 	/**
 	 * Get the timestamp used to decide whether an account is online.
 	 */
-	private static function OnlineCutoff(): string
+	static public function OnlineCutoff(): string
 	{
 		return date('Y-m-d H:i:s', time() - self::ONLINE_WINDOW_SECONDS);
 	}
@@ -212,7 +218,7 @@ class AccountController
      */
     static public function CreateTable(Database $db)
     {
-        $db->Query('CREATE TABLE IF NOT EXISTS bit_accounts ( id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, username VARCHAR(32) NOT NULL, pass VARCHAR(1024) NOT NULL, email VARCHAR(64) NOT NULL, avatar VARCHAR(255) NULL DEFAULT NULL, bio VARCHAR(1000) NOT NULL DEFAULT \'\', signature VARCHAR(500) NOT NULL DEFAULT \'\', reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, reputation INT(6) NOT NULL DEFAULT 0, last_ip VARCHAR(64), last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP, last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP, rank_id INT(6) NOT NULL)');
+        $db->Query('CREATE TABLE IF NOT EXISTS bit_accounts ( id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, username VARCHAR(32) NOT NULL, pass VARCHAR(1024) NOT NULL, email VARCHAR(64) NOT NULL, avatar VARCHAR(255) NULL DEFAULT NULL, bio VARCHAR(1000) NOT NULL DEFAULT \'\', signature VARCHAR(500) NOT NULL DEFAULT \'\', viewing_type VARCHAR(16) NOT NULL DEFAULT \'\', viewing_id INT(6) UNSIGNED NOT NULL DEFAULT 0, reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, reputation INT(6) NOT NULL DEFAULT 0, last_ip VARCHAR(64), last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP, last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP, rank_id INT(6) NOT NULL)');
     }
 
 	/**

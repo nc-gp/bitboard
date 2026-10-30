@@ -7,6 +7,8 @@ use App\Classes\SessionManager;
 use App\Classes\UrlManager;
 use App\Classes\Database;
 
+use App\Forum\Controllers\ViewingController;
+
 use App\Interfaces\PageInterface;
 
 class LogoutPage extends PageBase implements PageInterface
@@ -20,6 +22,8 @@ class LogoutPage extends PageBase implements PageInterface
     {
         if(!SessionManager::IsLogged())
             UrlManager::Redirect($this->serverPath);
+
+        ViewingController::Clear($this->database, (int) ($_SESSION['bitboard_user']->id ?? 0));
 
         SessionManager::Delete();
         UrlManager::Redirect($this->serverPath);
