@@ -1,83 +1,53 @@
-<!doctype html>
-<html>
-{head}
-<body>
-    <div id="bb-container">
-        <div id="bb-box">
-            <form id="bb-form" action="" method="POST" novalidate autocomplete="off">
-                <input type="hidden" name="step" value="3">
-                <input type="hidden" name="csrf_token" value="{csrf}">
+<section class="installer-view">
+    <p class="installer-kicker">Database</p>
+    <h1>Connect your database.</h1>
+    <p class="installer-lede">
+        Use an existing MySQL database or let BitBoard create one with these credentials.
+        The account needs permission to create tables and indexes.
+    </p>
 
-                <h1 class="bb-lines">BitBoard</h1>
-                <h2 class="bb-lines">Database connection data.</h2>
+    <form id="bb-form" action="" method="POST" novalidate autocomplete="off">
+        <input type="hidden" name="step" value="3">
+        <input type="hidden" name="csrf_token" value="{csrf}">
 
-                <div id="bb-input-area">
-                    <div class="form-control">
-                        <input special name="host" type="text" required="">
-                        <label>
-                            <span style="transition-delay:0ms">H</span>
-                            <span style="transition-delay:50ms">o</span>
-                            <span style="transition-delay:100ms">s</span>
-                            <span style="transition-delay:150ms">t</span>
-                        </label>
-                    </div>
+        <div class="installer-fields">
+            <label class="installer-field" for="db-host">
+                <span>Database host</span>
+                <input id="db-host" special name="host" type="text" required
+                    placeholder="localhost" autocomplete="off" aria-describedby="db-host-hint">
+                <small id="db-host-hint">Usually <code>localhost</code>. Ask your host if unsure.</small>
+            </label>
 
-                    <div class="form-control">
-                        <input special name="username" type="text" required="">
-                        <label>
-                            <span style="transition-delay:0ms">U</span>
-                            <span style="transition-delay:50ms">s</span>
-                            <span style="transition-delay:100ms">e</span>
-                            <span style="transition-delay:150ms">r</span>
-                            <span style="transition-delay:200ms">n</span>
-                            <span style="transition-delay:250ms">a</span>
-                            <span style="transition-delay:300ms">m</span>
-                            <span style="transition-delay:350ms">e</span>
-                        </label>
-                    </div>
+            <label class="installer-field" for="db-user">
+                <span>Database user</span>
+                <input id="db-user" special name="username" type="text" required
+                    autocomplete="off" aria-describedby="db-user-hint">
+                <small id="db-user-hint">The MySQL account BitBoard should use.</small>
+            </label>
 
-                    <div class="form-control">
-                        <input name="password" type="password" required="">
-                        <label>
-                            <span style="transition-delay:0ms">P</span>
-                            <span style="transition-delay:50ms">a</span>
-                            <span style="transition-delay:100ms">s</span>
-                            <span style="transition-delay:150ms">s</span>
-                            <span style="transition-delay:200ms">w</span>
-                            <span style="transition-delay:250ms">o</span>
-                            <span style="transition-delay:300ms">r</span>
-                            <span style="transition-delay:350ms">d</span>
-                        </label>
-                    </div>
+            <label class="installer-field" for="db-password">
+                <span>Database password</span>
+                <input id="db-password" name="password" type="password" required
+                    autocomplete="new-password" aria-describedby="db-password-hint">
+                <small id="db-password-hint">Leave blank only if your database user has no password.</small>
+            </label>
 
-                    <div class="form-control">
-                        <input special name="name" type="text" value="bitboard" required="">
-                        <label>
-                            <span style="transition-delay:0ms">D</span>
-                            <span style="transition-delay:50ms">a</span>
-                            <span style="transition-delay:100ms">t</span>
-                            <span style="transition-delay:150ms">a</span>
-                            <span style="transition-delay:200ms">b</span>
-                            <span style="transition-delay:250ms">a</span>
-                            <span style="transition-delay:300ms">s</span>
-                            <span style="transition-delay:350ms">e</span>
-                        </label>
-                    </div>
-                </div>
-
-                <button class="button">
-                    <input class="button-content" type="submit" value="Next">
-                </button>
-            </form>
+            <label class="installer-field" for="db-name">
+                <span>Database name</span>
+                <input id="db-name" special name="name" type="text" value="bitboard" required
+                    autocomplete="off" aria-describedby="db-name-hint">
+                <small id="db-name-hint">Letters, numbers, and underscores only. Created if it does not exist.</small>
+            </label>
         </div>
 
-        <footer>{footer}</footer>
-    </div>
+        <p class="installer-note">
+            These credentials are written to <code>app/config.php</code>. Keep that file private.
+        </p>
 
-    <script src="./assets/javascripts/spell-element.js"></script>
-	<script src="./assets/javascripts/spell-modal.js"></script>
-    <script src="./assets/javascripts/spell-alert.js"></script>
-    {error}
-    <script src="./assets/javascripts/install/form.js"></script>
-</body>
-</html>
+        {error}
+
+        <div class="installer-actions">
+            <button type="submit" class="button">Test connection</button>
+        </div>
+    </form>
+</section>

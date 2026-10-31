@@ -32,7 +32,7 @@
 BitBoard is dependency-free: plain PHP, MySQLi, and vanilla JavaScript. There is no Composer,
 npm, or build step. Tabler Icons is the only external front-end asset and is pinned via CDN.
 
-- Six-step web installer (database, admin account, forum settings).
+- Responsive six-step web installer with requirement checks, validation, and a finish checklist.
 - Categories → forums → subforums, with locked-forum permissions.
 - Threads and replies with a Markdown editor, live preview, local drafts, CSRF protection,
   edit history, and permanent deletion.

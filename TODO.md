@@ -369,7 +369,9 @@ Items marked **good first issue** are small and self-contained.
 
 - [x] Redesign the offline page as a standalone theme-aware card with no header/footer chrome and
   a context-aware action (staff login, view forum, or log out).
-- [ ] Redesign the installation wizard to match the default theme layout and styling.
+- [x] Redesign the installation wizard to match the default theme layout and styling. The installer
+  now uses a two-column rail, numbered step progress, card-based requirements, labelled fields with
+  hints, accessible focus/validation states, a finish checklist, and responsive layouts.
 - [x] Pin the admin panel to the default theme so custom forum themes cannot break its
   templates, header, footer, or assets.
 - [ ] Build a dedicated admin theme/layout independent of the default theme.

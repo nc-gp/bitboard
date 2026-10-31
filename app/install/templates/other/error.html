@@ -1,12 +1,13 @@
 <script>
-    // actually we can create html element casually without javascript. then fetch and pass element through parameter...
-    const el_error = spell_element.f('div', {}, [
-        spell_element.f('h2', {}, ['Error has occured!']),
-        spell_element.f('p', {}, [{error}]),
-        spell_element.f('div', {}, [
-            spell_element.f('button', {sm_action: 'close'}, ['Got it'])
-        ])
-    ]);
+    document.addEventListener('DOMContentLoaded', () => {
+        const el_error = spell_element.f('div', {}, [
+            spell_element.f('h2', {}, ['Error has occurred!']),
+            spell_element.f('p', {}, [{error}]),
+            spell_element.f('div', {}, [
+                spell_element.f('button', {sm_action: 'close'}, ['Got it'])
+            ])
+        ]);
 
-    spell_modal.Cast(el_error);
+        spell_modal.Cast(el_error);
+    });
 </script>

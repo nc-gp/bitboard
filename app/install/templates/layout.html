@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+{head}
+<body class="installer-page">
+    <div class="installer-shell">
+        <aside class="installer-rail">
+            <div class="installer-brand">
+                <span class="installer-brand-mark" aria-hidden="true">BB</span>
+                <span class="installer-brand-copy">
+                    <strong>BitBoard</strong>
+                    <small>Forum installation</small>
+                </span>
+            </div>
+
+            <p class="installer-rail-intro">
+                Six short steps to create your database, administrator account, and first forum.
+            </p>
+
+            {steps}
+
+            <div class="installer-rail-note">
+                <span>Need help?</span>
+                <a href="https://github.com/bit-paper/bitboard" target="_blank" rel="noopener noreferrer">Read the docs</a>
+            </div>
+        </aside>
+
+        <main class="installer-main">
+            <div class="installer-topline">
+                <span class="installer-topline-label">Setup</span>
+                <span class="installer-topline-step">Step {step} of {total_steps}</span>
+            </div>
+
+            <div class="installer-panel">
+                {content}
+            </div>
+
+            {footer}
+        </main>
+    </div>
+
+    <script src="./assets/javascripts/spell-element.js"></script>
+    <script src="./assets/javascripts/spell-modal.js"></script>
+    <script src="./assets/javascripts/spell-alert.js"></script>
+    <script src="./assets/javascripts/install/form.js"></script>
+</body>
+</html>

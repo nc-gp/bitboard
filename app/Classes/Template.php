@@ -37,7 +37,10 @@ class Template
      */
     public static function GetTheme(): string
     {
-        return self::$themeOverride ?? BB_THEME;
+        if (self::$themeOverride !== null)
+            return self::$themeOverride;
+
+        return defined('BB_THEME') ? BB_THEME : 'default';
     }
 
     /**

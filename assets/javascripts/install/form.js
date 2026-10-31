@@ -1,92 +1,99 @@
 let showError = true;
 
-// Function to capitalize the first letter of a string
-const capitalizeFirstLetter = str => `${str.charAt(0).toUpperCase()}${str.slice(1)}`;
+const fieldLabel = name => {
+    const label = String(name || 'field').replace(/_/g, ' ');
+    return `${label.charAt(0).toUpperCase()}${label.slice(1)}`;
+};
 
-// Function to display an error toast message
-const showErrorToast = (name, text) => 
-{
-    if(!showError)
+const showErrorToast = (name, text) => {
+    if (!showError || typeof spell_alert === 'undefined')
         return;
 
     spell_alert.Cast({
-        title: name,
+        title: fieldLabel(name),
         description: text,
         time: 5000
     });
-}
+};
 
-// Function to validate a single input element
-const validateInput = input => 
-{
-    const name = capitalizeFirstLetter(input.getAttribute('name'));
+const validateInput = input => {
+    const name = input.getAttribute('name') || 'field';
     const value = input.value.trim();
-    
-    if (value === '') 
-    {
-        showErrorToast(name, " can't be empty!");
-        return false;
+
+    if (input.hasAttribute('required') && value === '')
+        return "Can't be empty.";
+
+    if (input.hasAttribute('cmin')) {
+        const minimum = parseInt(input.getAttribute('cmin'), 10);
+
+        if (Number.isFinite(minimum) && value.length < minimum)
+            return `Needs to be at least ${minimum} characters.`;
     }
 
-    if (input.hasAttribute('cmin')) 
-    {
-        const chars = parseInt(input.getAttribute('cmin'));
-        if (value.length < chars) 
-        {
-            showErrorToast(name, ` needs to be at least ${chars} characters!`);
-            return false;
-        }
-    }
-
-    if (input.hasAttribute('reg')) 
-    {
+    if (input.hasAttribute('reg')) {
         const pattern = new RegExp(input.getAttribute('reg'));
-        if (!pattern.test(value)) 
-        {
-            let text = " is not valid!";
-            if (name === "Password") 
-            {
-                if (!/\d/.test(value)) text = " must contain at least one digit.";
-                if (!/[a-z]/.test(value)) text = " must contain at least one lowercase letter.";
-                if (!/[A-Z]/.test(value)) text = " must contain at least one uppercase letter.";
+
+        if (!pattern.test(value)) {
+            if (name === 'password') {
+                if (!/\d/.test(value))
+                    return 'Must contain at least one digit.';
+
+                if (!/[a-z]/.test(value))
+                    return 'Must contain at least one lowercase letter.';
+
+                if (!/[A-Z]/.test(value))
+                    return 'Must contain at least one uppercase letter.';
             }
-            showErrorToast(name, text);
-            return false;
+
+            return 'Is not valid.';
         }
     }
 
-    return true;
-}
+    return '';
+};
 
-const initStep = () => 
-{
-    document.body.style.transition = "opacity 1s";
-    document.body.style.opacity = 1;
+const initStep = () => {
+    document.body.classList.add('is-ready');
 
     const form = document.getElementById('bb-form');
 
-    form.addEventListener('submit', (e) => 
-    {
-        e.preventDefault();
-        showError = true;
-        
-        const all = document.querySelectorAll('input[special]');
-        let process = true;
+    if (!form)
+        return;
 
-        all.forEach(input => {
-            if (!validateInput(input) && process) {
-                process = false;
-                showError = false;
-            }
-        });
-
-        if (!process) return;
-
-        document.body.style.opacity = 0;
-        setTimeout(() => {
-            form.submit();
-        }, 1000);
+    form.querySelectorAll('input[special]').forEach(input => {
+        input.addEventListener('input', () => input.removeAttribute('aria-invalid'));
     });
-}
 
-window.onload = initStep;
+    form.addEventListener('submit', event => {
+        showError = true;
+
+        let firstInvalid = null;
+
+        for (const input of form.querySelectorAll('input[special]')) {
+            const message = validateInput(input);
+
+            if (message === '')
+                continue;
+
+            input.setAttribute('aria-invalid', 'true');
+            firstInvalid = input;
+            showErrorToast(input.getAttribute('name') || 'field', message);
+            break;
+        }
+
+        if (firstInvalid !== null) {
+            event.preventDefault();
+            firstInvalid.focus();
+            return;
+        }
+
+        const button = form.querySelector('button[type="submit"], input[type="submit"]');
+
+        if (button) {
+            button.disabled = true;
+            button.setAttribute('aria-busy', 'true');
+        }
+    });
+};
+
+document.addEventListener('DOMContentLoaded', initStep);

@@ -1,155 +1,768 @@
+@charset "UTF-8";
+
+/* BitBoard installer — matches the default theme's purple stage language. */
+
+:root {
+    color-scheme: light;
+
+    --bg: #f4f0fa;
+    --bg-deep: #ebe3f7;
+    --panel: #ffffff;
+    --ink: #211a2e;
+    --muted: #6f6580;
+    --line: rgba(33, 26, 46, 0.12);
+    --line-strong: rgba(33, 26, 46, 0.22);
+    --field: #faf8fe;
+    --primary: #7127c3;
+    --primary-hover: #9331ff;
+    --primary-focus: rgba(112, 39, 195, 0.16);
+    --primary-soft: rgba(112, 39, 195, 0.08);
+    --rail: #1b1028;
+    --rail-deep: #120a1c;
+    --rail-ink: #f8f2ff;
+    --rail-muted: #b9a9d0;
+    --success: #2f9e44;
+    --success-soft: rgba(47, 158, 68, 0.10);
+    --danger: #c62828;
+    --danger-soft: rgba(198, 40, 40, 0.10);
+    --warning: #9a6200;
+    --warning-soft: rgba(255, 193, 77, 0.16);
+    --shadow: 0 30px 80px rgba(30, 10, 55, 0.18);
+    --radius: 18px;
+    --font: -apple-system, BlinkMacSystemFont, "Avenir Next", Avenir, "Segoe UI Variable Text",
+        "Segoe UI", Roboto, "Noto Sans", Arial, Helvetica, sans-serif;
+    --mono: "Cascadia Code", "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+}
+
+@media only screen and (prefers-color-scheme: dark) {
+    :root {
+        color-scheme: dark;
+
+        --bg: #0d0914;
+        --bg-deep: #07040b;
+        --panel: #141020;
+        --ink: #f4efff;
+        --muted: #a79bbd;
+        --line: rgba(255, 255, 255, 0.10);
+        --line-strong: rgba(255, 255, 255, 0.20);
+        --field: rgba(255, 255, 255, 0.04);
+        --primary: #a56bff;
+        --primary-hover: #c39bff;
+        --primary-focus: rgba(165, 107, 255, 0.22);
+        --primary-soft: rgba(165, 107, 255, 0.12);
+        --rail: #160d22;
+        --rail-deep: #0d0715;
+        --rail-ink: #f8f2ff;
+        --rail-muted: #a99ac2;
+        --success: #69db7c;
+        --success-soft: rgba(105, 219, 124, 0.12);
+        --danger: #ff8787;
+        --danger-soft: rgba(255, 135, 135, 0.12);
+        --warning: #ffd43b;
+        --warning-soft: rgba(255, 212, 59, 0.12);
+        --shadow: 0 30px 90px rgba(0, 0, 0, 0.55);
+    }
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html {
+    background: var(--bg-deep);
+}
+
 body {
-  margin: 0;
-  background-color: #212121;
-  color: white;
-  font-family: -apple-system, BlinkMacSystemFont, "Avenir Next", Avenir,
-  "Nimbus Sans L", Roboto, "Noto Sans", "Segoe UI", Arial, Helvetica,
-  "Helvetica Neue", sans-serif;
-  scroll-behavior: smooth;
-  opacity: 0;
+    min-height: 100vh;
+    margin: 0;
+    padding: 28px;
+    display: grid;
+    place-items: center;
+    background-color: var(--bg);
+    background-image:
+        radial-gradient(800px 500px at 8% -10%, rgba(112, 39, 195, 0.14), transparent 60%),
+        radial-gradient(700px 500px at 100% 100%, rgba(147, 49, 255, 0.12), transparent 60%);
+    color: var(--ink);
+    font-family: var(--font);
+    line-height: 1.55;
 }
 
-#bb-container {
-  display: grid;
-  place-items: center;
-  min-height: 100vh;
+.installer-shell {
+    display: grid;
+    grid-template-columns: 310px minmax(0, 1fr);
+    width: min(1120px, 100%);
+    overflow: hidden;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--panel);
+    box-shadow: var(--shadow);
 }
 
-#bb-box {
-  min-width: 300px;
-  padding: 25px;
-  background-color: #161616;
-  box-shadow: 0px 15px 60px #ae00ff;
-  outline: 1px solid #642b99;
-  border-radius: 10px;
-  position: relative;
-  display: grid;
-  place-content: center;
+/* --- Rail ---------------------------------------------------------------- */
+
+.installer-rail {
+    display: flex;
+    flex-direction: column;
+    gap: 26px;
+    padding: 34px 28px;
+    background:
+        radial-gradient(360px 260px at 110% 0%, rgba(147, 49, 255, 0.35), transparent 68%),
+        linear-gradient(165deg, var(--rail) 0%, var(--rail-deep) 100%);
+    color: var(--rail-ink);
 }
 
-#bb-input-area {
-  margin: 20px 0;
+.installer-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-form {
-  max-width: 230px;
+.installer-brand-mark {
+    display: grid;
+    place-items: center;
+    width: 46px;
+    height: 46px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 14px;
+    background: linear-gradient(145deg, #9331ff, #5a13a8);
+    color: #fff;
+    font-size: 0.82rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
 }
 
-h1 {
-  color: #7700ff;
-  font-weight: 600;
-  font-size: 40px;
+.installer-brand-copy {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.1;
 }
 
-h2 {
-  font-size: 18px;
-  margin-top: 17px;
+.installer-brand-copy strong {
+    font-size: 1.1rem;
+    letter-spacing: 0.02em;
 }
 
-.bb-lines {
-  text-align: center;
-  line-height: 1;
+.installer-brand-copy small {
+    margin-top: 3px;
+    color: var(--rail-muted);
+    font-size: 0.62rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+}
+
+.installer-rail-intro {
+    margin: 0;
+    color: var(--rail-muted);
+    font-size: 0.84rem;
+    line-height: 1.6;
+}
+
+.installer-steps {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.installer-step {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 9px 10px;
+    border-radius: 10px;
+    color: var(--rail-muted);
+    font-size: 0.84rem;
+}
+
+.installer-step-number {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    place-items: center;
+    flex: 0 0 28px;
+    width: 28px;
+    height: 28px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 50%;
+    background: var(--rail);
+    color: var(--rail-muted);
+    font-size: 0.62rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.installer-step:not(:last-child)::after {
+    content: "";
+    position: absolute;
+    top: 36px;
+    left: 23px;
+    width: 1px;
+    height: calc(100% - 24px);
+    background: rgba(255, 255, 255, 0.12);
+}
+
+.installer-step.is-complete {
+    color: rgba(248, 242, 255, 0.78);
+}
+
+.installer-step.is-complete .installer-step-number {
+    border-color: rgba(147, 49, 255, 0.55);
+    background: rgba(147, 49, 255, 0.24);
+    color: #fff;
+}
+
+.installer-step.is-current {
+    background: rgba(255, 255, 255, 0.07);
+    color: #fff;
+}
+
+.installer-step.is-current .installer-step-number {
+    border-color: #b988ff;
+    background: linear-gradient(145deg, #9331ff, #5a13a8);
+    color: #fff;
+    box-shadow: 0 0 0 4px rgba(147, 49, 255, 0.18);
+}
+
+.installer-rail-note {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-top: auto;
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.10);
+    color: var(--rail-muted);
+    font-size: 0.72rem;
+}
+
+.installer-rail-note a {
+    color: #d7bdff;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.installer-rail-note a:hover {
+    color: #fff;
+}
+
+/* --- Main ---------------------------------------------------------------- */
+
+.installer-main {
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    padding: 30px 38px 24px;
+    min-width: 0;
+}
+
+.installer-topline {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.68rem;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+}
+
+.installer-topline-label {
+    color: var(--primary);
+}
+
+.installer-panel {
+    flex: 1;
+    width: 100%;
+    max-width: 650px;
+    animation: installer-in 0.35s ease-out both;
+}
+
+@keyframes installer-in {
+    from {
+        opacity: 0;
+        transform: translateY(6px);
+    }
+
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}
+
+.installer-view {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+}
+
+.installer-kicker {
+    margin: 0 0 10px;
+    color: var(--primary);
+    font-size: 0.66rem;
+    font-weight: 700;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+}
+
+.installer-view h1 {
+    margin: 0;
+    color: var(--ink);
+    font-size: clamp(1.9rem, 4vw, 2.65rem);
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    line-height: 1.08;
+}
+
+.installer-lede {
+    max-width: 56ch;
+    margin: 16px 0 0;
+    color: var(--muted);
+    font-size: 0.95rem;
+    line-height: 1.65;
+}
+
+/* Welcome points */
+
+.installer-points {
+    display: grid;
+    gap: 0;
+    margin: 28px 0 30px;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--line);
+}
+
+.installer-points li {
+    display: grid;
+    grid-template-columns: 180px minmax(0, 1fr);
+    gap: 18px;
+    padding: 14px 0;
+    border-bottom: 1px solid var(--line);
+}
+
+.installer-points strong {
+    color: var(--ink);
+    font-size: 0.84rem;
+}
+
+.installer-points span {
+    color: var(--muted);
+    font-size: 0.84rem;
+}
+
+/* Requirement cards */
+
+.installer-requirements {
+    display: grid;
+    gap: 10px;
+    margin: 26px 0 6px;
+}
+
+.installer-requirement {
+    display: flex;
+    align-items: flex-start;
+    gap: 14px;
+    padding: 15px 16px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--field);
+}
+
+.installer-requirement.is-ok {
+    border-color: rgba(47, 158, 68, 0.3);
+    background: var(--success-soft);
+}
+
+.installer-requirement.is-bad {
+    border-color: rgba(198, 40, 40, 0.32);
+    background: var(--danger-soft);
+}
+
+.installer-requirement-mark {
+    display: grid;
+    place-items: center;
+    flex: 0 0 34px;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: var(--panel);
+    color: var(--muted);
+    font-size: 0.62rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+.is-ok .installer-requirement-mark {
+    color: var(--success);
+    box-shadow: inset 0 0 0 1px currentColor;
+}
+
+.is-bad .installer-requirement-mark {
+    color: var(--danger);
+    box-shadow: inset 0 0 0 1px currentColor;
+}
+
+.installer-requirement strong {
+    display: block;
+    margin-bottom: 3px;
+    color: var(--ink);
+    font-size: 0.9rem;
+}
+
+.installer-requirement p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.55;
+}
+
+.installer-mono,
+.installer-view code {
+    font-family: var(--mono);
+    font-size: 0.88em;
+}
+
+.installer-view code {
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: var(--primary-soft);
+    color: var(--primary);
+}
+
+/* Forms */
+
+#bb-form {
+    margin: 0;
+}
+
+.installer-fields {
+    display: grid;
+    gap: 18px;
+    margin-top: 26px;
+}
+
+.installer-field {
+    display: flex;
+    flex-direction: column;
+    gap: 7px;
+    margin: 0;
+    color: var(--ink);
+}
+
+.installer-field > span {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+}
+
+.installer-field input {
+    width: 100%;
+    min-height: 48px;
+    margin: 0;
+    padding: 11px 13px;
+    border: 1px solid var(--line-strong);
+    border-radius: 10px;
+    background: var(--field);
+    color: var(--ink);
+    font-family: var(--font);
+    font-size: 0.96rem;
+    line-height: 1.3;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.installer-field input::placeholder {
+    color: var(--muted);
+    opacity: 0.7;
+}
+
+.installer-field input:focus {
+    border-color: var(--primary);
+    outline: 0;
+    background: var(--panel);
+    box-shadow: 0 0 0 4px var(--primary-focus);
+}
+
+.installer-field input[aria-invalid="true"] {
+    border-color: var(--danger);
+    box-shadow: 0 0 0 4px var(--danger-soft);
+}
+
+.installer-field small {
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.5;
+}
+
+.installer-note {
+    margin: 20px 0 0;
+    padding: 12px 14px;
+    border: 1px dashed var(--line-strong);
+    border-radius: 10px;
+    color: var(--muted);
+    font-size: 0.82rem;
+}
+
+.installer-actions {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-top: 26px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
 }
 
 .button {
-  position: relative;
-  overflow: hidden;
-  height: 3rem;
-  padding: 0 2rem;
-  border-radius: 1.5rem;
-  background: #3d3a4e;
-  background-size: 400%;
-  color: #fff;
-  border: none;
-  line-height: 1;
-  width: 100%;
-  font-size: 16px;
-  cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 48px;
+    padding: 0 24px;
+    border: 0;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #8b3cff 0%, #6420c0 100%);
+    color: #fff;
+    font-family: var(--font);
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    cursor: pointer;
+    box-shadow: 0 12px 28px rgba(112, 39, 195, 0.28);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, filter 0.15s ease;
 }
 
-.button:hover::before {
-  transform: scaleX(1);
+.button:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.06);
+    box-shadow: 0 16px 34px rgba(112, 39, 195, 0.36);
 }
 
-.button-content {
-  position: relative;
-  z-index: 1;
+.button:active {
+    transform: translateY(0);
 }
 
-.button::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  transform: scaleX(0);
-  transform-origin: 0 50%;
-  width: 100%;
-  height: inherit;
-  border-radius: inherit;
-  background: linear-gradient( 82.3deg, rgb(150, 93, 233) 10.8%, rgb(125, 53, 230) 94.3% );
-  transition: all 0.475s;
+.button:focus-visible {
+    outline: 3px solid var(--primary-focus);
+    outline-offset: 3px;
 }
 
-input[type="submit"] {
-  background: none;
-  border: none;
-  color: inherit;
-  font-size: inherit;
-  cursor: inherit;
+.button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+    transform: none;
 }
 
-.form-control {
-  position: relative;
+/* Finish step */
+
+.installer-finish-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin: 26px 0 18px;
 }
 
-.form-control input:not(:last-child) {
-  margin-bottom: 25px;
+.installer-finish-item {
+    padding: 15px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: var(--field);
 }
 
-.form-control input {
-  background-color: transparent;
-  border: 0;
-  border-bottom: 2px #fff solid;
-  display: block;
-  width: 100%;
-  padding: 11px 0;
-  font-size: 14px;
-  color: #fff;
-  line-height: 1;
-  transition: border-bottom-color .2s;
+.installer-finish-item > span {
+    display: block;
+    margin-bottom: 10px;
+    color: var(--primary);
+    font-size: 0.66rem;
+    font-weight: 800;
+    letter-spacing: 0.2em;
 }
 
-.form-control input:focus,
-.form-control input:valid {
-  outline: 0;
-  border-bottom-color: #bc79ff;
+.installer-finish-item strong {
+    display: block;
+    margin-bottom: 5px;
+    font-size: 0.86rem;
 }
 
-.form-control label {
-  position: absolute;
-  top: 15px;
-  left: 0;
-  pointer-events: none;
-  font-size: 0;
+.installer-finish-item p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.78rem;
+    line-height: 1.5;
 }
 
-.form-control label span {
-  display: inline-block;
-  font-size: 15px;
-  min-width: 5px;
-  color: #fff;
-  transition: 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+.installer-warning {
+    padding: 15px 17px;
+    border: 1px solid rgba(154, 98, 0, 0.28);
+    border-radius: 12px;
+    background: var(--warning-soft);
 }
 
-.form-control input:focus+label span,
-.form-control input:valid+label span {
-  color: #bc79ff;
-  transform: translateY(-25px);
+.installer-warning strong {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--warning);
+    font-size: 0.82rem;
 }
 
-footer {
-  position: absolute;
-  bottom: 5px;
-  width: 100%;
-  text-align: center;
+.installer-warning p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.55;
+}
+
+/* Footer */
+
+.installer-footer {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px 18px;
+    margin-top: auto;
+    padding-top: 18px;
+    border-top: 1px solid var(--line);
+    color: var(--muted);
+    font-size: 0.7rem;
+}
+
+.installer-footer a {
+    color: var(--primary);
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.installer-footer a:hover {
+    color: var(--primary-hover);
+}
+
+/* --- Responsive ---------------------------------------------------------- */
+
+@media (max-width: 900px) {
+    body {
+        padding: 16px;
+    }
+
+    .installer-shell {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .installer-rail {
+        gap: 20px;
+        padding: 26px 26px 22px;
+    }
+
+    .installer-rail-intro {
+        max-width: 60ch;
+    }
+
+    .installer-steps {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 4px;
+    }
+
+    .installer-step {
+        padding: 8px;
+    }
+
+    .installer-step:not(:last-child)::after {
+        display: none;
+    }
+
+    .installer-rail-note {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        margin-top: 0;
+        padding-top: 16px;
+    }
+
+    .installer-main {
+        padding: 26px 26px 22px;
+    }
+
+    .installer-panel {
+        max-width: none;
+    }
+}
+
+@media (max-width: 620px) {
+    body {
+        padding: 0;
+        background: var(--panel);
+    }
+
+    .installer-shell {
+        min-height: 100vh;
+        border: 0;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .installer-rail {
+        padding: 22px 20px 18px;
+    }
+
+    .installer-brand-mark {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+    }
+
+    .installer-steps {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .installer-step {
+        font-size: 0.78rem;
+    }
+
+    .installer-step-number {
+        flex-basis: 24px;
+        width: 24px;
+        height: 24px;
+    }
+
+    .installer-main {
+        padding: 22px 20px 18px;
+    }
+
+    .installer-points li {
+        grid-template-columns: minmax(0, 1fr);
+        gap: 2px;
+    }
+
+    .installer-finish-grid {
+        grid-template-columns: minmax(0, 1fr);
+    }
+
+    .installer-actions,
+    .button {
+        width: 100%;
+    }
+
+    .installer-actions {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .installer-panel {
+        animation: none;
+    }
+
+    .button {
+        transition: none;
+    }
 }

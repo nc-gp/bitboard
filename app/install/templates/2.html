@@ -1,36 +1,23 @@
-<!doctype html>
-<html>
-{head}
-<body>
-	<div id="bb-container">
-		<div id="bb-box">
-			<form id="bb-form" action="" method="post">
-				<input type="hidden" name="step" value="2">
-				<input type="hidden" name="csrf_token" value="{csrf}">
+<section class="installer-view">
+    <p class="installer-kicker">Requirements</p>
+    <h1>Check the server.</h1>
+    <p class="installer-lede">
+        BitBoard needs PHP 8.0 or newer and the MySQLi extension. These checks run automatically.
+    </p>
 
-                <h1 class="bb-lines">BitBoard</h1>
-                <h2 class="bb-lines">Installation requirements.</h2>
-				
-				<p class="bb-lines">
-					{php}
-				</p>
+    <div class="installer-requirements">
+        {php}
+        {mysql}
+    </div>
 
-				<p class="bb-lines">
-					{mysql}
-				</p>
-
-                <button class="button">
-                    <input class="button-content" type="submit" value="Next">
-                </button>
-            </form>
-		</div>
-
-		{footer}
-	</div>
-
-	<script src="./assets/javascripts/spell-element.js"></script>
-	<script src="./assets/javascripts/spell-modal.js"></script>
     {error}
-    <script src="./assets/javascripts/install/form.js"></script>
-</body>
-</html>
+
+    <form id="bb-form" action="" method="post">
+        <input type="hidden" name="step" value="2">
+        <input type="hidden" name="csrf_token" value="{csrf}">
+
+        <div class="installer-actions">
+            <button type="submit" class="button">Continue</button>
+        </div>
+    </form>
+</section>

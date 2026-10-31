@@ -1,71 +1,47 @@
-<!doctype html>
-<html>
-{head}
-<body>
-    <div id="bb-container">
-        <div id="bb-box">
-            <form id="bb-form" action="" method="POST" novalidate autocomplete="off">
-                <input type="hidden" name="step" value="4">
-                <input type="hidden" name="csrf_token" value="{csrf}">
+<section class="installer-view">
+    <p class="installer-kicker">Administrator</p>
+    <h1>Create your administrator.</h1>
+    <p class="installer-lede">
+        This account gets the Admin rank and full access to the forum and admin panel.
+        You can create more accounts later.
+    </p>
 
-                <h1 class="bb-lines">BitBoard</h1>
-                <h2 class="bb-lines">Administration account.</h2>
+    <form id="bb-form" action="" method="POST" novalidate autocomplete="off">
+        <input type="hidden" name="step" value="4">
+        <input type="hidden" name="csrf_token" value="{csrf}">
 
-                <div id="bb-input-area">
+        <div class="installer-fields">
+            <label class="installer-field" for="admin-username">
+                <span>Username</span>
+                <input id="admin-username" cmin="4" special name="username" type="text" required
+                    maxlength="32" autocomplete="username" aria-describedby="admin-username-hint">
+                <small id="admin-username-hint">At least 4 characters. This is your public display name.</small>
+            </label>
 
-                    <div class="form-control">
-                        <input cmin="4" special name="username" type="text" required="">
-                        <label>
-                            <span style="transition-delay:0ms">U</span>
-							<span style="transition-delay:50ms">s</span>
-							<span style="transition-delay:100ms">e</span>
-							<span style="transition-delay:150ms">r</span>
-							<span style="transition-delay:200ms">n</span>
-							<span style="transition-delay:250ms">a</span>
-							<span style="transition-delay:300ms">m</span>
-							<span style="transition-delay:350ms">e</span>
-                        </label>
-                    </div>
+            <label class="installer-field" for="admin-email">
+                <span>Email</span>
+                <input id="admin-email" special name="email" type="email" required
+                    maxlength="64" autocomplete="email" reg="[^@]+@[^@]+\.[a-zA-Z]{2,}"
+                    aria-describedby="admin-email-hint">
+                <small id="admin-email-hint">Used for sign-in and account recovery later.</small>
+            </label>
 
-					<div class="form-control">
-                        <input special name="email" type="text" required="" reg="[^@]+@[^@]+\.[a-zA-Z]{2,}">
-                        <label>
-                            <span style="transition-delay:0ms">E</span>
-							<span style="transition-delay:50ms">m</span>
-							<span style="transition-delay:100ms">a</span>
-							<span style="transition-delay:150ms">i</span>
-							<span style="transition-delay:200ms">l</span>
-                        </label>
-                    </div>
-
-                    <div class="form-control">
-                        <input cmin="8" special name="password" type="password" required="" reg="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$">
-                        <label>
-                            <span style="transition-delay:0ms">P</span>
-							<span style="transition-delay:50ms">a</span>
-							<span style="transition-delay:100ms">s</span>
-							<span style="transition-delay:150ms">s</span>
-							<span style="transition-delay:200ms">w</span>
-							<span style="transition-delay:250ms">o</span>
-							<span style="transition-delay:300ms">r</span>
-							<span style="transition-delay:350ms">d</span>
-                        </label>
-                    </div>
-                </div>
-
-                <button class="button">
-                    <input class="button-content" type="submit" value="Next">
-                </button>
-            </form>
+            <label class="installer-field" for="admin-password">
+                <span>Password</span>
+                <input id="admin-password" cmin="8" special name="password" type="password" required
+                    minlength="8" autocomplete="new-password"
+                    reg="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z]).{8,}$"
+                    aria-describedby="admin-password-hint">
+                <small id="admin-password-hint">
+                    At least 8 characters with a number, an uppercase letter, and a lowercase letter.
+                </small>
+            </label>
         </div>
 
-        <footer>{footer}</footer>
-    </div>
+        {error}
 
-    <script src="./assets/javascripts/spell-element.js"></script>
-	<script src="./assets/javascripts/spell-modal.js"></script>
-    <script src="./assets/javascripts/spell-alert.js"></script>
-    {error}
-    <script src="./assets/javascripts/install/form.js"></script>
-</body>
-</html>
+        <div class="installer-actions">
+            <button type="submit" class="button">Create administrator</button>
+        </div>
+    </form>
+</section>

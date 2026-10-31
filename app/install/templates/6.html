@@ -1,32 +1,43 @@
-<!doctype html>
-<html>
-{head}
-<body>
-	<div id="bb-container">
-        <div id="bb-box">
-            <form id="bb-form" action="" method="POST" novalidate autocomplete="off">
-                <input type="hidden" name="step" value="6">
-                <input type="hidden" name="csrf_token" value="{csrf}">
+<section class="installer-view">
+    <p class="installer-kicker">Finish</p>
+    <h1>You're ready to go live.</h1>
+    <p class="installer-lede">
+        The database, administrator account, and first forum are ready. Finish the wizard, then
+        lock down the installer before sharing the link.
+    </p>
 
-                <h1 class="bb-lines">BitBoard</h1>
-                <h2 class="bb-lines">Installation finished.</h2>
-
-                <p class="bb-lines">
-                    After clicking Finish, remove write access from <code>app/install</code> (or the
-                    whole <code>app/</code> directory) and keep it outside public reach. The installer
-                    needs write access until you click Finish and will not run again while
-                    <code>app/install/lock</code> exists.
-                </p>
-
-                <button class="button">
-                    <input class="button-content" type="submit" value="Finish">
-                </button>
-            </form>
+    <div class="installer-finish-grid">
+        <div class="installer-finish-item">
+            <span>01</span>
+            <strong>Remove write access</strong>
+            <p>Make <code>app/install</code> and <code>app/config.php</code> read-only.</p>
         </div>
-
-        <footer>{footer}</footer>
+        <div class="installer-finish-item">
+            <span>02</span>
+            <strong>Keep app/ private</strong>
+            <p>Use the bundled rules, or move <code>app/</code> outside the web root.</p>
+        </div>
+        <div class="installer-finish-item">
+            <span>03</span>
+            <strong>Open the forum</strong>
+            <p>Sign in with your administrator account and post the first thread.</p>
+        </div>
     </div>
 
-    <script src="./assets/javascripts/install/form.js"></script>
-</body>
-</html>
+    <div class="installer-warning">
+        <strong>Before you click Finish</strong>
+        <p>
+            The installer will write <code>app/install/lock</code> and remove its step file. It will
+            not run again while the lock exists.
+        </p>
+    </div>
+
+    <form id="bb-form" action="" method="POST" novalidate autocomplete="off">
+        <input type="hidden" name="step" value="6">
+        <input type="hidden" name="csrf_token" value="{csrf}">
+
+        <div class="installer-actions">
+            <button type="submit" class="button">Finish installation</button>
+        </div>
+    </form>
+</section>

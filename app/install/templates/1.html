@@ -1,25 +1,32 @@
-<!doctype html>
-<html>
-{head}
-<body>
-	<div id="bb-container">
-		<div id="bb-box">
-			<form id="bb-form" action="" method="post">
-				<input type="hidden" name="step" value="1">
-				<input type="hidden" name="csrf_token" value="{csrf}">
+<section class="installer-view installer-welcome">
+    <p class="installer-kicker">Welcome</p>
+    <h1>Build a forum that feels like home.</h1>
+    <p class="installer-lede">
+        BitBoard is a lightweight, dependency-free PHP forum. This wizard creates the
+        database, your administrator account, and the first forum settings.
+    </p>
 
-                <h1 class="bb-lines">BitBoard</h1>
-                <h2 class="bb-lines">Easy, fun, fast forum system written in PHP.</h2>
+    <ul class="installer-points">
+        <li>
+            <strong>Plain PHP + MySQL</strong>
+            <span>No Composer, npm, or build step. Drop it on a server and go.</span>
+        </li>
+        <li>
+            <strong>Six short steps</strong>
+            <span>Most installs take about two minutes.</span>
+        </li>
+        <li>
+            <strong>Your data stays yours</strong>
+            <span>Everything lives in your own database and filesystem.</span>
+        </li>
+    </ul>
 
-                <button class="button">
-                    <input class="button-content" type="submit" value="Begin Installation">
-                </button>
-            </form>
-		</div>
+    <form id="bb-form" action="" method="post">
+        <input type="hidden" name="step" value="1">
+        <input type="hidden" name="csrf_token" value="{csrf}">
 
-		{footer}
-	</div>
-
-	<script src="./assets/javascripts/install/form.js"></script>
-</body>
-</html>
+        <div class="installer-actions">
+            <button type="submit" class="button">Begin installation</button>
+        </div>
+    </form>
+</section>
