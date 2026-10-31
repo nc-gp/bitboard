@@ -7,6 +7,7 @@ use App\Classes\Template;
 use App\Classes\RelativeTime;
 use App\Classes\AvatarUtils;
 use App\Classes\Slug;
+use App\Classes\State;
 use App\Classes\UrlManager;
 use App\Classes\UsernameUtils;
 use App\Classes\Database;
@@ -224,6 +225,10 @@ class IndexPage extends PageBase implements PageInterface
     public function Do()
     {
         $this->FetchCategories();
+
+        if ($this->cats === '')
+            $this->cats = State::Empty('No categories yet', 'An administrator can create the first category from the admin panel.', 'category');
+
         $this->FetchLastAccount();
         $this->FetchStats();
         $this->FetchOnline();

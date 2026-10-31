@@ -6,18 +6,19 @@ use App\Classes\Database;
 use App\Classes\PageFactory;
 use App\Classes\File;
 Use App\Classes\UrlManager;
-use App\Classes\Console;
 use App\Classes\AdminPath;
 use App\Classes\Migrator;
 use App\Classes\Permissions;
 use App\Classes\SessionManager;
+use App\Classes\Template;
 use App\Forum\Controllers\AccountController;
 use App\Forum\Controllers\ThemeController;
 use App\Forum\Controllers\ViewingController;
+use App\Forum\Pages\_500Page;
 
 use App\Forum\Structs\ForumDataStruct;
 
-use Exception;
+use Throwable;
 
 SessionManager::Start();
 
@@ -120,16 +121,36 @@ class BitBoard
 			elseif (strtolower($firstParameter) === 'admin')
 				$pageName = '_404';
 
-			try {
-				$instance = PageFactory::CreatePage($pageName, $this->database, $this->data);
-			} catch (Exception $e) {
-				Console::Error($e->getMessage());
-			}
+			$this->RenderPage($pageName);
 
 			return; 
 		}
 
-		PageFactory::CreatePage('index', $this->database, $this->data);
+		$this->RenderPage('index');
+	}
+
+	private function RenderPage(string $pageName): void
+	{
+		try
+		{
+			PageFactory::CreatePage($pageName, $this->database, $this->data);
+		}
+		catch (Throwable $e)
+		{
+			error_log('BitBoard page error: ' . $e->getMessage());
+
+			try
+			{
+				Template::SetTheme('default');
+				(new _500Page($this->database, $this->data))->Do();
+			}
+			catch (Throwable $fallback)
+			{
+				error_log('BitBoard error page failed: ' . $fallback->getMessage());
+				http_response_code(500);
+				echo 'Internal Server Error';
+			}
+		}
 	}
 
 	private function IsInstalled(): bool

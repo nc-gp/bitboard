@@ -388,7 +388,9 @@ Items marked **good first issue** are small and self-contained.
   forum/subforum thread rows, thread/post author headers, pagination, viewing chips, and
   login/register spacing at 1000px, 900px, 760px, and 480px breakpoints.
 - [ ] Accessibility pass: landmarks, labels, focus states, contrast, keyboard navigation.
-- [ ] Loading, empty, and error states for every page.
+- [x] Shared empty and error states for index categories, forum/subforum threads, members, online,
+  profile activity, and a themed 500 page. Normal forms now show a busy state while submitting.
+- [ ] Audit remaining admin and edge-case pages for dedicated loading, empty, and error coverage.
 - [ ] i18n/locale files, timezone-aware dates, and RTL support.
 - [ ] Replace hardcoded English strings in pages/widgets/templates.
 

@@ -10,6 +10,7 @@ use App\Classes\Permissions;
 use App\Classes\RelativeTime;
 use App\Classes\SessionManager;
 use App\Classes\Slug;
+use App\Classes\State;
 use App\Classes\Template;
 use App\Classes\Text;
 use App\Classes\UrlManager;
@@ -79,7 +80,7 @@ class ProfilePage extends PageBase implements PageInterface
             LIMIT 5', $this->profileID)->FetchAll();
 
         if (count($threads) <= 0)
-            return '<p class="profile-empty">No threads yet.</p>';
+            return State::Empty('No threads yet', 'This member has not started a thread.', 'book');
 
         $html = '';
         foreach ($threads as $thread)
@@ -118,7 +119,7 @@ class ProfilePage extends PageBase implements PageInterface
             LIMIT 5', $this->profileID)->FetchAll();
 
         if (count($posts) <= 0)
-            return '<p class="profile-empty">No posts yet.</p>';
+            return State::Empty('No posts yet', 'This member has not posted a reply yet.', 'message-2');
 
         $html = '';
         foreach ($posts as $post)

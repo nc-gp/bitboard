@@ -268,3 +268,30 @@ const themeSwitcher = {
 
 // Init
 themeSwitcher.init();
+
+// Give normal form submissions a visible busy state. AJAX handlers prevent the
+// default action, so the deferred check leaves their own loading UI alone.
+(() => {
+    document.addEventListener("submit", event => {
+        const form = event.target;
+
+        if (!(form instanceof HTMLFormElement) || form.dataset.noBusy !== undefined)
+            return;
+
+        const submitter = event.submitter
+            || form.querySelector('button[type="submit"], input[type="submit"]');
+
+        if (!submitter || submitter.disabled)
+            return;
+
+        window.setTimeout(() => {
+            if (event.defaultPrevented || !form.isConnected || form.dataset.noBusy !== undefined)
+                return;
+
+            form.classList.add("is-busy");
+            form.setAttribute("aria-busy", "true");
+            submitter.disabled = true;
+            submitter.setAttribute("aria-busy", "true");
+        }, 0);
+    }, true);
+})();
