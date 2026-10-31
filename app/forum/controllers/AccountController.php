@@ -23,7 +23,7 @@ class AccountController
 
 	private static function AdminUserWhere(string $search, int $rankID, array &$parameters): string
 	{
-		$where = 'a.id > 1';
+		$where = 'a.is_system = 0';
 
 		if ($search !== '')
 		{
@@ -91,7 +91,7 @@ class AccountController
 		$row = $db->Query('SELECT COUNT(*) AS admin_count
 			FROM bit_accounts AS a
 			JOIN bit_ranks AS r ON r.id = a.rank_id
-			WHERE a.id > 1 AND a.id <> ? AND (r.rank_flags & ?) <> 0',
+			WHERE a.is_system = 0 AND a.id <> ? AND (r.rank_flags & ?) <> 0',
 			$excludeUserID, Permissions::ADMIN_PANEL_ACCESS)->FetchArray();
 
 		return (int) ($row['admin_count'] ?? 0);
@@ -124,7 +124,7 @@ class AccountController
 	static public function CountOnline(Database $db): int
 	{
 		$count = $db->Query('SELECT COUNT(*) AS online_count FROM bit_accounts
-			WHERE id > 1 AND last_active >= ?', self::OnlineCutoff())->FetchArray();
+			WHERE is_system = 0 AND last_active >= ?', self::OnlineCutoff())->FetchArray();
 
 		return (int) ($count['online_count'] ?? 0);
 	}
@@ -143,7 +143,7 @@ class AccountController
 		return $db->Query('SELECT a.id, a.username, a.avatar, a.reg_date, a.reputation, a.last_active, r.rank_name, r.rank_format
 			FROM bit_accounts AS a
 			JOIN bit_ranks AS r ON r.id = a.rank_id
-			WHERE a.id > 1 AND a.last_active >= ?
+			WHERE a.is_system = 0 AND a.last_active >= ?
 			ORDER BY a.last_active DESC, a.username ASC
 			LIMIT ?, ?', self::OnlineCutoff(), $offset, $limit)->FetchAll();
 	}
@@ -183,7 +183,7 @@ class AccountController
      */
     static public function CreateTable(Database $db)
     {
-        $db->Query('CREATE TABLE IF NOT EXISTS bit_accounts ( id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, username VARCHAR(32) NOT NULL, pass VARCHAR(1024) NOT NULL, email VARCHAR(64) NOT NULL, avatar VARCHAR(255) NULL DEFAULT NULL, bio VARCHAR(1000) NOT NULL DEFAULT \'\', signature VARCHAR(500) NOT NULL DEFAULT \'\', viewing_type VARCHAR(16) NOT NULL DEFAULT \'\', viewing_id INT(6) UNSIGNED NOT NULL DEFAULT 0, reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, reputation INT(6) NOT NULL DEFAULT 0, last_ip VARCHAR(64), last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP, last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP, rank_id INT(6) NOT NULL, UNIQUE KEY uniq_accounts_username (username), UNIQUE KEY uniq_accounts_email (email), KEY accounts_last_active (last_active))');
+        $db->Query('CREATE TABLE IF NOT EXISTS bit_accounts ( id INT(6) UNSIGNED AUTO_INCREMENT PRIMARY KEY, is_system TINYINT(1) NOT NULL DEFAULT 0, username VARCHAR(32) NOT NULL, pass VARCHAR(1024) NOT NULL, email VARCHAR(64) NOT NULL, avatar VARCHAR(255) NULL DEFAULT NULL, bio VARCHAR(1000) NOT NULL DEFAULT \'\', signature VARCHAR(500) NOT NULL DEFAULT \'\', viewing_type VARCHAR(16) NOT NULL DEFAULT \'\', viewing_id INT(6) UNSIGNED NOT NULL DEFAULT 0, reg_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP, reputation INT(6) NOT NULL DEFAULT 0, last_ip VARCHAR(64), last_active TIMESTAMP DEFAULT CURRENT_TIMESTAMP, last_login TIMESTAMP DEFAULT CURRENT_TIMESTAMP, rank_id INT(6) NOT NULL, UNIQUE KEY uniq_accounts_username (username), UNIQUE KEY uniq_accounts_email (email), KEY accounts_last_active (last_active), KEY accounts_system (is_system))');
     }
 
 	/**
@@ -194,12 +194,13 @@ class AccountController
      * @param string 	hashedPassword The hashed password for the new account.
      * @param string 	email The email for the new account.
      * @param int 		rankId The ID of the rank for the new account.
+     * @param bool 		isSystem Whether this is the built-in system account.
      *
      * @return void
      */
-    static public function Create(Database $db, string $username, string $hashedPassword, string $email, int $rankId)
+    static public function Create(Database $db, string $username, string $hashedPassword, string $email, int $rankId, bool $isSystem = false)
     {
-        $db->Query('INSERT INTO bit_accounts (id,username,pass,email,avatar,reg_date,reputation,last_ip,last_active,last_login,rank_id) VALUES (?,?,?,?,?,?,?,?,?,?,?)', [0, $username, $hashedPassword, $email, 'default.webp', date("Y-m-d H:i:s"), 0, $_SERVER['REMOTE_ADDR'], date("Y-m-d H:i:s"), date("Y-m-d H:i:s"), $rankId]);
+        $db->Query('INSERT INTO bit_accounts (id,is_system,username,pass,email,avatar,reg_date,reputation,last_ip,last_active,last_login,rank_id) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)', [0, $isSystem ? 1 : 0, $username, $hashedPassword, $email, 'default.webp', date("Y-m-d H:i:s"), 0, ($_SERVER['REMOTE_ADDR'] ?? ''), date("Y-m-d H:i:s"), date("Y-m-d H:i:s"), $rankId]);
     }
 }
 

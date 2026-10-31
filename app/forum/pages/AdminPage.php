@@ -1525,7 +1525,7 @@ class AdminPage extends PageBase implements PageInterface
         $sql = 'SELECT DATE(' . $column . ') AS day, COUNT(*) AS total
             FROM ' . $table . '
             WHERE ' . $column . ' >= ?'
-            . ($excludeSystem ? ' AND id > 1' : '')
+            . ($excludeSystem ? ' AND is_system = 0' : '')
             . ' GROUP BY DATE(' . $column . ')';
 
         $rows = $this->database->Query($sql, date('Y-m-d 00:00:00', $start))->FetchAll();
@@ -1552,7 +1552,7 @@ class AdminPage extends PageBase implements PageInterface
         $sql = 'SELECT COUNT(*) AS total
             FROM ' . $table . '
             WHERE ' . $column . ' >= ? AND ' . $column . ' < ?'
-            . ($excludeSystem ? ' AND id > 1' : '');
+            . ($excludeSystem ? ' AND is_system = 0' : '');
 
         $row = $this->database->Query(
             $sql,
@@ -1651,7 +1651,7 @@ class AdminPage extends PageBase implements PageInterface
                 r.rank_name, r.rank_format
             FROM bit_accounts AS a
             JOIN bit_ranks AS r ON r.id = a.rank_id
-            WHERE a.id > 1
+            WHERE a.is_system = 0
             ORDER BY a.reg_date DESC, a.id DESC
             LIMIT 5')->FetchAll();
 
@@ -1678,7 +1678,7 @@ class AdminPage extends PageBase implements PageInterface
     private function BuildDashboard(): string
     {
         $stats = $this->database->Query('SELECT
-                (SELECT COUNT(*) FROM bit_accounts WHERE id > 1) AS members,
+                (SELECT COUNT(*) FROM bit_accounts WHERE is_system = 0) AS members,
                 (SELECT COUNT(*) FROM bit_threads) AS threads,
                 (SELECT COUNT(*) FROM bit_posts) AS posts,
                 (SELECT COUNT(*) FROM bit_forums) AS forums,

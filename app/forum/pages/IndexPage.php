@@ -43,7 +43,7 @@ class IndexPage extends PageBase implements PageInterface
 
     private function FetchLastAccount()
     {
-        $this->lastAccount = $this->database->Query('SELECT a.*, r.rank_format FROM bit_accounts AS a JOIN bit_ranks AS r ON a.rank_id = r.id ORDER BY a.reg_date DESC LIMIT 1')->FetchArray();
+        $this->lastAccount = $this->database->Query('SELECT a.*, r.rank_format FROM bit_accounts AS a JOIN bit_ranks AS r ON a.rank_id = r.id WHERE a.is_system = 0 ORDER BY a.reg_date DESC LIMIT 1')->FetchArray();
         $this->lastAccount['avatar'] = AvatarUtils::GetPath($this->lastAccount['avatar']);
         $this->lastAccount['formatted_username'] = UsernameUtils::Format($this->lastAccount['rank_format'], $this->lastAccount['username']);
     }
@@ -53,7 +53,7 @@ class IndexPage extends PageBase implements PageInterface
         $stats = $this->database->Query('SELECT
             (SELECT COUNT(*) FROM bit_posts) AS total_posts,
             (SELECT COUNT(*) FROM bit_threads) AS total_threads,
-            (SELECT COUNT(*) FROM bit_accounts) AS total_users')->FetchArray();
+            (SELECT COUNT(*) FROM bit_accounts WHERE is_system = 0) AS total_users')->FetchArray();
 
         $this->totalPosts = (int) $stats['total_posts'];
         $this->totalThreads = (int) $stats['total_threads'];

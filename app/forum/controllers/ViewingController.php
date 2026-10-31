@@ -81,7 +81,7 @@ class ViewingController
             return 0;
 
         $row = $db->Query('SELECT COUNT(*) AS viewing_count FROM bit_accounts
-            WHERE id > 1 AND viewing_type = ? AND viewing_id = ? AND last_active >= ?',
+            WHERE is_system = 0 AND viewing_type = ? AND viewing_id = ? AND last_active >= ?',
             $type,
             $id,
             AccountController::OnlineCutoff()
@@ -103,7 +103,7 @@ class ViewingController
         return $db->Query('SELECT a.id, a.username, a.avatar, r.rank_name, r.rank_format
             FROM bit_accounts AS a
             JOIN bit_ranks AS r ON r.id = a.rank_id
-            WHERE a.id > 1 AND a.viewing_type = ? AND a.viewing_id = ? AND a.last_active >= ?
+            WHERE a.is_system = 0 AND a.viewing_type = ? AND a.viewing_id = ? AND a.last_active >= ?
             ORDER BY a.last_active DESC, a.username ASC
             LIMIT ?',
             $type,

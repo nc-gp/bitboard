@@ -157,8 +157,8 @@ Items marked **good first issue** are small and self-contained.
 - [x] **Remove magic row IDs.** Migration 17 replaces `bit_settings.id = 0` with a
   `settings_key = 'core'` primary key, drops the legacy `id` column, and adds a single-row
   `CHECK` constraint. Built-in ranks are now found by name through `RankController` instead of
-  hard-coded IDs; the installer creates ranks before accounts and resolves the Admin/User ranks
-  by name.
+  hard-coded IDs. Migration 18 adds an `is_system` flag for the BitBot account so member, online,
+  admin, and dashboard queries no longer assume `id > 1`.
 
 ### Pagination and page bugs
 

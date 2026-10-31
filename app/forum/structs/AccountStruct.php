@@ -77,7 +77,10 @@ class AccountStruct
     public function __construct(array $accountData)
     {
         foreach($accountData as $key => $value)
-            $this->{$key} = $value;
+        {
+            if (property_exists($this, $key))
+                $this->{$key} = $value;
+        }
     }
 
     /**

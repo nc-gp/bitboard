@@ -151,7 +151,7 @@ class Step_3 extends StepBase implements StepInterface
 				throw new Exception('The built-in Admin rank could not be created.');
 
 			AccountController::CreateTable($InstallDatabase);
-			AccountController::Create($InstallDatabase, 'BitBot', '-', '-', $adminRankID);
+			AccountController::Create($InstallDatabase, 'BitBot', '-', '-', $adminRankID, true);
 
 			LoginThrottle::CreateTable($InstallDatabase);
 

@@ -86,7 +86,7 @@ class MembersPage extends PageBase implements PageInterface
 
     private function FetchMembers(): void
     {
-        $where = 'b.id > 1';
+        $where = 'b.is_system = 0';
         $parameters = [];
 
         if ($this->search !== '')
