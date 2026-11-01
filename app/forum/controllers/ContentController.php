@@ -120,6 +120,15 @@ class ContentController
             $db->RollBack();
             throw $e;
         }
+
+        try
+        {
+            AttachmentController::DeleteForThread($db, $threadID);
+        }
+        catch (Throwable $e)
+        {
+            error_log('BitBoard thread attachment cleanup failed: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -142,6 +151,15 @@ class ContentController
         {
             $db->RollBack();
             throw $e;
+        }
+
+        try
+        {
+            AttachmentController::DeleteForPost($db, $postID);
+        }
+        catch (Throwable $e)
+        {
+            error_log('BitBoard post attachment cleanup failed: ' . $e->getMessage());
         }
     }
 

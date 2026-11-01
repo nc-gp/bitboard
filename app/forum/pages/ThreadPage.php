@@ -19,12 +19,14 @@ use App\Classes\SessionManager;
 use App\Interfaces\PageInterface;
 
 use App\Forum\Controllers\ContentController;
+use App\Forum\Controllers\AttachmentController;
 use App\Forum\Controllers\LikeController;
 use App\Forum\Controllers\MentionController;
 use App\Forum\Controllers\PostController;
 use App\Forum\Controllers\SubscriptionController;
 use App\Forum\Controllers\ThreadReadController;
 use App\Forum\Widgets\PaginationWidget;
+use App\Forum\Widgets\AttachmentWidget;
 use App\Forum\Widgets\PrefixWidget;
 use App\Forum\Widgets\ReactionWidget;
 use App\Forum\Widgets\ViewingWidget;
@@ -47,6 +49,7 @@ class ThreadPage extends PageBase implements PageInterface
     private int $maximumResults = PostController::POSTS_PER_PAGE;
     private int $postsCount = 0;
     private int $lastPostID = 0;
+    private array $attachmentsByPost = [];
 
     public function __construct(Database $db, object $data)
     {
@@ -169,6 +172,7 @@ class ThreadPage extends PageBase implements PageInterface
             $this->database,
             HtmlSanitizer::Sanitize($thread['thread_content'])
         ));
+        $threadContentTemplate->AddEntry('{thread_attachments}', AttachmentWidget::Render($this->attachmentsByPost[0] ?? []));
         $threadContentTemplate->AddEntry('{thread_moderation}', $this->BuildModeration());
 
         $threadQuote = '';
@@ -254,6 +258,14 @@ class ThreadPage extends PageBase implements PageInterface
         $this->thread = $threadContentTemplate->template;
     }
 
+    private function LoadAttachments(): void
+    {
+        $this->attachmentsByPost = [];
+
+        foreach (AttachmentController::GetForThread($this->database, $this->threadID) as $attachment)
+            $this->attachmentsByPost[(int) $attachment['post_id']][] = $attachment;
+    }
+
     private function fetchPosts()
     {
         $posts = $this->database->Query('SELECT p.*, a.id AS author_id, a.username, a.avatar, a.reputation, a.signature, r.rank_name, r.rank_format
@@ -302,6 +314,7 @@ class ThreadPage extends PageBase implements PageInterface
                 $this->database,
                 HtmlSanitizer::Sanitize($post['post_content'])
             ));
+            $postTemplate->AddEntry('{post_attachments}', AttachmentWidget::Render($this->attachmentsByPost[(int) $post['id']] ?? []));
 
             $postQuote = '';
             if ($this->CanReply())
@@ -526,6 +539,7 @@ class ThreadPage extends PageBase implements PageInterface
 
     public function Do()
     {
+        $this->LoadAttachments();
         $this->fetchThread();
         $this->fetchPosts();
 
@@ -553,6 +567,7 @@ class ThreadPage extends PageBase implements PageInterface
             $replyTemplate->AddEscapedEntry('{return_page}', $this->threadPage);
             $replyTemplate->AddEscapedEntry('{draft_key}', 'u' . (int) ($_SESSION['bitboard_user']->id ?? 0) . '-reply-' . $this->threadID);
             $replyTemplate->AddEntry('{editor_toolbar}', (new EditorWidget())->Template);
+            $replyTemplate->AddEntry('{attachments_field}', AttachmentWidget::UploadField('fast-reply-attachments'));
             $replyTemplate->AddEscapedEntry('{hint}', $this->threadClosed
                 ? 'This thread is closed, but staff can still reply.'
                 : 'Post a reply without leaving this thread. Markdown supported.');

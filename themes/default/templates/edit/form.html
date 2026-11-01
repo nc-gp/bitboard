@@ -1,4 +1,4 @@
-<form action="{server_url}edit" method="post">
+<form action="{server_url}edit" method="post" enctype="multipart/form-data">
     <input type="hidden" name="csrf_token" value="{csrf_token}">
     <input type="hidden" name="type" value="{type}">
     <input type="hidden" name="id" value="{id}">
@@ -17,6 +17,9 @@
         <code>&gt;</code> quotes, lists, links, and images. Raw HTML is shown as text.
         Use <code>@username</code> to mention a member.
     </p>
+
+    {existing_attachments}
+    {attachments_field}
 
     <div class="post-actions">
         <button type="submit">Save changes</button>

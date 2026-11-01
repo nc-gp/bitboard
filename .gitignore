@@ -1,6 +1,8 @@
 /app/config.php
 /app/install/lock
 /app/install/step
+/app/storage/attachments/*
+!/app/storage/attachments/.gitkeep
 /dumps/*
 /assets/images/avatars/*
 !/assets/images/avatars/.gitkeep

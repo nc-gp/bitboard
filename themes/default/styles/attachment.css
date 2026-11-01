@@ -1,0 +1,133 @@
+.attachment-list {
+    margin-top: 18px;
+    padding-top: 14px;
+    border-top: 1px solid var(--opposite-x2);
+}
+
+.attachment-list-title {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    margin: 0 0 9px;
+    color: var(--muted-text);
+    font-size: 0.74rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+}
+
+.attachment-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.attachment-item {
+    margin: 0;
+    padding: 0;
+}
+
+.attachment-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    max-width: 100%;
+    padding: 6px 10px;
+    border: 1px solid var(--opposite-x2);
+    border-radius: var(--border-radius);
+    background: var(--opposite);
+    color: inherit;
+    font-size: 0.82rem;
+    text-decoration: none;
+}
+
+.attachment-link:hover,
+.attachment-link:focus-visible {
+    background: var(--primary-focus);
+}
+
+.attachment-icon {
+    display: inline-flex;
+    color: var(--link-color);
+}
+
+.attachment-name {
+    min-width: 0;
+    max-width: 32ch;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.attachment-size {
+    color: var(--muted-text);
+    font-size: 0.72rem;
+    white-space: nowrap;
+}
+
+.attachment-upload,
+.attachment-manage {
+    margin: 14px 0;
+    padding: 12px 14px;
+    border: 1px dashed var(--opposite-x2);
+    border-radius: var(--border-radius);
+}
+
+.attachment-manage {
+    border-style: solid;
+    background: var(--opposite);
+}
+
+.attachment-upload label > span {
+    display: block;
+    margin-bottom: 6px;
+    font-weight: 600;
+}
+
+.attachment-hint {
+    margin: 6px 0 0;
+    color: var(--muted-text);
+    font-size: 0.78rem;
+}
+
+.attachment-manage-items {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.attachment-manage-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin: 0;
+    padding: 6px 8px;
+    border-radius: var(--border-radius);
+    background: var(--opposite-x2);
+    font-size: 0.82rem;
+    cursor: pointer;
+}
+
+.attachment-manage-name {
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.attachment-manage-hint {
+    margin-left: auto;
+    color: var(--muted-text);
+    font-size: 0.68rem;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+@media (max-width: 620px) {
+    .attachment-name {
+        max-width: 19ch;
+    }
+}

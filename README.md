@@ -37,6 +37,9 @@ npm, or build step. Tabler Icons is the only external front-end asset and is pin
 - Threads and replies with a Markdown editor, live preview, local drafts, CSRF protection,
   edit history, and permanent deletion.
 - Inline fast reply with AJAX append and a normal POST fallback.
+- Attachments on threads, replies, edits, and fast replies: private storage under `app/`,
+  extension/MIME/size validation, a five-file limit, controlled download links, and cleanup
+  when posts or threads are deleted.
 - Reactions, quotes, multi-quote, `@mentions`, and a header notification bell.
 - Thread subscriptions and forum/subforum watch notifications.
 - Per-user read tracking, pagination-preserving last-post links, and “who is viewing”.
@@ -72,7 +75,7 @@ it is stored. Drafts stay in the browser’s local storage.
 | PHP | 8.0+ (8.1+ recommended), with the `mysqli` extension |
 | Database | MySQL 5.7+ or MariaDB 10.2+ |
 | Web server | Apache 2.4+ with `mod_rewrite`, or Nginx with an equivalent rewrite rule |
-| Filesystem | Temporary write access to `app/` during installation for `config.php` and installer state files |
+| Filesystem | Temporary write access to `app/` during installation; persistent write access to `app/storage/attachments/` for uploads |
 
 BitBoard runs on Windows and Linux. Root and subdirectory installs are both supported.
 
@@ -93,6 +96,8 @@ BitBoard runs on Windows and Linux. Root and subdirectory installs are both supp
 
 6. Keep `app/` out of public reach. The bundled root `.htaccess` blocks `/app/...`; use the
    Nginx rules below or move `app/` outside the document root if your server ignores it.
+7. Keep `app/storage/attachments/` writable by the web server. Attachment files are served
+   through `/attachment/{id}` after forum permission checks and are never linked directly.
 
 The admin panel route is chosen in installer step 5 (default `/admin`). Pick a non-obvious path
 before exposing the forum publicly.

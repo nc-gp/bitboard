@@ -14,7 +14,7 @@
 
 				{error}
 
-				<form action="{server_url}post" method="post">
+				<form action="{server_url}post" method="post" enctype="multipart/form-data">
 					<input type="hidden" name="csrf_token" value="{csrf_token}">
 					{context_fields}
 
@@ -31,6 +31,8 @@
 						<code>&gt;</code> quotes, lists, links, and images. Raw HTML is shown as text.
 						Use <code>@username</code> to mention a member.
 					</p>
+
+					{attachments_field}
 
 					<div class="post-actions">
 						<button type="submit">{submit_label}</button>

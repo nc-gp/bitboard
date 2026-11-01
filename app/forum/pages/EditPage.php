@@ -16,11 +16,14 @@ use App\Classes\Template;
 use App\Classes\Text;
 use App\Classes\UrlManager;
 use App\Classes\UsernameUtils;
+use App\Classes\AttachmentException;
 
+use App\Forum\Controllers\AttachmentController;
 use App\Forum\Controllers\ContentController;
 use App\Forum\Controllers\MentionController;
 use App\Forum\Controllers\PrefixController;
 use App\Forum\Controllers\AuditController;
+use App\Forum\Widgets\AttachmentWidget;
 use App\Forum\Widgets\EditorWidget;
 
 use App\Interfaces\PageInterface;
@@ -47,6 +50,7 @@ class EditPage extends PageBase implements PageInterface
     private string $cancelUrl = '';
     private int $prefixID = 0;
     private array $customPrefixes = [];
+    private array $attachments = [];
 
     private bool $denied = false;
     private string $deniedMessage = '';
@@ -121,6 +125,7 @@ class EditPage extends PageBase implements PageInterface
         $this->contentValue = Text::FromHtml($thread['thread_content']);
         $this->customPrefixes = PrefixController::GetCustomPrefixes($this->database);
         $this->prefixID = (int) ($thread['prefix_id'] ?? 0);
+        $this->attachments = AttachmentController::GetForContent($this->database, $this->id, 0);
 
         if (!$this->IsAllowedPrefix($this->prefixID))
             $this->prefixID = 0;
@@ -153,6 +158,7 @@ class EditPage extends PageBase implements PageInterface
         $this->heading = $this->canEdit ? 'Edit post' : 'Delete post';
         $this->subheading = ($this->canEdit ? 'Editing a reply in “' : 'Deleting a reply in “') . $post['thread_title'] . '”';
         $this->contentValue = Text::FromHtml($post['post_content']);
+        $this->attachments = AttachmentController::GetForContent($this->database, $this->threadID, $this->id);
 
         $page = ContentController::PostPageNumber($this->database, $post);
         $this->cancelUrl = UrlManager::ThreadUrl(
@@ -311,11 +317,48 @@ class EditPage extends PageBase implements PageInterface
 
         try
         {
+            $uploads = AttachmentController::ValidateUploads($_FILES['attachments'] ?? null);
+        }
+        catch (AttachmentException $e)
+        {
+            $this->error = $e->getMessage();
+            return;
+        }
+
+        $removeIDs = [];
+
+        if (isset($_POST['remove_attachments']) && is_array($_POST['remove_attachments']))
+        {
+            foreach ($_POST['remove_attachments'] as $attachmentID)
+            {
+                if (is_string($attachmentID) && ctype_digit($attachmentID) && (int) $attachmentID > 0)
+                    $removeIDs[] = (int) $attachmentID;
+            }
+        }
+
+        $remainingAttachments = 0;
+
+        foreach ($this->attachments as $attachment)
+        {
+            if (!in_array((int) $attachment['id'], $removeIDs, true))
+                $remainingAttachments++;
+        }
+
+        if ($remainingAttachments + count($uploads) > AttachmentController::MAX_FILES)
+        {
+            $this->error = 'You can keep up to ' . AttachmentController::MAX_FILES . ' attachments on a post.';
+            return;
+        }
+
+        try
+        {
             $editorID = (int) $_SESSION['bitboard_user']->id;
 
             if ($this->type === 'thread')
             {
                 ContentController::UpdateThread($this->database, $this->id, $editorID, $this->titleValue, $html, $this->prefixID);
+                AttachmentController::StoreUploads($this->database, $uploads, $editorID, $this->id, 0);
+                AttachmentController::DeleteForContent($this->database, $removeIDs, $this->id, 0);
 
                 if (SessionManager::IsStaff())
                 {
@@ -332,6 +375,8 @@ class EditPage extends PageBase implements PageInterface
             }
 
             ContentController::UpdatePost($this->database, $this->id, $editorID, $html);
+            AttachmentController::StoreUploads($this->database, $uploads, $editorID, $this->threadID, $this->id);
+            AttachmentController::DeleteForContent($this->database, $removeIDs, $this->threadID, $this->id);
 
             if (SessionManager::IsStaff())
             {
@@ -420,6 +465,8 @@ class EditPage extends PageBase implements PageInterface
         $form->AddEntry('{editor_toolbar}', (new EditorWidget())->Template);
         $form->AddEntry('{title_field}', $titleField);
         $form->AddEntry('{prefix_field}', $this->BuildPrefixField());
+        $form->AddEntry('{existing_attachments}', AttachmentWidget::Manage($this->attachments));
+        $form->AddEntry('{attachments_field}', AttachmentWidget::UploadField('edit-attachments'));
         $form->Replace();
 
         return $form->template;

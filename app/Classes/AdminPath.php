@@ -16,7 +16,7 @@ class AdminPath
      * as the admin path.
      */
     private const RESERVED = [
-        '404', 'api', 'app', 'assets', 'banned', 'dumps', 'edit', 'feed',
+        '404', 'api', 'app', 'assets', 'attachment', 'banned', 'dumps', 'edit', 'feed',
         'feed.xml', 'forum', 'index', 'like', 'login', 'logout', 'members',
         'moderate', 'move', 'notifications', 'offline', 'online', 'post',
         'preview', 'profile', 'register', 'report', 'reports', 'search',

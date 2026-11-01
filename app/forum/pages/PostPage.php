@@ -14,7 +14,10 @@ use App\Classes\Slug;
 use App\Classes\Template;
 use App\Classes\Text;
 use App\Classes\UrlManager;
+use App\Classes\AttachmentException;
 
+use App\Forum\Controllers\AttachmentController;
+use App\Forum\Controllers\ContentController;
 use App\Forum\Controllers\PostController;
 use App\Forum\Controllers\ForumSubscriptionController;
 use App\Forum\Controllers\MentionController;
@@ -22,6 +25,7 @@ use App\Forum\Controllers\PrefixController;
 use App\Forum\Controllers\SubscriptionController;
 use App\Forum\Controllers\ThreadController;
 use App\Forum\Controllers\ThreadReadController;
+use App\Forum\Widgets\AttachmentWidget;
 use App\Forum\Widgets\EditorWidget;
 
 use App\Interfaces\PageInterface;
@@ -334,6 +338,16 @@ class PostPage extends PageBase implements PageInterface
 
         try
         {
+            $uploads = AttachmentController::ValidateUploads($_FILES['attachments'] ?? null);
+        }
+        catch (AttachmentException $e)
+        {
+            $this->error = $e->getMessage();
+            return;
+        }
+
+        try
+        {
             $userId = (int) $_SESSION['bitboard_user']->id;
 
             if ($this->mode === 'thread')
@@ -352,6 +366,25 @@ class PostPage extends PageBase implements PageInterface
 
                 if ($newThreadID <= 0)
                     throw new Exception('The new thread ID could not be determined.');
+
+                if (count($uploads) > 0)
+                {
+                    try
+                    {
+                        AttachmentController::StoreUploads(
+                            $this->database,
+                            $uploads,
+                            $userId,
+                            $newThreadID,
+                            0
+                        );
+                    }
+                    catch (\Throwable $e)
+                    {
+                        ContentController::DeleteThread($this->database, $newThreadID);
+                        throw $e;
+                    }
+                }
 
                 $threadUrl = UrlManager::ThreadUrl($newThreadID, Slug::FromTitle($this->titleValue), 1);
 
@@ -386,6 +419,25 @@ class PostPage extends PageBase implements PageInterface
 
             if ($newPostID <= 0)
                 throw new Exception('The new post ID could not be determined.');
+
+            if (count($uploads) > 0)
+            {
+                try
+                {
+                    AttachmentController::StoreUploads(
+                        $this->database,
+                        $uploads,
+                        $userId,
+                        $this->threadID,
+                        $newPostID
+                    );
+                }
+                catch (\Throwable $e)
+                {
+                    ContentController::DeletePost($this->database, $newPostID);
+                    throw $e;
+                }
+            }
 
             ThreadReadController::MarkRead($this->database, $userId, $this->threadID, $newPostID);
 
@@ -558,6 +610,7 @@ class PostPage extends PageBase implements PageInterface
         $this->template->AddEntry('{title_field}', $this->BuildTitleField());
         $this->template->AddEntry('{prefix_field}', $this->BuildPrefixField());
         $this->template->AddEntry('{context_fields}', $this->BuildContextFields());
+        $this->template->AddEntry('{attachments_field}', AttachmentWidget::UploadField('post-attachments'));
         $this->template->AddEntry('{error}', $this->BuildError());
 
         parent::RenderPage('post');

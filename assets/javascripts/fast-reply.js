@@ -103,6 +103,10 @@
             textarea.value = '';
             textarea.dispatchEvent(new Event('input', { bubbles: true }));
 
+            const fileInput = form.querySelector('input[type="file"]');
+            if (fileInput)
+                fileInput.value = '';
+
             const quoteClear = document.querySelector('.fast-reply-quote-bar .quote-clear');
             if (quoteClear)
                 quoteClear.click();

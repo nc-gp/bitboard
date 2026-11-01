@@ -291,7 +291,8 @@ Items marked **good first issue** are small and self-contained.
 - [x] Rich Markdown editor with a formatting toolbar, live AJAX preview, and browser-local
   drafts. Policy: input is a Markdown subset, raw HTML is escaped, and rendered output is
   sanitized before storage. Existing HTML posts are converted back to Markdown when edited.
-- [ ] Attachments/uploads with extension/MIME/size validation and private storage.
+- [x] Attachments/uploads with extension/MIME/size validation, private storage, editor and
+  fast-reply uploads, controlled download links, per-post limits, and cleanup on deletion.
 - [x] Thread subscriptions: subscribe/unsubscribe from the thread page, with a reply
   notification (including a direct post anchor) for every new reply by another member.
 - [x] "Watch forum" notifications for forums and subforums, with watch/unwatch buttons, a

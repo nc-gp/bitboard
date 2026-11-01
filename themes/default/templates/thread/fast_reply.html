@@ -4,7 +4,7 @@
         <span>{hint}</span>
     </div>
 
-    <form id="fast-reply-form" action="{server_url}post" method="post">
+    <form id="fast-reply-form" action="{server_url}post" method="post" enctype="multipart/form-data">
         <input type="hidden" name="csrf_token" value="{csrf_token}">
         <input type="hidden" name="thread" value="{thread_id}">
         <input type="hidden" name="page" value="{return_page}">
@@ -20,6 +20,8 @@
             <button type="button" class="quote-selected">Quote selected</button>
             <button type="button" class="quote-clear">Clear</button>
         </div>
+
+        {attachments_field}
 
         <div class="fast-reply-actions">
             <button type="submit">Post reply</button>
