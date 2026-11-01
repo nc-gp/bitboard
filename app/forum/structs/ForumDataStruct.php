@@ -75,6 +75,31 @@ class ForumDataStruct
     public string $admin_path = 'admin';
 
     /**
+     * @var string Terms text shown on the registration form.
+     */
+    public string $registration_terms = 'By registering, you agree to follow the forum rules and keep your account secure.';
+
+    /**
+     * @var int Minimum seconds between opening and submitting the registration form.
+     */
+    public int $registration_min_delay = 3;
+
+    /**
+     * @var int Maximum registration attempts from one IP per hour.
+     */
+    public int $registration_ip_limit = 5;
+
+    /**
+     * @var string Email-domain policy: off, allow, or block.
+     */
+    public string $registration_email_mode = 'off';
+
+    /**
+     * @var string Newline-separated email domains used by the policy.
+     */
+    public string $registration_email_domains = "gmail.com\noutlook.com\nhotmail.com\nyahoo.com\nicloud.com\nprotonmail.com";
+
+    /**
      * @var array The array of splitted URL. (/)
      * Note: Can be empty.
      */

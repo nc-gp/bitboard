@@ -21,6 +21,7 @@ use App\Forum\Controllers\BanController;
 use App\Forum\Controllers\CategoryController;
 use App\Forum\Controllers\ForumController;
 use App\Forum\Controllers\RankController;
+use App\Forum\Controllers\RegistrationController;
 use App\Forum\Controllers\SubForumController;
 use App\Forum\Controllers\ThemeController;
 
@@ -1377,6 +1378,16 @@ class AdminPage extends PageBase implements PageInterface
         return $options;
     }
 
+    private function BuildRegistrationModeOptions(string $selected): string
+    {
+        $options = '';
+
+        foreach (RegistrationController::EMAIL_MODES as $mode => $label)
+            $options .= $this->BuildOption($mode, $label, $mode === $selected);
+
+        return $options;
+    }
+
     private function BuildUserRow(
         array $user,
         array $ranks,
@@ -2320,6 +2331,12 @@ class AdminPage extends PageBase implements PageInterface
                 'settings/avatars',
                 'Control whether members can upload avatars and how large or which formats are allowed.',
             ],
+            'registration' => [
+                'Registration',
+                'ti-user-plus',
+                'settings/registration',
+                'Control registration terms, anti-bot timing, rate limits, and email-domain rules.',
+            ],
         ];
 
         $tab = isset($this->forumData->actionParameters[2]) && is_string($this->forumData->actionParameters[2])
@@ -2340,13 +2357,33 @@ class AdminPage extends PageBase implements PageInterface
             $content->AddEntry('{forum_force_login}', $this->forumData->forum_force_login ? 'checked' : '');
             $content->AddEntry('{forum_credits}', $this->forumData->forum_credits ? 'checked' : '');
         }
-        else
+        elseif ($tab === 'avatars')
         {
             $content->AddEntry('{avatar_uploads}', ($this->forumData->avatar_uploads ?? true) ? 'checked' : '');
             $content->AddEscapedEntry('{avatar_max_size}', max(1, (int) ($this->forumData->avatar_max_size ?? 2048)));
             $content->AddEscapedEntry('{avatar_formats}', (string) ($this->forumData->avatar_formats ?? 'jpg,png,webp,gif'));
             $content->AddEscapedEntry('{avatar_max_width}', max(0, (int) ($this->forumData->avatar_max_width ?? 0)));
             $content->AddEscapedEntry('{avatar_max_height}', max(0, (int) ($this->forumData->avatar_max_height ?? 0)));
+        }
+        else
+        {
+            $terms = trim((string) ($this->forumData->registration_terms ?? ''));
+
+            if ($terms === '')
+                $terms = 'By registering, you agree to follow the forum rules and keep your account secure.';
+
+            $emailMode = (string) ($this->forumData->registration_email_mode ?? 'off');
+
+            if (!array_key_exists($emailMode, RegistrationController::EMAIL_MODES))
+                $emailMode = 'off';
+
+            $domains = RegistrationController::ParseDomains((string) ($this->forumData->registration_email_domains ?? ''));
+
+            $content->AddEscapedEntry('{registration_terms}', $terms);
+            $content->AddEscapedEntry('{registration_min_delay}', max(0, min(60, (int) ($this->forumData->registration_min_delay ?? 3))));
+            $content->AddEscapedEntry('{registration_ip_limit}', max(1, min(100, (int) ($this->forumData->registration_ip_limit ?? 5))));
+            $content->AddEntry('{registration_mode_options}', $this->BuildRegistrationModeOptions($emailMode));
+            $content->AddEscapedEntry('{registration_email_domains}', implode("\n", $domains));
         }
 
         $content->Replace();

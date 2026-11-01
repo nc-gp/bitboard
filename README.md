@@ -48,6 +48,9 @@ npm, or build step. Tabler Icons is the only external front-end asset and is pin
 - Search with forum, prefix, author, and date filters.
 - Member directory, online list, and public profiles with avatar, bio, and signature.
 - Account settings for email, password, bio, signature, and avatar uploads with admin limits.
+- Registration hardening: required configurable terms, per-IP throttling, a hidden honeypot and
+  minimum submit delay, plus configurable email-domain allow/block lists seeded with common
+  providers.
 - Admin panel: dashboard charts, tabbed settings, categories, forums, prefixes, ranks with a
   permission matrix, user management, ban/suspension records with reasons and expiry, and an
   audit log.
@@ -59,8 +62,8 @@ npm, or build step. Tabler Icons is the only external front-end asset and is pin
 - SEO slugs and canonical URLs, OpenGraph/Twitter metadata, `/sitemap.xml`, and `/feed.xml`.
 - Responsive layouts for desktop, tablet, and phone.
 
-Email verification, password reset, anti-bot registration, attachments, thread merges/splits,
-and the public API are not implemented yet. See [TODO.md](TODO.md) for details.
+Email verification, password reset, thread merges/splits, and the public API are not implemented
+yet. See [TODO.md](TODO.md) for details.
 
 ### Content format
 

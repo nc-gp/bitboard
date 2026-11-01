@@ -1,0 +1,74 @@
+<form id="settingsForm" method="post" action="{admin_url}/settings/registration">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
+
+    <label for="settings-registration-terms">Registration terms</label>
+    <textarea id="settings-registration-terms" name="registration_terms" rows="4" maxlength="2000" required
+        aria-describedby="settings-registration-terms-hint">{registration_terms}</textarea>
+    <p id="settings-registration-terms-hint" class="admin-field-hint">
+        Plain text shown above the required acceptance checkbox. Line breaks are preserved.
+    </p>
+
+    <label for="settings-registration-delay">Minimum form delay (seconds)</label>
+    <input type="number" id="settings-registration-delay" name="registration_min_delay" min="0" max="60" step="1"
+        value="{registration_min_delay}" aria-describedby="settings-registration-delay-hint">
+    <p id="settings-registration-delay-hint" class="admin-field-hint">
+        How long a visitor must wait between opening and submitting the form. Use 0 to disable.
+    </p>
+
+    <label for="settings-registration-limit">Registration attempts per IP per hour</label>
+    <input type="number" id="settings-registration-limit" name="registration_ip_limit" min="1" max="100" step="1"
+        value="{registration_ip_limit}" aria-describedby="settings-registration-limit-hint">
+    <p id="settings-registration-limit-hint" class="admin-field-hint">
+        Every valid form submission counts, including failed validation. The window slides hourly.
+    </p>
+
+    <label for="settings-registration-mode">Email-domain policy</label>
+    <select id="settings-registration-mode" name="registration_email_mode"
+        aria-describedby="settings-registration-mode-hint">
+        {registration_mode_options}
+    </select>
+    <p id="settings-registration-mode-hint" class="admin-field-hint">
+        Allowlist only permits listed domains. Blocklist rejects listed domains. Disabled allows every valid address.
+    </p>
+
+    <label for="settings-registration-domains">Email domains</label>
+    <textarea id="settings-registration-domains" name="registration_email_domains" rows="6" maxlength="1000"
+        aria-describedby="settings-registration-domains-hint">{registration_email_domains}</textarea>
+    <p id="settings-registration-domains-hint" class="admin-field-hint">
+        One domain per line, or comma-separated. Subdomains match their listed parent domain.
+    </p>
+</form>
+<button id="settings">Update registration settings</button>
+
+<script>
+    window.onload = () => {
+        const btn = document.querySelector('#settings');
+        btn.addEventListener('click', () => {
+            const formData = new FormData(document.getElementById('settingsForm'));
+
+            const formObject = {};
+            formData.forEach((value, key) => {
+                formObject[key] = value;
+            });
+
+            toast('Trying to update..', 2, '180, 180, 53');
+            req('POST', '{server_url}api/registration', JSON.stringify(formObject), (msg, data) => {
+                if(msg !== null) {
+                    toast(msg);
+                    return;
+                }
+
+                try {
+                    if (data !== null) {
+                        let d = JSON.parse(data);
+                        toast(d.data.message, 5, '53, 255, 53');
+                    } else {
+                        toast('Data is null');
+                    }
+                } catch (error) {
+                    toast('Error parsing JSON data: ' + error.message);
+                }
+            });
+        });
+    }
+</script>

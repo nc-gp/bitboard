@@ -102,3 +102,76 @@ input:valid~label {
         padding: 16px;
     }
 }
+/* Registration terms and anti-bot honeypot */
+.register-honeypot {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.register-terms {
+    margin: 14px 0;
+    padding: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    background: rgba(255, 255, 255, 0.04);
+    text-align: left;
+}
+
+.register-terms-text {
+    margin: 0 0 10px;
+    color: #d0d0d0;
+    font-size: 0.82rem;
+    line-height: 1.55;
+    white-space: pre-line;
+}
+
+.register-terms-check {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: #f0f0f0;
+    font-size: 0.84rem;
+    line-height: 1.4;
+}
+
+.register-terms-check input {
+    flex: 0 0 auto;
+    margin-top: 2px;
+}
+
+/* The standalone cards keep a dark surface in every colour scheme. */
+main {
+    color: #e9eef2;
+}
+
+main h1 {
+    color: #ffffff;
+}
+
+main header p,
+main p {
+    color: #d6dde3;
+}
+
+main header a,
+main a {
+    color: #b58cff;
+}
+
+main input,
+main textarea {
+    color: #f5f5f5;
+}
+
+main input::placeholder,
+main textarea::placeholder {
+    color: #b9c4cf;
+    opacity: 1;
+}
+
+main .settings-hint {
+    color: #c9c9c9;
+}

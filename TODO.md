@@ -236,10 +236,13 @@ Items marked **good first issue** are small and self-contained.
 ### Accounts and authentication
 
 - [x] Registration page with unique username/email validation and password policy.
-- [ ] Registration terms acceptance and rate limiting.
+- [x] Registration terms acceptance and per-IP rate limiting. Terms are configurable in
+  Forum Settings; every valid form submission counts toward an hourly IP limit.
 - [ ] Email activation before login/posting, with resend and expiration.
-- [ ] Anti-bot registration protection: per-IP throttling, a honeypot/minimum submit delay, and an optional challenge.
-- [ ] Configurable email-domain allowlist/blocklist for registration, seeded with common provider domains.
+- [x] Anti-bot registration protection: per-IP throttling, a hidden honeypot field, and a
+  configurable minimum submit delay.
+- [x] Configurable email-domain allowlist/blocklist for registration, seeded with common provider
+  domains and editable from the Registration settings tab.
 - [ ] Password reset via signed, expiring tokens.
 - [x] Account settings for email and password.
 - [x] Account settings for bio and post signature, with profile/post display, plain-text escaping,

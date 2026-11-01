@@ -24,6 +24,10 @@ class ApiMain
                 'class' => 'Avatars',
                 'permission' => Permissions::MANAGING_SETTINGS,
             ],
+            'api/registration' => [
+                'class' => 'Registration',
+                'permission' => Permissions::MANAGING_SETTINGS,
+            ],
             // Prefix create/edit/delete requests use the base route. Edit and delete
             // arrive as api/prefixes/{edit|delete}/{id}; HandleURL() maps those paths
             // to this entry and injects the route parameters.

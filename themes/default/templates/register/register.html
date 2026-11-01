@@ -13,6 +13,13 @@
             </header>
             <form action="{server_url}register" method="post">
                 <input type="hidden" name="csrf_token" value="{csrf_token}">
+                <input type="hidden" name="form_nonce" value="{form_nonce}">
+
+                <div class="register-honeypot" aria-hidden="true">
+                    <label for="register-bb-website">Website</label>
+                    <input type="text" id="register-bb-website" name="bb_website" tabindex="-1" autocomplete="off">
+                </div>
+
                 <input type="text" name="username" placeholder="Username" aria-label="Username"
                     maxlength="32" required="">
                 <input type="email" name="email" placeholder="Email" aria-label="Email"
@@ -22,6 +29,15 @@
                 <input type="password" name="password_confirm" placeholder="Confirm password"
                     aria-label="Confirm password" minlength="8" autocomplete="new-password" required="">
                 <p class="settings-hint">Use at least 8 characters with a number, uppercase and lowercase letter.</p>
+
+                <div class="register-terms">
+                    <p class="register-terms-text">{terms_text}</p>
+                    <label class="register-terms-check">
+                        <input type="checkbox" name="terms" required="">
+                        I accept the registration terms
+                    </label>
+                </div>
+
                 <button type="submit">Register</button>
             </form>
         </main>
