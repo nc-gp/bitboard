@@ -22,7 +22,7 @@
     margin: 0;
     padding: 7px 12px;
     border-radius: 999px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.85rem;
     line-height: 1.2;
     text-decoration: none;
@@ -30,12 +30,12 @@
 
 .admin-nav-link:hover {
     background: var(--opposite-x2);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .admin-nav-link.is-active {
-    background: var(--primary-focus);
-    color: var(--primary-hover);
+    background: var(--primary);
+    color: var(--primary-inverse);
 }
 
 .admin-nav-link i {
@@ -62,7 +62,7 @@
     height: 38px;
     border-radius: 12px;
     background: var(--primary-focus);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .admin-section-icon i {
@@ -77,7 +77,7 @@
 
 .admin-section-header p {
     margin: 0;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.9rem;
     line-height: 1.45;
 }
@@ -103,7 +103,7 @@
     margin: 0;
     padding: 7px 12px;
     border-radius: 999px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.85rem;
     line-height: 1.2;
     text-decoration: none;
@@ -111,12 +111,12 @@
 
 .admin-settings-tab:hover {
     background: var(--opposite);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .admin-settings-tab.is-active {
-    background: var(--primary-focus);
-    color: var(--primary-hover);
+    background: var(--primary);
+    color: var(--primary-inverse);
 }
 
 .admin-settings-tab i {
@@ -151,7 +151,7 @@
     padding: 9px 13px;
     border: 1px solid var(--opposite-x2);
     border-radius: var(--border-radius);
-    color: var(--primary-hover);
+    color: var(--link-color);
     font-size: 0.88rem;
     text-decoration: none;
 }
@@ -197,7 +197,7 @@ a.admin-stat:hover {
     margin-bottom: 3px;
     border-radius: 50%;
     background: var(--primary-focus);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .admin-stat-icon i {
@@ -211,7 +211,7 @@ a.admin-stat:hover {
 }
 
 .admin-stat-label {
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.05em;
@@ -233,7 +233,7 @@ a.admin-stat:hover {
 .admin-dashboard-section-head h3,
 .admin-panel > h3 {
     margin: 0;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.76rem;
     font-weight: 600;
     letter-spacing: 0.06em;
@@ -249,19 +249,19 @@ a.admin-stat:hover {
 .admin-period-link {
     padding: 3px 8px;
     border-radius: 999px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.72rem;
     text-decoration: none;
 }
 
 .admin-period-link:hover {
     background: var(--opposite-x2);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .admin-period-link.is-active {
-    background: var(--primary-focus);
-    color: var(--primary-hover);
+    background: var(--primary);
+    color: var(--primary-inverse);
 }
 
 .admin-charts {
@@ -282,18 +282,18 @@ a.admin-stat:hover {
     flex-wrap: wrap;
     align-items: center;
     gap: 8px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.8rem;
 }
 
 .admin-chart-head i {
-    color: var(--primary-hover);
+    color: var(--link-color);
     font-size: 1rem;
 }
 
 .admin-chart-head strong {
     margin-left: auto;
-    color: var(--primary-hover);
+    color: var(--link-color);
     font-size: 0.95rem;
 }
 
@@ -304,15 +304,15 @@ a.admin-stat:hover {
 }
 
 .admin-chart-trend.is-up {
-    color: #2f9e44;
+    color: var(--success-text);
 }
 
 .admin-chart-trend.is-down {
-    color: #e03131;
+    color: var(--danger-text);
 }
 
 .admin-chart-trend.is-flat {
-    color: gray;
+    color: var(--muted-text);
 }
 
 .admin-chart {
@@ -351,7 +351,7 @@ a.admin-stat:hover {
     display: flex;
     justify-content: space-between;
     margin-top: 4px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.7rem;
 }
 
@@ -400,7 +400,7 @@ a.admin-stat:hover {
     height: 30px;
     border-radius: 50%;
     background: var(--opposite-x2);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .admin-recent-icon i {
@@ -429,7 +429,7 @@ a.admin-stat:hover {
 
 .admin-recent-title {
     display: block;
-    color: var(--primary-hover);
+    color: var(--link-color);
     font-size: 0.88rem;
     font-weight: 600;
     overflow-wrap: anywhere;
@@ -442,7 +442,7 @@ a.admin-stat:hover {
 
 .admin-recent-meta {
     margin-top: 2px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.74rem;
     line-height: 1.35;
 }
@@ -453,7 +453,7 @@ a.admin-stat:hover {
 
 .admin-recent-empty {
     margin: 0;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.85rem;
 }
 
@@ -519,7 +519,7 @@ a.admin-stat:hover {
 
 .admin-field-hint {
     margin: 8px 0 0;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.78rem;
 }
 
@@ -552,7 +552,7 @@ a.admin-stat:hover {
     height: 30px;
     border-radius: 50%;
     background: var(--opposite-x2);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .admin-category-icon i {
@@ -567,7 +567,7 @@ a.admin-stat:hover {
     padding: 1px 8px;
     border-radius: 999px;
     background: var(--opposite-x2);
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.7rem;
 }
 
@@ -582,7 +582,7 @@ a.admin-stat:hover {
     flex-direction: column;
     gap: 4px;
     margin: 0;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.05em;
@@ -612,7 +612,7 @@ a.admin-stat:hover {
     align-items: center;
     gap: 8px;
     margin: 10px 0 0;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.82rem;
 }
 
@@ -637,7 +637,7 @@ a.admin-stat:hover {
     align-items: center;
     gap: 8px;
     margin: 0 0 10px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.76rem;
     font-weight: 600;
     letter-spacing: 0.08em;
@@ -646,7 +646,7 @@ a.admin-stat:hover {
 
 .admin-forum-group-title i {
     font-size: 1rem;
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .admin-forum {
@@ -670,7 +670,7 @@ a.admin-stat:hover {
 
 .admin-subforums > h4 {
     margin: 0 0 10px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.06em;
@@ -715,13 +715,13 @@ a.admin-stat:hover {
 .admin-rank-authority,
 .admin-user-authority {
     margin: 0 0 14px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.82rem;
 }
 
 .admin-rank-authority strong,
 .admin-user-authority strong {
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .admin-rank-readonly,
@@ -729,7 +729,7 @@ a.admin-stat:hover {
     padding: 1px 8px;
     border-radius: 999px;
     background: var(--opposite-x2);
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.7rem;
     font-weight: 600;
 }
@@ -745,8 +745,8 @@ a.admin-stat:hover {
 .admin-rank-builtin {
     padding: 1px 8px;
     border-radius: 999px;
-    background: var(--primary-focus);
-    color: var(--primary-hover);
+    background: var(--primary);
+    color: var(--primary-inverse);
     font-size: 0.7rem;
     font-weight: 600;
 }
@@ -766,7 +766,7 @@ a.admin-stat:hover {
 
 .admin-permission-group legend {
     padding: 0 6px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.06em;
@@ -819,13 +819,13 @@ a.admin-stat:hover {
 .admin-user-reset {
     align-self: center;
     margin-right: auto;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.84rem;
 }
 
 .admin-user-total {
     margin: 0 0 10px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.82rem;
 }
 
@@ -858,7 +858,7 @@ a.admin-stat:hover {
 }
 
 .admin-user-email {
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.8rem;
     overflow-wrap: anywhere;
 }
@@ -866,15 +866,15 @@ a.admin-stat:hover {
 .admin-user-self {
     padding: 1px 8px;
     border-radius: 999px;
-    background: var(--primary-focus);
-    color: var(--primary-hover);
+    background: var(--primary);
+    color: var(--primary-inverse);
     font-size: 0.7rem;
     font-weight: 600;
 }
 
 .admin-user-meta {
     margin: 0 0 10px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.78rem;
 }
 
@@ -899,7 +899,7 @@ a.admin-stat:hover {
 .admin-audit-table th {
     padding: 8px 10px;
     border-bottom: 1px solid var(--opposite-x2);
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: 0.05em;
@@ -923,7 +923,7 @@ a.admin-stat:hover {
 }
 
 .admin-audit-empty {
-    color: gray;
+    color: var(--muted-text);
     text-align: center;
 }
 
@@ -946,7 +946,7 @@ a.admin-stat:hover {
 
 .admin-category-empty {
     margin: 0;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.9rem;
 }
 
@@ -1024,7 +1024,7 @@ a.admin-stat:hover {
     gap: 4px;
     min-width: 0;
     font-size: 0.78rem;
-    color: gray;
+    color: var(--muted-text);
 }
 
 .admin-theme-file input {
@@ -1096,19 +1096,19 @@ a.admin-stat:hover {
     padding: 2px 8px;
     border-radius: 999px;
     background: var(--opposite-x2);
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.66rem;
     font-weight: 600;
 }
 
 .admin-theme-badge.is-active {
-    background: rgba(53, 255, 53, 0.14);
-    color: #4fd14f;
+    background: #1f7a1c;
+    color: #ffffff;
 }
 
 .admin-theme-badge.is-preview {
-    background: var(--primary-focus);
-    color: var(--primary-hover);
+    background: var(--primary);
+    color: var(--primary-inverse);
 }
 
 .admin-theme-badge.is-invalid {
@@ -1118,14 +1118,14 @@ a.admin-stat:hover {
 
 .admin-theme-desc {
     margin: 0;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.85rem;
     line-height: 1.45;
 }
 
 .admin-theme-meta {
     margin: 0;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.75rem;
 }
 
@@ -1161,7 +1161,7 @@ a.admin-stat:hover {
     padding: 5px 12px;
     border: 1px solid var(--opposite-x2);
     border-radius: 999px;
-    color: var(--primary-hover);
+    color: var(--link-color);
     font-size: 0.8rem;
     text-decoration: none;
 }

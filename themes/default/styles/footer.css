@@ -21,7 +21,7 @@ footer .footer-brand img {
 
 footer .footer-brand p {
     margin: 0;
-    color: gray;
+    color: var(--muted-text);
     line-height: 1.6;
     font-size: 0.95rem;
 }
@@ -32,9 +32,9 @@ footer .footer-columns {
     gap: 60px;
 }
 
-footer .footer-column h4 {
+footer .footer-column h2 {
     margin: 0 0 12px;
-    color: var(--primary);
+    color: var(--link-color);
     font-size: 0.8rem;
     letter-spacing: 0.08em;
     text-transform: uppercase;
@@ -56,14 +56,14 @@ footer .footer-column a {
 }
 
 footer .footer-column a:hover {
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 #bb-foot {
     max-width: 1200px;
     margin: 0 auto;
     padding: 0 0 30px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.85rem;
 }
 

@@ -27,7 +27,7 @@
 
 #reports-header p {
     margin: 5px 0 0;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.9rem;
 }
 
@@ -45,20 +45,20 @@
     padding: 5px 10px;
     border: 1px solid var(--opposite-x2);
     border-radius: 999px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.8rem;
     text-decoration: none;
 }
 
 .report-tab:hover {
     border-color: var(--primary);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .report-tab.is-active {
     border-color: var(--primary);
     background: var(--primary-focus);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .report-tab-count {
@@ -89,7 +89,7 @@
 }
 
 .report-card.is-dismissed {
-    border-left-color: gray;
+    border-left-color: var(--muted-text);
     opacity: 0.82;
 }
 
@@ -104,7 +104,7 @@
     padding: 1px 8px;
     border-radius: 999px;
     background: var(--primary-focus);
-    color: var(--primary-hover);
+    color: var(--link-color);
     font-size: 0.68rem;
     font-weight: 700;
     letter-spacing: 0.05em;
@@ -118,11 +118,11 @@
 
 .report-card.is-dismissed .report-status {
     background: var(--opposite-x2);
-    color: gray;
+    color: var(--muted-text);
 }
 
 .report-target-type {
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.72rem;
     font-weight: 600;
     letter-spacing: 0.05em;
@@ -130,7 +130,7 @@
 }
 
 .report-target {
-    color: var(--primary-hover);
+    color: var(--link-color);
     font-weight: 600;
     text-decoration: none;
 }
@@ -141,7 +141,7 @@
 
 .report-created {
     margin-left: auto;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.76rem;
 }
 
@@ -150,12 +150,12 @@
     flex-wrap: wrap;
     gap: 4px 14px;
     margin-top: 7px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.8rem;
 }
 
 .report-meta a {
-    color: var(--primary-hover);
+    color: var(--link-color);
     text-decoration: none;
 }
 
@@ -172,7 +172,7 @@
 .report-excerpt,
 .report-details {
     margin: 8px 0 0;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.88rem;
     line-height: 1.5;
     overflow-wrap: anywhere;
@@ -217,17 +217,17 @@
 .report-action-buttons .report-dismiss {
     background: transparent;
     border-color: var(--opposite-x2);
-    color: gray;
+    color: var(--muted-text);
 }
 
 .report-action-buttons .report-dismiss:hover {
     border-color: var(--primary);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .report-resolution {
     margin-top: 9px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.78rem;
 }
 
@@ -236,7 +236,7 @@
     padding: 8px 10px;
     border-radius: var(--border-radius);
     background: var(--opposite-x2);
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.84rem;
     line-height: 1.45;
     overflow-wrap: anywhere;
@@ -263,7 +263,7 @@
 
 .reports-empty p {
     margin: 0;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.9rem;
 }
 

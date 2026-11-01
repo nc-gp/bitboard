@@ -87,7 +87,7 @@
     gap: 8px 14px;
     align-items: center;
     margin-top: 6px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.9rem;
 }
 
@@ -105,14 +105,14 @@
 .profile_stats_count {
     display: flex;
     flex-direction: column;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.78rem;
     letter-spacing: 0.06em;
     text-transform: uppercase;
 }
 
 .profile_stats_count span {
-    color: var(--primary-hover);
+    color: var(--link-color);
     font-size: 1.2rem;
     font-weight: 700;
     letter-spacing: normal;
@@ -170,7 +170,7 @@
 }
 
 .profile-item a {
-    color: var(--primary-hover);
+    color: var(--link-color);
     font-weight: 600;
     text-decoration: none;
 }
@@ -181,14 +181,14 @@
 
 .profile-item p {
     margin: 5px 0;
-    color: gray;
+    color: var(--muted-text);
     line-height: 1.45;
     font-size: 0.92rem;
 }
 
 .profile-item-meta,
 .profile-empty {
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.85rem;
 }
 
@@ -198,7 +198,7 @@
 
 .profile-bio {
     margin: 0 0 14px;
-    color: gray;
+    color: var(--muted-text);
     line-height: 1.5;
     white-space: pre-line;
 }
@@ -222,7 +222,7 @@
 }
 
 .profile-meta-row dt {
-    color: gray;
+    color: var(--muted-text);
 }
 
 .profile-meta-row dd {
@@ -235,7 +235,7 @@
     align-items: center;
     gap: 7px;
     margin-top: 16px;
-    color: var(--primary-hover);
+    color: var(--link-color);
     font-weight: 600;
     text-decoration: none;
 }

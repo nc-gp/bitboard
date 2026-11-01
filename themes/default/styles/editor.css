@@ -27,7 +27,7 @@
     border: 0;
     border-radius: var(--border-radius);
     background: transparent;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.8rem;
     line-height: 1;
     cursor: pointer;
@@ -36,12 +36,12 @@
 .bb-editor-button:hover,
 .bb-editor-button:focus-visible {
     background: var(--opposite-x2);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .bb-editor-button.is-active {
     background: var(--primary-focus);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .bb-editor-button i {
@@ -53,7 +53,7 @@
 }
 
 .bb-editor-status {
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.75rem;
     white-space: nowrap;
 }
@@ -66,8 +66,8 @@
     padding: 8px 10px;
     border: 1px dashed var(--primary);
     border-radius: var(--border-radius);
-    background: var(--primary-focus);
-    color: var(--primary-hover);
+    background: var(--opposite);
+    color: var(--link-color);
     font-size: 0.82rem;
 }
 
@@ -168,7 +168,7 @@
 
 .bb-editor-preview-empty {
     margin: 0;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.9rem;
 }
 

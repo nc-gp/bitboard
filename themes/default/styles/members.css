@@ -40,7 +40,7 @@
 }
 
 .members-reset {
-    color: var(--primary-hover);
+    color: var(--link-color);
     font-size: 0.9rem;
     text-decoration: none;
 }

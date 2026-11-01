@@ -1,11 +1,11 @@
 <!doctype html>
-<html>
+<html lang="en">
 {head}
 <body>
 	<div class="bit-container">
 		{header}
 
-		<div id="content">
+		<div id="content" role="main">
 			<div id="members_toolbar">
 				<form action="{server_url}members/page/1" method="get">
 					<input type="search" name="q" value="{search}" placeholder="Search by username"
@@ -23,7 +23,7 @@
 				{members}
 			</div>
 		</div>
-		
+
         {footer}
 	</div>
 	{scripts}

@@ -2079,12 +2079,12 @@ progress::-moz-progress-bar {
 }
 
 details[role=list],
-li[role=list] {
+.nav-drop {
     position: relative
 }
 
 details[role=list] summary+ul,
-li[role=list]>ul {
+.nav-drop>ul {
     display: flex;
     z-index: 99;
     position: absolute;
@@ -2105,7 +2105,7 @@ li[role=list]>ul {
 }
 
 details[role=list] summary+ul li,
-li[role=list]>ul li {
+.nav-drop>ul li {
     width: 100%;
     margin-bottom: 0;
     padding: calc(var(--form-element-spacing-vertical) * .5) var(--form-element-spacing-horizontal);
@@ -2113,17 +2113,17 @@ li[role=list]>ul li {
 }
 
 details[role=list] summary+ul li:first-of-type,
-li[role=list]>ul li:first-of-type {
+.nav-drop>ul li:first-of-type {
     margin-top: calc(var(--form-element-spacing-vertical) * .5)
 }
 
 details[role=list] summary+ul li:last-of-type,
-li[role=list]>ul li:last-of-type {
+.nav-drop>ul li:last-of-type {
     margin-bottom: calc(var(--form-element-spacing-vertical) * .5)
 }
 
 details[role=list] summary+ul li a,
-li[role=list]>ul li a {
+.nav-drop>ul li a {
     display: block;
     margin: calc(var(--form-element-spacing-vertical) * -.5) calc(var(--form-element-spacing-horizontal) * -1);
     padding: calc(var(--form-element-spacing-vertical) * .5) var(--form-element-spacing-horizontal);
@@ -2134,12 +2134,12 @@ li[role=list]>ul li a {
 }
 
 details[role=list] summary+ul li a:hover,
-li[role=list]>ul li a:hover {
+.nav-drop>ul li a:hover {
     background-color: var(--dropdown-hover-background-color)
 }
 
 details[role=list] summary::after,
-li[role=list]>a::after {
+.nav-drop>a::after {
     display: block;
     width: 1rem;
     height: calc(1rem * var(--line-height, 1.5));
@@ -2203,20 +2203,20 @@ details[role=list][open] summary::before {
 }
 
 nav details[role=list] summary,
-nav li[role=list] a {
+nav .nav-drop a {
     display: flex;
     direction: ltr
 }
 
 nav details[role=list] summary+ul,
-nav li[role=list]>ul {
+nav .nav-drop>ul {
     min-width: -moz-fit-content;
     min-width: fit-content;
     border-radius: var(--border-radius)
 }
 
 nav details[role=list] summary+ul li a,
-nav li[role=list]>ul li a {
+nav .nav-drop>ul li a {
     border-radius: 0
 }
 
@@ -2247,20 +2247,22 @@ nav details[role=list] summary[role=link]+ul {
     margin-inline-start: calc(var(--nav-link-spacing-horizontal) * -1)
 }
 
-li[role=list] a:active~ul,
-li[role=list] a:focus~ul,
-li[role=list]:hover>ul {
+.nav-drop a:active~ul,
+.nav-drop a:focus~ul,
+.nav-drop button:focus~ul,
+.nav-drop:focus-within>ul,
+.nav-drop:hover>ul {
     display: flex
 }
 
-li[role=list]>ul {
+.nav-drop>ul {
     display: none;
     margin-top: calc(var(--nav-link-spacing-vertical) + var(--outline-width));
     -webkit-margin-start: calc(var(--nav-element-spacing-horizontal) - var(--nav-link-spacing-horizontal));
     margin-inline-start: calc(var(--nav-element-spacing-horizontal) - var(--nav-link-spacing-horizontal))
 }
 
-li[role=list]>a::after {
+.nav-drop>a::after {
     background-image: var(--icon-chevron)
 }
 

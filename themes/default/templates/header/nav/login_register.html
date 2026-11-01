@@ -1,22 +1,30 @@
 <div class="login_register">
-    <a href="{server_url}login">
-        <button aria-label="Login" data-tooltip-position="bottom" role="tooltip"><i
-                class="ti ti-login-2"></i></button>
+    <a class="nav-icon-link" href="{server_url}login" aria-label="Login">
+        <i class="ti ti-login-2" aria-hidden="true"></i>
     </a>
-    <a href="{server_url}register">
-        <button aria-label="Register" data-tooltip-position="bottom" role="tooltip"><i
-                class="ti ti-user-plus"></i></button>
+    <a class="nav-icon-link" href="{server_url}register" aria-label="Register">
+        <i class="ti ti-user-plus" aria-hidden="true"></i>
     </a>
-    <li role="list">
-        <button aria-haspopup="listbox" aria-label="Theme switcher" data-tooltip-position="top-left" role="tooltip"><i
-                class="ti ti-sun-moon"></i></button>
-        <ul role="listbox">
-            <li aria-label="Auto" data-tooltip-position="left" role="tooltip"><a href="#" data-theme-switcher="auto"><i
-                        class="ti ti-circle-letter-a"></i></a></li>
-            <li aria-label="Light" data-tooltip-position="left" role="tooltip"><a href="#"
-                    data-theme-switcher="light"><i class="ti ti-sun"></i></a></li>
-            <li aria-label="Dark" data-tooltip-position="left" role="tooltip"><a href="#" data-theme-switcher="dark"><i
-                        class="ti ti-moon-stars"></i></a></li>
+    <div class="nav-drop">
+        <button aria-haspopup="true" aria-label="Theme switcher" data-tooltip-position="top-left">
+            <i class="ti ti-sun-moon" aria-hidden="true"></i>
+        </button>
+        <ul>
+            <li>
+                <a href="#" data-theme-switcher="auto" aria-label="Use automatic color scheme">
+                    <i class="ti ti-circle-letter-a" aria-hidden="true"></i>
+                </a>
+            </li>
+            <li>
+                <a href="#" data-theme-switcher="light" aria-label="Use light color scheme">
+                    <i class="ti ti-sun" aria-hidden="true"></i>
+                </a>
+            </li>
+            <li>
+                <a href="#" data-theme-switcher="dark" aria-label="Use dark color scheme">
+                    <i class="ti ti-moon-stars" aria-hidden="true"></i>
+                </a>
+            </li>
         </ul>
-    </li>
+    </div>
 </div>

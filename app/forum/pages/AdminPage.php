@@ -2080,6 +2080,7 @@ class AdminPage extends PageBase implements PageInterface
             $item->AddEscapedEntry('{label}', $label);
             $item->AddEscapedEntry('{icon}', $icon);
             $item->AddEscapedEntry('{active_class}', $key === $current ? ' is-active' : '');
+            $item->AddEntry('{aria_current}', $key === $current ? ' aria-current="page"' : '');
             $item->Replace();
             $items .= $item->template;
         }
@@ -2127,6 +2128,7 @@ class AdminPage extends PageBase implements PageInterface
             $item->AddEscapedEntry('{label}', $label);
             $item->AddEscapedEntry('{icon}', $icon);
             $item->AddEscapedEntry('{active_class}', $key === $current ? ' is-active' : '');
+            $item->AddEntry('{aria_current}', $key === $current ? ' aria-current="page"' : '');
             $item->Replace();
             $items .= $item->template;
         }

@@ -18,7 +18,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    color: gray;
+    color: var(--muted-text);
 }
 
 .viewing-header i {
@@ -47,7 +47,7 @@
 
 .viewing-user:hover {
     background: var(--primary-focus);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .viewing-user img {
@@ -63,7 +63,7 @@
 }
 
 .viewing-more {
-    color: gray;
+    color: var(--muted-text);
     white-space: nowrap;
 }
 

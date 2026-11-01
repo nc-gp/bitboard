@@ -25,7 +25,7 @@
 
 .edit-history-item summary {
     padding: 10px 0;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.85rem;
     cursor: pointer;
 }
@@ -37,7 +37,7 @@
 
 .edit-history-content {
     padding-bottom: 12px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.92rem;
     line-height: 1.55;
     overflow-wrap: anywhere;
@@ -49,7 +49,7 @@
 
 .edit-history-empty {
     margin: 0;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.9rem;
 }
 

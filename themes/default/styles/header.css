@@ -6,7 +6,7 @@
     padding: 8px 16px;
     border-bottom: 1px solid var(--primary);
     background: var(--primary-focus);
-    color: var(--primary-hover);
+    color: var(--link-color);
     font-size: 0.88rem;
     text-align: center;
 }
@@ -60,6 +60,39 @@ header nav a {
     justify-content: flex-start;
     align-items: center;
     align-content: center;
+}
+
+.nav-icon-link {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 50px;
+    height: 50px;
+    margin: 0 10px;
+    padding: 0;
+    border: 1px solid var(--primary);
+    border-radius: var(--border-radius);
+    background: var(--primary);
+    color: var(--primary-inverse);
+    text-decoration: none;
+}
+
+.nav-icon-link:hover {
+    border-color: var(--link-color);
+    background: var(--primary-hover);
+    color: var(--primary-inverse);
+}
+
+.nav-drop > button {
+    width: 50px;
+    height: 50px;
+    margin: 0;
+    padding: 0;
+    border-radius: var(--border-radius);
+}
+
+.nav-drop > ul {
+    min-width: 170px;
 }
 
 #i {
@@ -119,12 +152,12 @@ header nav a {
 
 .notification-bell:hover {
     background: var(--opposite-x2);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .notification-bell[aria-expanded="true"] {
     background: var(--primary-focus);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .notification-bell i {
@@ -267,17 +300,17 @@ header nav a {
     border: 0;
     border-radius: 50%;
     background: transparent;
-    color: gray;
+    color: var(--muted-text);
     cursor: pointer;
 }
 
 .notification-sound-toggle:hover {
     background: var(--opposite-x2);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .notification-sound-toggle[aria-pressed="true"] {
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .notification-sound-toggle i {
@@ -290,7 +323,7 @@ header nav a {
     padding: 3px 0 !important;
     border: 0;
     background: transparent;
-    color: var(--primary-hover);
+    color: var(--link-color);
     font-size: 0.74rem;
     white-space: nowrap;
 }
@@ -366,7 +399,7 @@ header nav a {
     height: 34px;
     border-radius: 12px;
     background: var(--opposite-x2);
-    color: var(--primary-hover);
+    color: var(--link-color);
     transition: background 0.15s ease, color 0.15s ease;
 }
 
@@ -409,14 +442,14 @@ header nav a {
 }
 
 .notification-item-time {
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.74rem;
 }
 
 .notification-item::after {
     align-self: center;
     margin-left: auto;
-    color: gray;
+    color: var(--muted-text);
     content: "›";
     opacity: 0;
     font-size: 1.1rem;
@@ -434,7 +467,7 @@ header nav a {
     align-items: center;
     gap: 5px;
     padding: 34px 20px;
-    color: gray;
+    color: var(--muted-text);
     text-align: center;
 }
 
@@ -528,7 +561,7 @@ header nav a {
     padding: 8px 16px;
     border-bottom: 1px solid var(--primary);
     background: var(--primary-focus);
-    color: var(--primary-hover);
+    color: var(--link-color);
     font-size: 0.88rem;
     text-align: center;
 }

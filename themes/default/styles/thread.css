@@ -66,7 +66,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.74rem;
     font-weight: 600;
     letter-spacing: 0.06em;
@@ -84,15 +84,15 @@
     gap: 4px;
     padding: 2px 8px;
     border-radius: 999px;
-    background: var(--primary-focus);
-    color: var(--primary-hover);
+    background: var(--primary);
+    color: var(--primary-inverse);
     font-size: 0.72rem;
     font-weight: 600;
 }
 
 .thread-moderation-status.is-locked {
-    background: rgba(255, 53, 53, 0.16);
-    color: #ff8a8a;
+    background: #aa2727;
+    color: #ffffff;
 }
 
 .thread-moderation-status i {
@@ -121,7 +121,7 @@
     border: 1px solid var(--opposite-x2);
     border-radius: 999px;
     background: transparent;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.78rem;
     line-height: 1.2;
     text-decoration: none;
@@ -130,7 +130,7 @@
 
 .thread-moderation-button:hover {
     border-color: var(--primary);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .thread-moderation-button i {
@@ -161,7 +161,7 @@
     margin-top: 10px;
     padding-top: 8px;
     border-top: 1px solid var(--opposite-x2);
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.85rem;
     white-space: pre-line;
 }
@@ -280,7 +280,7 @@
 .post-timestamp {
     margin-bottom: 15px;
     font-size: 0.88rem;
-    color: gray;
+    color: var(--muted-text);
 }
 
 #thread-reply-area {
@@ -317,7 +317,7 @@
 }
 
 .fast-reply-header span {
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.82rem;
 }
 
@@ -355,7 +355,7 @@
     padding: 8px 10px;
     border: 1px dashed var(--opposite-x2);
     border-radius: var(--border-radius);
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.82rem;
 }
 
@@ -374,7 +374,7 @@
 .fast-reply-quote-bar .quote-clear {
     border-color: transparent;
     background: transparent;
-    color: gray;
+    color: var(--muted-text);
 }
 
 .thread-closed-notice {
@@ -382,7 +382,7 @@
     align-items: center;
     gap: 7px;
     margin: 0;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.9rem;
 }
 
@@ -409,7 +409,7 @@
     padding: 4px 9px;
     border: 1px solid var(--opposite-x2);
     border-radius: 999px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.8rem;
     line-height: 1;
     text-decoration: none;
@@ -418,7 +418,7 @@
 .content-quote-link:hover,
 .content-edit-link:hover {
     border-color: var(--primary);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .content-quote-link i,
@@ -436,7 +436,7 @@
     border: 1px solid var(--opposite-x2);
     border-radius: 999px;
     background: transparent;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.8rem;
     line-height: 1;
     cursor: pointer;
@@ -444,13 +444,13 @@
 
 .content-multiquote-link:hover {
     border-color: var(--primary);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .content-multiquote-link.is-selected {
     border-color: var(--primary);
     background: var(--primary-focus);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .content-multiquote-link i {
@@ -472,7 +472,7 @@
     border: 1px solid var(--opposite-x2);
     border-radius: 999px;
     background: transparent;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.8rem;
     line-height: 1;
     cursor: pointer;
@@ -480,13 +480,13 @@
 
 .content-subscribe-link:hover {
     border-color: var(--primary);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .content-subscribe-link.is-active {
     border-color: var(--primary);
     background: var(--primary-focus);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .content-subscribe-link i {
@@ -501,13 +501,13 @@
     height: 28px;
     border: 1px solid var(--opposite-x2);
     border-radius: 50%;
-    color: gray;
+    color: var(--muted-text);
     text-decoration: none;
 }
 
 .content-report-link:hover {
     border-color: var(--primary);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .content-report-link i {
@@ -535,7 +535,7 @@
     padding: 4px 9px;
     border: 1px solid var(--opposite-x2);
     border-radius: 999px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.8rem;
     line-height: 1;
     cursor: default;
@@ -549,7 +549,7 @@
     font-size: 1rem;
 }
 
-.reaction-static[role="tooltip"]::after {
+.reaction-static[data-tooltip-position]::after {
     width: max-content;
     max-width: 220px;
     white-space: normal;
@@ -565,7 +565,7 @@
     border: 1px solid var(--opposite-x2);
     border-radius: 999px;
     background: transparent;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.8rem;
     line-height: 1;
     cursor: pointer;
@@ -588,7 +588,7 @@
 }
 
 .reaction-total {
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.75rem;
 }
 
@@ -629,7 +629,7 @@
 
 .reaction-menu-title {
     padding: 4px 8px 5px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.7rem;
     font-weight: 600;
     letter-spacing: 0.08em;
@@ -674,7 +674,7 @@
 }
 
 .reaction-option .reaction-count {
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.78rem;
 }
 

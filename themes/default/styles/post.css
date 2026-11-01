@@ -23,7 +23,7 @@
 
 #post-form header p {
     margin: 0;
-    color: gray;
+    color: var(--muted-text);
 }
 
 #post-form form {
@@ -50,7 +50,7 @@
 
 .post-hint {
     margin: 2px 0 8px;
-    color: gray;
+    color: var(--muted-text);
     font-size: 0.85rem;
 }
 
@@ -68,7 +68,7 @@
 }
 
 .post-cancel {
-    color: var(--primary-hover);
+    color: var(--link-color);
     font-size: 0.9rem;
     text-decoration: none;
 }
@@ -103,7 +103,7 @@
 #post-denied p {
     max-width: 480px;
     margin: 0 auto 18px;
-    color: gray;
+    color: var(--muted-text);
     line-height: 1.5;
 }
 

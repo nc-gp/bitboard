@@ -387,7 +387,9 @@ Items marked **good first issue** are small and self-contained.
 - [x] Responsive pass for mobile and tablet: header/nav wrapping, index forum rows,
   forum/subforum thread rows, thread/post author headers, pagination, viewing chips, and
   login/register spacing at 1000px, 900px, 760px, and 480px breakpoints.
-- [ ] Accessibility pass: landmarks, labels, focus states, contrast, keyboard navigation.
+- [x] Accessibility pass: landmarks, skip links, labelled navigation and current-page states,
+  accessible form labels and avatar alt text, stronger focus rings, reduced-motion support, and
+  contrast-safe theme tokens for links, muted text, ranks, prefixes, badges, and active admin tabs.
 - [x] Shared empty and error states for index categories, forum/subforum threads, members, online,
   profile activity, and a themed 500 page. Normal forms now show a busy state while submitting.
 - [ ] Audit remaining admin and edge-case pages for dedicated loading, empty, and error coverage.

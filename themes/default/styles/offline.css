@@ -29,7 +29,7 @@
     margin: 0 auto 16px;
     border-radius: 50%;
     background: var(--primary-focus);
-    color: var(--primary-hover);
+    color: var(--link-color);
 }
 
 .offline-icon i {
@@ -38,7 +38,7 @@
 
 .offline-kicker {
     margin: 0 0 6px;
-    color: var(--primary-hover);
+    color: var(--link-color);
     font-size: 0.75rem;
     font-weight: 700;
     letter-spacing: 0.08em;
@@ -54,7 +54,7 @@
 .offline-message {
     max-width: 46ch;
     margin: 0 auto 24px;
-    color: gray;
+    color: var(--muted-text);
     line-height: 1.5;
     white-space: pre-line;
 }
@@ -99,7 +99,7 @@
 
 .offline-actions a.button:hover,
 .offline-actions a.button:focus {
-    border-color: var(--primary-hover);
+    border-color: var(--link-color);
     background: var(--primary-hover);
     color: var(--primary-inverse);
 }

@@ -4,7 +4,7 @@
 }
 
 .report-optional {
-    color: gray;
+    color: var(--muted-text);
     font-weight: normal;
 }
 
@@ -27,7 +27,7 @@
 .report-notice p {
     max-width: 520px;
     margin: 0 auto 18px;
-    color: gray;
+    color: var(--muted-text);
     line-height: 1.5;
 }
 
