@@ -90,6 +90,26 @@ class ForumDataStruct
     public int $registration_ip_limit = 5;
 
     /**
+     * @var bool Whether post attachments are enabled.
+     */
+    public bool $attachment_uploads = true;
+
+    /**
+     * @var int Maximum attachment size in kilobytes.
+     */
+    public int $attachment_max_size = 5120;
+
+    /**
+     * @var int Maximum attachments per post.
+     */
+    public int $attachment_max_files = 5;
+
+    /**
+     * @var string Comma-separated attachment extensions.
+     */
+    public string $attachment_formats = 'jpg,png,gif,webp,pdf,txt,zip';
+
+    /**
      * @var string Email-domain policy: off, allow, or block.
      */
     public string $registration_email_mode = 'off';

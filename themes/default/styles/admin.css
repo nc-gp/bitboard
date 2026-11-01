@@ -1312,3 +1312,33 @@ a.admin-stat:hover {
     background: #a61e1e;
     border-color: #a61e1e;
 }
+
+/* Attachment settings */
+.admin-attachment-formats {
+    margin-top: 8px;
+}
+
+.admin-attachment-format-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    margin-top: 8px;
+}
+
+.admin-attachment-format {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 6px 10px;
+    border: 1px solid var(--opposite-x2);
+    border-radius: var(--border-radius);
+    background: var(--opposite);
+    font-size: 0.82rem;
+    cursor: pointer;
+}
+
+.admin-attachment-format input {
+    flex: 0 0 auto;
+    margin: 0;
+}

@@ -567,7 +567,10 @@ class ThreadPage extends PageBase implements PageInterface
             $replyTemplate->AddEscapedEntry('{return_page}', $this->threadPage);
             $replyTemplate->AddEscapedEntry('{draft_key}', 'u' . (int) ($_SESSION['bitboard_user']->id ?? 0) . '-reply-' . $this->threadID);
             $replyTemplate->AddEntry('{editor_toolbar}', (new EditorWidget())->Template);
-            $replyTemplate->AddEntry('{attachments_field}', AttachmentWidget::UploadField('fast-reply-attachments'));
+            $replyTemplate->AddEntry('{attachments_field}', AttachmentWidget::UploadField(
+                'fast-reply-attachments',
+                AttachmentController::Config($this->forumData)
+            ));
             $replyTemplate->AddEscapedEntry('{hint}', $this->threadClosed
                 ? 'This thread is closed, but staff can still reply.'
                 : 'Post a reply without leaving this thread. Markdown supported.');

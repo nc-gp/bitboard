@@ -317,7 +317,8 @@ class EditPage extends PageBase implements PageInterface
 
         try
         {
-            $uploads = AttachmentController::ValidateUploads($_FILES['attachments'] ?? null);
+            $attachmentConfig = AttachmentController::Config($this->forumData);
+            $uploads = AttachmentController::ValidateUploads($_FILES['attachments'] ?? null, $attachmentConfig);
         }
         catch (AttachmentException $e)
         {
@@ -344,9 +345,9 @@ class EditPage extends PageBase implements PageInterface
                 $remainingAttachments++;
         }
 
-        if ($remainingAttachments + count($uploads) > AttachmentController::MAX_FILES)
+        if ($remainingAttachments + count($uploads) > $attachmentConfig['max_files'])
         {
-            $this->error = 'You can keep up to ' . AttachmentController::MAX_FILES . ' attachments on a post.';
+            $this->error = 'You can keep up to ' . $attachmentConfig['max_files'] . ' attachments on a post.';
             return;
         }
 
@@ -466,7 +467,10 @@ class EditPage extends PageBase implements PageInterface
         $form->AddEntry('{title_field}', $titleField);
         $form->AddEntry('{prefix_field}', $this->BuildPrefixField());
         $form->AddEntry('{existing_attachments}', AttachmentWidget::Manage($this->attachments));
-        $form->AddEntry('{attachments_field}', AttachmentWidget::UploadField('edit-attachments'));
+        $form->AddEntry('{attachments_field}', AttachmentWidget::UploadField(
+            'edit-attachments',
+            AttachmentController::Config($this->forumData)
+        ));
         $form->Replace();
 
         return $form->template;

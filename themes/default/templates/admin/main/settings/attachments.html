@@ -1,0 +1,76 @@
+<form id="settingsForm" method="post" action="{admin_url}/settings/attachments">
+    <input type="hidden" name="csrf_token" value="{csrf_token}">
+
+    <fieldset>
+        <label for="attachment_uploads">
+            <input type="checkbox" role="switch" id="attachment_uploads" name="attachment_uploads"
+                aria-describedby="settings-attachment-uploads-hint" {attachment_uploads}>
+            Allow post attachments
+        </label>
+        <p id="settings-attachment-uploads-hint" class="admin-field-hint">
+            When disabled, new uploads are blocked. Existing attachments stay visible and downloadable.
+        </p>
+    </fieldset>
+
+    <label for="settings-attachment-size">Maximum file size (KB)</label>
+    <input type="number" id="settings-attachment-size" name="attachment_max_size" min="1" max="20480" step="1"
+        value="{attachment_max_size}" aria-describedby="settings-attachment-size-hint">
+    <p id="settings-attachment-size-hint" class="admin-field-hint">
+        Maximum upload size in kilobytes. 1024 KB equals 1 MB. The server's PHP upload limit still applies.
+    </p>
+
+    <label for="settings-attachment-files">Maximum files per post</label>
+    <input type="number" id="settings-attachment-files" name="attachment_max_files" min="1" max="20" step="1"
+        value="{attachment_max_files}" aria-describedby="settings-attachment-files-hint">
+    <p id="settings-attachment-files-hint" class="admin-field-hint">
+        Applies to new posts and edits. Lowering this does not delete existing attachments.
+    </p>
+
+    <fieldset class="admin-attachment-formats">
+        <legend>Allowed formats</legend>
+        <div class="admin-attachment-format-grid">
+            {attachment_format_options}
+        </div>
+        <p class="admin-field-hint">Choose at least one format. Existing files keep working if a format is removed.</p>
+    </fieldset>
+</form>
+<button id="settings">Update attachment settings</button>
+
+<script>
+    window.onload = () => {
+        const form = document.getElementById('settingsForm');
+        const btn = document.querySelector('#settings');
+
+        btn.addEventListener('click', () => {
+            const formData = new FormData(form);
+
+            const formObject = {};
+            formData.forEach((value, key) => {
+                if (key !== 'attachment_formats[]')
+                    formObject[key] = value;
+            });
+
+            formObject.attachment_formats = [...form.querySelectorAll('input[name="attachment_formats[]"]:checked')]
+                .map(input => input.value);
+
+            toast('Trying to update..', 2, '180, 180, 53');
+            req('POST', '{server_url}api/attachments', JSON.stringify(formObject), (msg, data) => {
+                if(msg !== null) {
+                    toast(msg);
+                    return;
+                }
+
+                try {
+                    if (data !== null) {
+                        let d = JSON.parse(data);
+                        toast(d.data.message, 5, '53, 255, 53');
+                    } else {
+                        toast('Data is null');
+                    }
+                } catch (error) {
+                    toast('Error parsing JSON data: ' + error.message);
+                }
+            });
+        });
+    }
+</script>

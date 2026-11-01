@@ -12,8 +12,22 @@ use App\Classes\Database;
  */
 class AttachmentController
 {
-    public const MAX_FILE_SIZE = 5242880; // 5 MB
-    public const MAX_FILES = 5;
+    public const DEFAULT_MAX_SIZE_KB = 5120;
+    public const DEFAULT_MAX_FILES = 5;
+    public const MAX_SIZE_LIMIT_KB = 20480;
+    public const MAX_FILES_LIMIT = 20;
+
+    public const SUPPORTED_FORMATS = [
+        'jpg' => 'JPEG',
+        'png' => 'PNG',
+        'gif' => 'GIF',
+        'webp' => 'WebP',
+        'pdf' => 'PDF',
+        'txt' => 'Text',
+        'zip' => 'ZIP',
+    ];
+
+    public const DEFAULT_FORMATS = ['jpg', 'png', 'gif', 'webp', 'pdf', 'txt', 'zip'];
 
     public const TYPES = [
         'jpg' => ['image/jpeg'],
@@ -48,27 +62,90 @@ class AttachmentController
         )');
     }
 
-    public static function AllowedExtensions(): array
+    /**
+     * Resolve the attachment limits and formats from forum settings.
+     *
+     * @return array{enabled:bool,max_size:int,max_size_kb:int,max_files:int,formats:array<int,string>}
+     */
+    public static function Config(object $forumData): array
     {
-        return array_keys(self::TYPES);
+        $maxSizeKb = max(1, min(self::MAX_SIZE_LIMIT_KB, (int) ($forumData->attachment_max_size ?? self::DEFAULT_MAX_SIZE_KB)));
+        $maxFiles = max(1, min(self::MAX_FILES_LIMIT, (int) ($forumData->attachment_max_files ?? self::DEFAULT_MAX_FILES)));
+        $formats = self::ParseFormats((string) ($forumData->attachment_formats ?? ''));
+
+        return [
+            'enabled' => (bool) ($forumData->attachment_uploads ?? true),
+            'max_size' => $maxSizeKb * 1024,
+            'max_size_kb' => $maxSizeKb,
+            'max_files' => $maxFiles,
+            'formats' => $formats,
+        ];
     }
 
-    public static function MaxSizeLabel(): string
+    /**
+     * @return array<int, string> Canonical supported extensions.
+     */
+    public static function ParseFormats(string $formats): array
     {
-        return self::FormatSize(self::MAX_FILE_SIZE);
+        $parts = preg_split('/[\s,]+/', strtolower($formats)) ?: [];
+        $valid = [];
+
+        foreach ($parts as $part)
+        {
+            $extension = $part === 'jpeg' ? 'jpg' : $part;
+
+            if (isset(self::SUPPORTED_FORMATS[$extension]))
+                $valid[$extension] = true;
+        }
+
+        return count($valid) > 0 ? array_keys($valid) : self::DEFAULT_FORMATS;
+    }
+
+    /**
+     * @param array<int, mixed>|string $formats
+     */
+    public static function NormalizeFormats(array|string $formats): string
+    {
+        if (is_array($formats))
+            $formats = implode(',', array_map(static fn($format): string => is_string($format) ? $format : '', $formats));
+
+        return implode(',', self::ParseFormats($formats));
+    }
+
+    /**
+     * @param array<int, string> $formats
+     */
+    public static function FormatLabel(array $formats): string
+    {
+        return implode(', ', array_map(
+            static fn(string $extension): string => self::SUPPORTED_FORMATS[$extension] ?? strtoupper($extension),
+            $formats
+        ));
+    }
+
+    public static function MaxSizeLabel(int $bytes): string
+    {
+        return self::FormatSize($bytes);
     }
 
     /**
      * Normalize the multi-file PHP upload array and validate every file.
      *
+     * @param array{enabled:bool,max_size:int,max_size_kb:int,max_files:int,formats:array<int,string>} $config
      * @return array<int, array{tmp_name:string,name:string,mime:string,extension:string,size:int}>
      */
-    public static function ValidateUploads(?array $input): array
+    public static function ValidateUploads(?array $input, array $config): array
     {
         $files = self::NormalizeFiles($input);
 
-        if (count($files) > self::MAX_FILES)
-            throw new AttachmentException('You can attach up to ' . self::MAX_FILES . ' files at once.');
+        if (count($files) === 0)
+            return [];
+
+        if (!$config['enabled'])
+            throw new AttachmentException('Attachments are disabled.');
+
+        if (count($files) > $config['max_files'])
+            throw new AttachmentException('You can attach up to ' . $config['max_files'] . ' files at once.');
 
         $validated = [];
 
@@ -77,13 +154,17 @@ class AttachmentController
             if ($file['error'] !== UPLOAD_ERR_OK)
                 throw new AttachmentException(self::UploadErrorMessage($file['error']));
 
-            if ($file['size'] <= 0 || $file['size'] > self::MAX_FILE_SIZE)
-                throw new AttachmentException('Each attachment must be ' . self::MaxSizeLabel() . ' or smaller.');
+            if ($file['size'] <= 0 || $file['size'] > $config['max_size'])
+                throw new AttachmentException('Each attachment must be ' . self::MaxSizeLabel($config['max_size']) . ' or smaller.');
 
             $name = self::CleanFileName((string) $file['name']);
             $extension = strtolower((string) pathinfo($name, PATHINFO_EXTENSION));
+            $canonical = $extension === 'jpeg' ? 'jpg' : $extension;
 
             if (!array_key_exists($extension, self::TYPES))
+                throw new AttachmentException('That attachment type is not allowed.');
+
+            if (!in_array($canonical, $config['formats'], true))
                 throw new AttachmentException('That attachment type is not allowed.');
 
             $mime = self::DetectMime((string) $file['tmp_name']);

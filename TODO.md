@@ -295,7 +295,8 @@ Items marked **good first issue** are small and self-contained.
   drafts. Policy: input is a Markdown subset, raw HTML is escaped, and rendered output is
   sanitized before storage. Existing HTML posts are converted back to Markdown when edited.
 - [x] Attachments/uploads with extension/MIME/size validation, private storage, editor and
-  fast-reply uploads, controlled download links, per-post limits, and cleanup on deletion.
+  fast-reply uploads, controlled download links, per-post limits, admin-configurable limits and
+  formats, and cleanup on deletion.
 - [x] Thread subscriptions: subscribe/unsubscribe from the thread page, with a reply
   notification (including a direct post anchor) for every new reply by another member.
 - [x] "Watch forum" notifications for forums and subforums, with watch/unwatch buttons, a

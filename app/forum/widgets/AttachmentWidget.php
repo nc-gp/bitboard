@@ -60,17 +60,29 @@ class AttachmentWidget
         return $list->template;
     }
 
-    public static function UploadField(string $id = 'attachments'): string
+    public static function UploadField(string $id, array $config): string
     {
-        $extensions = AttachmentController::AllowedExtensions();
-        $accept = implode(',', array_map(static fn(string $extension): string => '.' . $extension, $extensions));
+        if (empty($config['enabled']))
+            return '';
+
+        $acceptExtensions = [];
+
+        foreach ($config['formats'] as $extension)
+        {
+            $acceptExtensions[] = '.' . $extension;
+
+            if ($extension === 'jpg')
+                $acceptExtensions[] = '.jpeg';
+        }
+
+        $accept = implode(',', $acceptExtensions);
 
         $template = new Template('attachment', 'upload_field');
         $template->AddEscapedEntry('{id}', $id);
         $template->AddEscapedEntry('{accept}', $accept);
-        $template->AddEscapedEntry('{extensions}', strtoupper(implode(', ', $extensions)));
-        $template->AddEscapedEntry('{max_files}', AttachmentController::MAX_FILES);
-        $template->AddEscapedEntry('{max_size}', AttachmentController::MaxSizeLabel());
+        $template->AddEscapedEntry('{extensions}', AttachmentController::FormatLabel($config['formats']));
+        $template->AddEscapedEntry('{max_files}', $config['max_files']);
+        $template->AddEscapedEntry('{max_size}', AttachmentController::MaxSizeLabel($config['max_size']));
         $template->Replace();
 
         return $template->template;

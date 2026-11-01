@@ -338,7 +338,10 @@ class PostPage extends PageBase implements PageInterface
 
         try
         {
-            $uploads = AttachmentController::ValidateUploads($_FILES['attachments'] ?? null);
+            $uploads = AttachmentController::ValidateUploads(
+                $_FILES['attachments'] ?? null,
+                AttachmentController::Config($this->forumData)
+            );
         }
         catch (AttachmentException $e)
         {
@@ -610,7 +613,10 @@ class PostPage extends PageBase implements PageInterface
         $this->template->AddEntry('{title_field}', $this->BuildTitleField());
         $this->template->AddEntry('{prefix_field}', $this->BuildPrefixField());
         $this->template->AddEntry('{context_fields}', $this->BuildContextFields());
-        $this->template->AddEntry('{attachments_field}', AttachmentWidget::UploadField('post-attachments'));
+        $this->template->AddEntry('{attachments_field}', AttachmentWidget::UploadField(
+            'post-attachments',
+            AttachmentController::Config($this->forumData)
+        ));
         $this->template->AddEntry('{error}', $this->BuildError());
 
         parent::RenderPage('post');

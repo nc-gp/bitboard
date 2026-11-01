@@ -16,6 +16,7 @@ use App\Classes\UsernameUtils;
 use App\Interfaces\PageInterface;
 use App\Classes\Template;
 use App\Forum\Controllers\AccountController;
+use App\Forum\Controllers\AttachmentController;
 use App\Forum\Controllers\AuditController;
 use App\Forum\Controllers\BanController;
 use App\Forum\Controllers\CategoryController;
@@ -1388,6 +1389,23 @@ class AdminPage extends PageBase implements PageInterface
         return $options;
     }
 
+    private function BuildAttachmentFormatOptions(array $selected): string
+    {
+        $options = '';
+
+        foreach (AttachmentController::SUPPORTED_FORMATS as $extension => $label)
+        {
+            $item = new Template('admin/main/settings', 'attachment_format');
+            $item->AddEscapedEntry('{value}', $extension);
+            $item->AddEscapedEntry('{label}', $label);
+            $item->AddEntry('{checked}', in_array($extension, $selected, true) ? ' checked' : '');
+            $item->Replace();
+            $options .= $item->template;
+        }
+
+        return $options;
+    }
+
     private function BuildUserRow(
         array $user,
         array $ranks,
@@ -2331,6 +2349,12 @@ class AdminPage extends PageBase implements PageInterface
                 'settings/avatars',
                 'Control whether members can upload avatars and how large or which formats are allowed.',
             ],
+            'attachments' => [
+                'Attachments',
+                'ti-paperclip',
+                'settings/attachments',
+                'Control whether posts can include attachments, their size, count, and allowed formats.',
+            ],
             'registration' => [
                 'Registration',
                 'ti-user-plus',
@@ -2364,6 +2388,14 @@ class AdminPage extends PageBase implements PageInterface
             $content->AddEscapedEntry('{avatar_formats}', (string) ($this->forumData->avatar_formats ?? 'jpg,png,webp,gif'));
             $content->AddEscapedEntry('{avatar_max_width}', max(0, (int) ($this->forumData->avatar_max_width ?? 0)));
             $content->AddEscapedEntry('{avatar_max_height}', max(0, (int) ($this->forumData->avatar_max_height ?? 0)));
+        }
+        elseif ($tab === 'attachments')
+        {
+            $config = AttachmentController::Config($this->forumData);
+            $content->AddEntry('{attachment_uploads}', $config['enabled'] ? 'checked' : '');
+            $content->AddEscapedEntry('{attachment_max_size}', $config['max_size_kb']);
+            $content->AddEscapedEntry('{attachment_max_files}', $config['max_files']);
+            $content->AddEntry('{attachment_format_options}', $this->BuildAttachmentFormatOptions($config['formats']));
         }
         else
         {

@@ -38,8 +38,8 @@ npm, or build step. Tabler Icons is the only external front-end asset and is pin
   edit history, and permanent deletion.
 - Inline fast reply with AJAX append and a normal POST fallback.
 - Attachments on threads, replies, edits, and fast replies: private storage under `app/`,
-  extension/MIME/size validation, a five-file limit, controlled download links, and cleanup
-  when posts or threads are deleted.
+  extension/MIME/size validation, admin-configurable limits and formats, controlled download
+  links, and cleanup when posts or threads are deleted.
 - Reactions, quotes, multi-quote, `@mentions`, and a header notification bell.
 - Thread subscriptions and forum/subforum watch notifications.
 - Per-user read tracking, pagination-preserving last-post links, and “who is viewing”.

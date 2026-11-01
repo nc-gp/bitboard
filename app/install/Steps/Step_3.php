@@ -131,7 +131,11 @@ class Step_3 extends StepBase implements StepInterface
 				registration_min_delay INT(6) NOT NULL DEFAULT 3,
 				registration_ip_limit INT(6) NOT NULL DEFAULT 5,
 				registration_email_mode VARCHAR(16) NOT NULL DEFAULT \'off\',
-				registration_email_domains VARCHAR(1000) NOT NULL DEFAULT \'gmail.com,outlook.com,hotmail.com,yahoo.com,icloud.com,protonmail.com\'
+				registration_email_domains VARCHAR(1000) NOT NULL DEFAULT \'gmail.com,outlook.com,hotmail.com,yahoo.com,icloud.com,protonmail.com\',
+				attachment_uploads TINYINT(1) NOT NULL DEFAULT 1,
+				attachment_max_size INT(6) NOT NULL DEFAULT 5120,
+				attachment_max_files INT(6) NOT NULL DEFAULT 5,
+				attachment_formats VARCHAR(255) NOT NULL DEFAULT \'jpg,png,gif,webp,pdf,txt,zip\'
 			)');
 
 			$InstallDatabase->Query('INSERT INTO bit_settings 

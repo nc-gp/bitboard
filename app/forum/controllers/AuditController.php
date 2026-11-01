@@ -15,6 +15,7 @@ class AuditController
     public const LABELS = [
         'settings.update' => 'Settings updated',
         'settings.registration' => 'Registration settings updated',
+        'settings.attachments' => 'Attachment settings updated',
         'avatars.update' => 'Avatar settings updated',
         'category.create' => 'Category created',
         'category.update' => 'Category updated',
