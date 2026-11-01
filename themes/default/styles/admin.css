@@ -1185,3 +1185,130 @@ a.admin-stat:hover {
         max-width: none;
     }
 }
+
+/* Ban and suspension records */
+.admin-user.is-banned {
+    border-left: 3px solid #aa2727;
+}
+
+.admin-ban-status {
+    margin: 0 0 12px;
+    padding: 12px 14px;
+    border: 1px solid rgba(255, 53, 53, 0.24);
+    border-radius: var(--border-radius);
+    background: rgba(255, 53, 53, 0.08);
+}
+
+.admin-ban-status p {
+    margin: 6px 0 0;
+    font-size: 0.82rem;
+    line-height: 1.5;
+}
+
+.admin-ban-reason strong {
+    color: var(--link-color);
+}
+
+.admin-ban-badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 999px;
+    font-size: 0.68rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    white-space: nowrap;
+}
+
+.admin-ban-badge.is-active {
+    background: #aa2727;
+    color: #ffffff;
+}
+
+.admin-ban-badge.is-expired,
+.admin-ban-badge.is-lifted {
+    background: var(--opposite-x2);
+    color: var(--muted-text);
+}
+
+.admin-ban-meta {
+    display: block;
+    margin-top: 3px;
+    color: var(--muted-text);
+    font-size: 0.74rem;
+}
+
+.admin-ban-filter {
+    margin: 0 0 16px;
+    padding: 14px;
+    border: 1px solid var(--opposite-x2);
+    border-radius: var(--border-radius);
+}
+
+.admin-ban-reason-cell {
+    max-width: 34ch;
+    overflow-wrap: anywhere;
+}
+
+.admin-ban-lift {
+    margin: 0;
+    padding: 0 !important;
+}
+
+.admin-ban-lift button {
+    width: auto;
+    margin: 0;
+    padding: 4px 10px !important;
+    font-size: 0.76rem;
+}
+
+.admin-ban-form {
+    width: min(560px, calc(100vw - 32px));
+    margin: 0;
+    padding: 22px;
+    border: 1px solid var(--opposite-x2);
+    border-radius: var(--border-radius);
+    background: var(--background-color);
+}
+
+.admin-ban-form h2 {
+    margin: 0 0 6px;
+    font-size: 1.15rem;
+}
+
+.admin-ban-form .admin-field-hint {
+    margin-bottom: 14px;
+}
+
+.admin-ban-form label {
+    display: block;
+    margin-bottom: 12px;
+}
+
+.admin-ban-form textarea,
+.admin-ban-form select {
+    margin-top: 4px;
+}
+
+.admin-ban-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 6px;
+}
+
+.admin-ban-actions button {
+    width: auto;
+    margin: 0;
+}
+
+.admin-ban-actions .danger-button {
+    background: #c92a2a;
+    border-color: #c92a2a;
+    color: #ffffff;
+}
+
+.admin-ban-actions .danger-button:hover {
+    background: #a61e1e;
+    border-color: #a61e1e;
+}

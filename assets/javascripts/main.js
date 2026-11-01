@@ -57,6 +57,19 @@ observer.observe(embedder, {
     attributes: true
 });
 
+// Modal content is cloned after page load, so delegated close controls inside
+// the embed need their own listener.
+document.addEventListener('click', event => {
+    const trigger = event.target.closest('#embed [bb-action="close"]');
+
+    if (trigger === null)
+        return;
+
+    event.preventDefault();
+    embed.innerHTML = '';
+    embedder.setAttribute('visibility', false);
+});
+
 
 const web = (target) => {
     if (target !== 'none') {

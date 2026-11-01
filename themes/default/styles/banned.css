@@ -1,0 +1,69 @@
+.banned-card {
+    max-width: 560px;
+    padding: 26px;
+    color: #e9eef2;
+}
+
+.banned-card h1 {
+    color: #ffffff;
+}
+
+.banned-card header p,
+.banned-card dd {
+    color: #e9eef2;
+}
+
+.banned-icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    margin: 0 auto 14px;
+    border-radius: 50%;
+    background: rgba(255, 53, 53, 0.16);
+    color: #ff8a8a;
+}
+
+.banned-icon i {
+    font-size: 1.6rem;
+}
+
+.banned-details {
+    display: grid;
+    gap: 10px;
+    margin: 20px 0;
+    text-align: left;
+}
+
+.banned-details div {
+    padding: 10px 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 6px;
+}
+
+.banned-details dt {
+    margin-bottom: 2px;
+    color: #b9b9b9;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+.banned-details dd {
+    margin: 0;
+    overflow-wrap: anywhere;
+}
+
+.banned-help {
+    margin: 0 0 16px;
+    color: #b9b9b9;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 560px) {
+    .banned-card {
+        width: 100%;
+        padding: 18px;
+    }
+}

@@ -46,9 +46,10 @@ npm, or build step. Tabler Icons is the only external front-end asset and is pin
 - Member directory, online list, and public profiles with avatar, bio, and signature.
 - Account settings for email, password, bio, signature, and avatar uploads with admin limits.
 - Admin panel: dashboard charts, tabbed settings, categories, forums, prefixes, ranks with a
-  permission matrix, user management, and an audit log.
+  permission matrix, user management, ban/suspension records with reasons and expiry, and an
+  audit log.
 - Numbered database migrations with automatic, locked upgrades for existing installs.
-- Foreign keys for accounts, forums, threads, posts, reactions, subscriptions, reports, and
+- Foreign keys for accounts, forums, threads, posts, reactions, subscriptions, reports, bans, and
   notifications, with safe `ON DELETE` rules and orphan cleanup through migrations.
 - Theme system with the bundled default theme, a light/dark/auto switcher, and an admin theme
   manager for installing, previewing, activating, and deleting themes.

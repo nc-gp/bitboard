@@ -3,11 +3,30 @@
 {head}
 <body>
 	<div class="bit-container">
-		<main>
-            <header>
-                <h1>BANNED</h1>
-                <p>You are no longer have access to this forum.</p>
-            </header>
+		<main id="login" class="banned-card">
+			<header>
+				<span class="banned-icon" aria-hidden="true"><i class="ti ti-gavel"></i></span>
+				<h1>Access suspended</h1>
+				<p>Your account cannot use the forum right now.</p>
+			</header>
+
+			<dl class="banned-details">
+				<div>
+					<dt>Reason</dt>
+					<dd>{reason}</dd>
+				</div>
+				<div>
+					<dt>Expires</dt>
+					<dd>{expiry}</dd>
+				</div>
+				<div>
+					<dt>Issued by</dt>
+					<dd>{issuer}</dd>
+				</div>
+			</dl>
+
+			<p class="banned-help">If you believe this is a mistake, contact the site staff.</p>
+			<a class="button" href="{logout_url}">Log out</a>
 		</main>
 	</div>
 	{scripts}

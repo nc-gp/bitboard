@@ -23,6 +23,7 @@ use App\Forum\Controllers\PrefixController;
 use App\Forum\Controllers\NotificationController;
 use App\Forum\Controllers\ReportController;
 use App\Forum\Controllers\AuditController;
+use App\Forum\Controllers\BanController;
 use App\Forum\Controllers\ForumSubscriptionController;
 use App\Forum\Controllers\SubscriptionController;
 use App\Forum\Controllers\ThreadReadController;
@@ -152,6 +153,8 @@ class Step_3 extends StepBase implements StepInterface
 
 			AccountController::CreateTable($InstallDatabase);
 			AccountController::Create($InstallDatabase, 'BitBot', '-', '-', $adminRankID, true);
+
+			BanController::CreateTable($InstallDatabase);
 
 			LoginThrottle::CreateTable($InstallDatabase);
 

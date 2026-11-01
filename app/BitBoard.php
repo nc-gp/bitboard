@@ -12,6 +12,7 @@ use App\Classes\Permissions;
 use App\Classes\SessionManager;
 use App\Classes\Template;
 use App\Forum\Controllers\AccountController;
+use App\Forum\Controllers\BanController;
 use App\Forum\Controllers\ThemeController;
 use App\Forum\Controllers\ViewingController;
 use App\Forum\Pages\_500Page;
@@ -82,12 +83,13 @@ class BitBoard
 
 			$_SESSION['bitboard_user']->Update($this->database);
 			
-			// Checking is user banned. (Reality this is checking if user has permission to view the forum)
-			if(!SessionManager::HasPermission(Permissions::VIEWING_FORUM))
-			{
-				if(count($SplitedURL) > 1 || empty($SplitedURL))
-					UrlManager::Redirect(UrlManager::GetPath() . 'banned');
-			}
+			// Bans are stored as records so reasons and expiry survive rank changes.
+			// Legacy Banned-rank accounts are still caught by the permission check.
+			$activeBan = BanController::GetActiveForUser($this->database, (int) $_SESSION['bitboard_user']->id);
+			$isBanned = !empty($activeBan) || !SessionManager::HasPermission(Permissions::VIEWING_FORUM);
+
+			if($isBanned && $firstParameter !== 'banned' && $firstParameter !== 'logout')
+				UrlManager::Redirect(UrlManager::GetPath() . 'banned');
 
 			// Remember where the member is browsing for the "who is viewing" lists.
 			$viewingType = '';

@@ -1,0 +1,47 @@
+<article class="admin-bans">
+    <header class="admin-section-header">
+        <span class="admin-section-icon"><i class="ti ti-gavel" aria-hidden="true"></i></span>
+        <div>
+            <h2>Bans</h2>
+            <p>Active suspensions and the full ban history, newest first.</p>
+        </div>
+    </header>
+
+    <form class="admin-ban-filter" method="get" action="{admin_url}/bans/page/1">
+        <div class="admin-category-fields">
+            <label>
+                <span>Show</span>
+                <select name="status">
+                    {status_options}
+                </select>
+            </label>
+        </div>
+
+        <div class="admin-category-actions">
+            <a class="admin-user-reset" href="{admin_url}/bans/page/1">Reset</a>
+            <button type="submit">Apply filter</button>
+        </div>
+    </form>
+
+    <p class="admin-user-total">{total_label}</p>
+
+    {pagination}
+
+    <div class="admin-audit-table-wrap">
+        <table class="admin-audit-table admin-ban-table">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Reason</th>
+                    <th>Issued</th>
+                    <th>Expires</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                {rows}
+            </tbody>
+        </table>
+    </div>
+</article>

@@ -252,7 +252,8 @@ Items marked **good first issue** are small and self-contained.
   maximum file size, allowed formats, and optional dimension limits, enforced in account
   settings.
 - [ ] Optional two-factor authentication (TOTP) after the core is stable.
-- [ ] Ban/suspension records with reasons and expiry instead of only the "Banned" rank.
+- [x] Ban/suspension records with reasons, optional expiry, active/history views, and lift actions
+  instead of relying only on the "Banned" rank.
 
 ### Threads and posts
 

@@ -1,0 +1,26 @@
+<div id="ban-{user_id}" class="modal" hidden>
+    <form class="admin-ban-form" method="post" action="{admin_url}/users">
+        <input type="hidden" name="csrf_token" value="{csrf_token}">
+        <input type="hidden" name="action" value="ban">
+        <input type="hidden" name="user_id" value="{user_id}">
+
+        <h2>Ban {username}</h2>
+        <p class="admin-field-hint">The account stays intact. Access is blocked until the ban expires or is lifted.</p>
+
+        <label>
+            <span>Reason</span>
+            <textarea name="reason" maxlength="500" rows="3" required></textarea>
+        </label>
+        <label>
+            <span>Length</span>
+            <select name="duration">
+                {duration_options}
+            </select>
+        </label>
+
+        <div class="admin-ban-actions">
+            <button type="submit" class="danger-button">Ban user</button>
+            <button type="button" bb-action="close">Cancel</button>
+        </div>
+    </form>
+</div>

@@ -17,6 +17,7 @@ use App\Interfaces\PageInterface;
 use App\Classes\Template;
 use App\Forum\Controllers\AccountController;
 use App\Forum\Controllers\AuditController;
+use App\Forum\Controllers\BanController;
 use App\Forum\Controllers\CategoryController;
 use App\Forum\Controllers\ForumController;
 use App\Forum\Controllers\RankController;
@@ -87,6 +88,9 @@ class AdminPage extends PageBase implements PageInterface
             UrlManager::Redirect($this->AdminUrl());
 
         if ($option === 'users' && !SessionManager::HasPermission(Permissions::MANAGING_USERS))
+            UrlManager::Redirect($this->AdminUrl());
+
+        if ($option === 'bans' && !SessionManager::HasPermission(Permissions::MANAGING_USERS))
             UrlManager::Redirect($this->AdminUrl());
 
         if ($option === 'audit' && !SessionManager::HasPermission(Permissions::VIEWING_AUDIT_LOG))
@@ -161,6 +165,14 @@ class AdminPage extends PageBase implements PageInterface
                     $this->HandleUserSubmission();
 
                 $this->content = $this->BuildUsers();
+                break;
+            }
+            case 'bans':
+            {
+                if (($_SERVER['REQUEST_METHOD'] ?? 'GET') === 'POST')
+                    $this->HandleBanSubmission();
+
+                $this->content = $this->BuildBans();
                 break;
             }
             case 'audit':
@@ -1112,43 +1124,78 @@ class AdminPage extends PageBase implements PageInterface
             {
                 if ($userID === $currentUserID)
                 {
-                    $this->AdminError('You cannot ban your own account.');
+                    $this->AdminError('You cannot ban or unban your own account.');
                     return;
                 }
 
-                $targetRankName = $action === 'ban' ? 'Banned' : 'User';
-                $targetRank = RankController::GetByName($this->database, $targetRankName);
-
-                if (empty($targetRank))
+                if ($action === 'ban')
                 {
-                    $this->AdminError('The ' . $targetRankName . ' rank could not be found.');
-                    return;
-                }
+                    $reason = mb_substr($this->PostedString('reason'), 0, 500);
+                    $duration = $this->PostedString('duration');
+                    $durationDays = ctype_digit($duration) ? (int) $duration : -1;
 
-                if ((int) $targetRank['rank_position'] > $actorPosition)
+                    if (mb_strlen($reason) < 3)
+                    {
+                        $this->AdminError('Enter a reason for the ban.');
+                        return;
+                    }
+
+                    if (!array_key_exists($durationDays, BanController::DURATIONS))
+                    {
+                        $this->AdminError('Choose a valid ban length.');
+                        return;
+                    }
+
+                    if (BanController::HasActive($this->database, $userID))
+                    {
+                        $this->AdminError('This user already has an active ban.');
+                        return;
+                    }
+
+                    if ($this->WouldRemoveLastAdmin($user))
+                    {
+                        $this->AdminError('At least one account must keep admin panel access.');
+                        return;
+                    }
+
+                    BanController::Create(
+                        $this->database,
+                        $userID,
+                        $currentUserID,
+                        $reason,
+                        $durationDays
+                    );
+
+                    AuditController::Log(
+                        $this->database,
+                        'user.ban',
+                        sprintf(
+                            'Banned user "%s" for %s. Reason: %s',
+                            $user['username'],
+                            strtolower(BanController::DurationLabel($durationDays)),
+                            $reason
+                        ),
+                        'user',
+                        $userID
+                    );
+                }
+                else
                 {
-                    $this->AdminError('You cannot assign a rank higher than your own.');
-                    return;
+                    if (!BanController::LiftActiveForUser($this->database, $userID, $currentUserID))
+                    {
+                        $this->AdminError('This user does not have an active ban.');
+                        return;
+                    }
+
+                    AuditController::Log(
+                        $this->database,
+                        'user.unban',
+                        sprintf('Lifted the ban on user "%s".', $user['username']),
+                        'user',
+                        $userID
+                    );
                 }
 
-                if ($action === 'ban' && $this->WouldRemoveLastAdmin($user))
-                {
-                    $this->AdminError('At least one account must keep admin panel access.');
-                    return;
-                }
-
-                AccountController::SetRank($this->database, $userID, (int) $targetRank['id']);
-                AuditController::Log(
-                    $this->database,
-                    $action === 'ban' ? 'user.ban' : 'user.unban',
-                    sprintf(
-                        '%s user "%s".',
-                        $action === 'ban' ? 'Banned' : 'Unbanned',
-                        $user['username']
-                    ),
-                    'user',
-                    $userID
-                );
                 UrlManager::Redirect($this->AdminUrl('users'));
             }
 
@@ -1225,6 +1272,77 @@ class AdminPage extends PageBase implements PageInterface
         }
     }
 
+    private function HandleBanSubmission(): void
+    {
+        if (!SessionManager::ValidateCsrfToken($_POST['csrf_token'] ?? ''))
+        {
+            $this->AdminError('Invalid request. Please try again.');
+            return;
+        }
+
+        $action = $this->PostedString('action');
+
+        if ($action !== 'lift')
+        {
+            $this->AdminError('Invalid ban action.');
+            return;
+        }
+
+        $banID = $this->PostedID('ban_id');
+        $ban = BanController::GetByID($this->database, $banID);
+
+        if (empty($ban))
+        {
+            $this->AdminError('That ban record could not be found.');
+            return;
+        }
+
+        if (BanController::Status($ban) !== 'active')
+        {
+            $this->AdminError('This ban is no longer active.');
+            return;
+        }
+
+        $target = AccountController::GetWithRank($this->database, (int) $ban['user_id']);
+
+        if (empty($target))
+        {
+            $this->AdminError('That user could not be found.');
+            return;
+        }
+
+        $currentUserID = (int) $_SESSION['bitboard_user']->id;
+        [$actorPosition] = $this->ActorAuthority();
+
+        if (
+            (int) $target['id'] !== $currentUserID
+            && !$this->CanManageUserPosition($actorPosition, (int) $target['rank_position'])
+        )
+        {
+            $this->AdminError('You cannot manage a user at or above your own rank.');
+            return;
+        }
+
+        BanController::Lift($this->database, $banID, $currentUserID);
+
+        AuditController::Log(
+            $this->database,
+            'user.unban',
+            sprintf('Lifted the ban on user "%s".', $target['username']),
+            'user',
+            (int) $target['id']
+        );
+
+        $status = $this->PostedString('status_filter');
+        $status = in_array($status, ['active', 'expired', 'lifted'], true) ? $status : 'all';
+        $returnUrl = $this->AdminUrl('bans');
+
+        if ($status !== 'all')
+            $returnUrl .= '?status=' . $status;
+
+        UrlManager::Redirect($returnUrl);
+    }
+
     private function BuildRankOptions(array $ranks, int $selectedID, bool $includeAll = false, ?int $maxPosition = null): string
     {
         $options = $includeAll
@@ -1249,23 +1367,40 @@ class AdminPage extends PageBase implements PageInterface
         return $options;
     }
 
+    private function BuildDurationOptions(): string
+    {
+        $options = '';
+
+        foreach (BanController::DURATIONS as $days => $label)
+            $options .= $this->BuildOption((string) $days, $label, $days === 7);
+
+        return $options;
+    }
+
     private function BuildUserRow(
         array $user,
         array $ranks,
-        int $bannedRankID,
         int $currentUserID,
         int $actorPosition
     ): string
     {
         $userID = (int) $user['id'];
-        $isBanned = $bannedRankID > 0 && (int) $user['rank_id'] === $bannedRankID;
+        $activeBan = BanController::GetActiveForUser($this->database, $userID);
+        $isBanned = !empty($activeBan);
         $isSelf = $userID === $currentUserID;
         $canManage = $isSelf || $this->CanManageUserPosition($actorPosition, (int) $user['rank_position']);
+        $assignableRanks = array_values(array_filter(
+            $ranks,
+            static fn(array $rank): bool => strtolower(trim((string) $rank['rank_name'])) !== 'banned'
+        ));
 
         $rankControl = '';
         $reputationDisabled = '';
         $actions = '';
         $badge = '';
+        $banStatus = '';
+        $moderationForm = '';
+        $banModal = '';
 
         if (!$canManage)
         {
@@ -1292,8 +1427,48 @@ class AdminPage extends PageBase implements PageInterface
             $select->AddEntry('{options}', $this->BuildRankOptions($ranks, (int) $user['rank_id'], false, $actorPosition));
             $select->Replace();
             $rankControl = $select->template;
-            $actions = $this->BuildButton('edit-user-' . $userID, 'Save')
-                . $this->BuildButton('moderate-user-' . $userID, $isBanned ? 'Unban' : 'Ban', $isBanned ? '' : 'danger-button');
+            $actions = $this->BuildButton('edit-user-' . $userID, 'Save');
+
+            if ($isBanned)
+            {
+                $actions .= $this->BuildButton('moderate-user-' . $userID, 'Unban');
+            }
+            else
+            {
+                $trigger = new Template('admin/main/users', 'ban_trigger');
+                $trigger->AddEscapedEntry('{user_id}', $userID);
+                $trigger->Replace();
+                $actions .= $trigger->template;
+
+                $modal = new Template('admin/main/users', 'ban_modal');
+                $modal->AddEscapedEntry('{user_id}', $userID);
+                $modal->AddEscapedEntry('{username}', $user['username']);
+                $modal->AddEntry('{duration_options}', $this->BuildDurationOptions());
+                $modal->Replace();
+                $banModal = $modal->template;
+            }
+        }
+
+        if ($isBanned)
+        {
+            $status = new Template('admin/main/users', 'ban_status');
+            $status->AddEntry('{status_class}', 'active');
+            $status->AddEscapedEntry('{status_label}', empty($activeBan['expires_at'])
+                ? 'Permanently banned'
+                : 'Banned until ' . BanController::ExpiryLabel((string) $activeBan['expires_at']));
+            $status->AddEscapedEntry('{reason}', $activeBan['reason']);
+            $status->AddEscapedEntry('{issued_at}', RelativeTime::Format($activeBan['issued_at'], false));
+            $status->AddEscapedEntry('{issuer}', $activeBan['issuer_name'] ?: 'Deleted user');
+            $status->Replace();
+            $banStatus = $status->template;
+
+            if ($canManage && !$isSelf)
+            {
+                $form = new Template('admin/main/users', 'unban_form');
+                $form->AddEscapedEntry('{user_id}', $userID);
+                $form->Replace();
+                $moderationForm = $form->template;
+            }
         }
 
         $row = new Template('admin/main/users', 'user');
@@ -1306,11 +1481,14 @@ class AdminPage extends PageBase implements PageInterface
         $row->AddEscapedEntry('{thread_label}', $this->CountLabel((int) $user['thread_count'], 'thread'));
         $row->AddEscapedEntry('{joined}', RelativeTime::Format($user['reg_date'], false));
         $row->AddEscapedEntry('{last_active}', RelativeTime::Convert($user['last_active']));
+        $row->AddEntry('{ban_class}', $isBanned ? ' is-banned' : '');
+        $row->AddEntry('{ban_status}', $banStatus);
+        $row->AddEntry('{moderation_form}', $moderationForm);
+        $row->AddEntry('{ban_modal}', $banModal);
         $row->AddEntry('{rank_control}', $rankControl);
         $row->AddEntry('{reputation_disabled}', $reputationDisabled);
         $row->AddEntry('{actions}', $actions);
         $row->AddEntry('{readonly_badge}', $badge);
-        $row->AddEscapedEntry('{moderation_action}', $isBanned ? 'unban' : 'ban');
         $row->Replace();
 
         return $row->template;
@@ -1345,11 +1523,6 @@ class AdminPage extends PageBase implements PageInterface
         if ($rankFilter > 0 && !in_array($rankFilter, $rankIDs, true))
             $rankFilter = 0;
 
-        $bannedRankID = 0;
-        foreach ($ranks as $rank)
-            if ($rank['rank_name'] === 'Banned')
-                $bannedRankID = (int) $rank['id'];
-
         [$actorPosition] = $this->ActorAuthority();
 
         $perPage = 20;
@@ -1376,7 +1549,6 @@ class AdminPage extends PageBase implements PageInterface
             $rows .= $this->BuildUserRow(
                 $user,
                 $ranks,
-                $bannedRankID,
                 (int) $_SESSION['bitboard_user']->id,
                 $actorPosition
             );
@@ -1727,6 +1899,9 @@ class AdminPage extends PageBase implements PageInterface
         $usersLink = $canManageUsers
             ? $this->BuildQuickLink($this->AdminUrl('users'), 'users', 'Users')
             : '';
+        $bansLink = $canManageUsers
+            ? $this->BuildQuickLink($this->AdminUrl('bans'), 'gavel', 'Bans')
+            : '';
         $ranksLink = $canManageRanks
             ? $this->BuildQuickLink($this->AdminUrl('ranks'), 'shield', 'Ranks')
             : '';
@@ -1741,7 +1916,123 @@ class AdminPage extends PageBase implements PageInterface
         $content->AddEntry('{recent_threads}', $this->BuildRecentThreads());
         $content->AddEntry('{recent_members}', $this->BuildRecentMembers());
         $content->AddEntry('{users_link}', $usersLink);
+        $content->AddEntry('{bans_link}', $bansLink);
         $content->AddEntry('{ranks_link}', $ranksLink);
+        $content->Replace();
+
+        return $content->template;
+    }
+
+    private function BuildBans(): string
+    {
+        $status = isset($_GET['status']) && is_string($_GET['status']) ? $_GET['status'] : 'all';
+        $status = in_array($status, ['active', 'expired', 'lifted'], true) ? $status : 'all';
+
+        $page = 1;
+        $parameters = $this->forumData->actionParameters;
+
+        if (
+            ($parameters[2] ?? '') === 'page'
+            && isset($parameters[3])
+            && is_string($parameters[3])
+            && ctype_digit($parameters[3])
+        )
+            $page = (int) $parameters[3];
+
+        if ($page <= 0)
+            $page = 1;
+
+        [$actorPosition] = $this->ActorAuthority();
+        $currentUserID = (int) $_SESSION['bitboard_user']->id;
+        $perPage = 20;
+        $total = BanController::Count($this->database, $status);
+        $totalPages = max(1, (int) ceil($total / $perPage));
+
+        $filterParameters = $status !== 'all' ? ['status' => $status] : [];
+        $queryString = count($filterParameters) > 0 ? '?' . http_build_query($filterParameters) : '';
+
+        if ($total > 0 && $page > $totalPages)
+            UrlManager::Redirect($this->AdminUrl('bans/page/' . $totalPages) . $queryString);
+
+        $bans = $total > 0
+            ? BanController::GetPage($this->database, $status, ($page - 1) * $perPage, $perPage)
+            : [];
+
+        $rows = '';
+
+        foreach ($bans as $ban)
+        {
+            $banStatus = BanController::Status($ban);
+            $statusLabel = match ($banStatus)
+            {
+                'lifted' => 'Lifted',
+                'expired' => 'Expired',
+                default => empty($ban['expires_at']) ? 'Permanent' : 'Active',
+            };
+            $statusMeta = '';
+
+            if ($banStatus === 'lifted')
+            {
+                $meta = new Template('admin/main/bans', 'status_meta');
+                $meta->AddEscapedEntry('{lifter}', $ban['lifter_name'] ?: 'Deleted user');
+                $meta->AddEscapedEntry('{lifted_at}', RelativeTime::Convert($ban['lifted_at']));
+                $meta->Replace();
+                $statusMeta = $meta->template;
+            }
+
+            $action = '';
+
+            if (
+                $banStatus === 'active'
+                && (
+                    (int) $ban['user_id'] === $currentUserID
+                    || $this->CanManageUserPosition($actorPosition, (int) $ban['user_rank_position'])
+                )
+            )
+            {
+                $lift = new Template('admin/main/bans', 'lift_form');
+                $lift->AddEscapedEntry('{ban_id}', $ban['id']);
+                $lift->AddEscapedEntry('{status_filter}', $status);
+                $lift->Replace();
+                $action = $lift->template;
+            }
+
+            $row = new Template('admin/main/bans', 'row');
+            $row->AddEscapedEntry('{profile_url}', $this->serverPath . 'profile/' . (int) $ban['user_id']);
+            $row->AddEscapedEntry('{user_name}', $ban['user_name']);
+            $row->AddEscapedEntry('{reason}', $ban['reason']);
+            $row->AddEscapedEntry('{issued_at}', RelativeTime::Format($ban['issued_at'], false));
+            $row->AddEscapedEntry('{issuer}', $ban['issuer_name'] ?: 'Deleted user');
+            $row->AddEscapedEntry('{expires_at}', BanController::ExpiryLabel(is_string($ban['expires_at']) ? $ban['expires_at'] : null));
+            $row->AddEntry('{status_class}', $banStatus);
+            $row->AddEscapedEntry('{status_label}', $statusLabel);
+            $row->AddEntry('{status_meta}', $statusMeta);
+            $row->AddEntry('{action}', $action);
+            $row->Replace();
+            $rows .= $row->template;
+        }
+
+        if ($rows === '')
+            $rows = (new Template('admin/main/bans', 'empty'))->template;
+
+        $statusOptions = $this->BuildOption('all', 'All records', $status === 'all')
+            . $this->BuildOption('active', 'Active', $status === 'active')
+            . $this->BuildOption('expired', 'Expired', $status === 'expired')
+            . $this->BuildOption('lifted', 'Lifted', $status === 'lifted');
+
+        $pagination = '';
+
+        if ($totalPages > 1)
+        {
+            $widget = new PaginationWidget($page, $total, $perPage, $this->adminPath . '/bans/page/', $filterParameters);
+            $pagination = $widget->Template->template;
+        }
+
+        $content = new Template('admin/main', 'bans');
+        $content->AddEntry('{status_options}', $statusOptions);
+        $content->AddEscapedEntry('{total_label}', $this->CountLabel($total, 'ban record'));
+        $content->AddEntry('{pagination}', $pagination);
+        $content->AddEntry('{rows}', $rows);
         $content->Replace();
 
         return $content->template;
@@ -2102,12 +2393,16 @@ class AdminPage extends PageBase implements PageInterface
             'forums' => ['Forums', 'ti-messages', 'forums'],
             'prefixes' => ['Prefixes', 'ti-tag', 'prefixes'],
             'users' => ['Users', 'ti-users', 'users'],
+            'bans' => ['Bans', 'ti-gavel', 'bans'],
             'ranks' => ['Ranks', 'ti-shield', 'ranks'],
             'audit' => ['Audit log', 'ti-history', 'audit'],
         ];
 
         if (!SessionManager::HasPermission(Permissions::MANAGING_USERS))
             unset($sections['users']);
+
+        if (!SessionManager::HasPermission(Permissions::MANAGING_USERS))
+            unset($sections['bans']);
 
         if (!SessionManager::HasPermission(Permissions::MANAGING_ROLES))
             unset($sections['ranks']);
